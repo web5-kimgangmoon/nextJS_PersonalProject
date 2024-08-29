@@ -7,5 +7,5 @@ export default function ({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return <div>에러났어</div>;
+  return <div>{error.message}</div>;
 }

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 export type Button = {
-  nobold?: boolean;
+  isNobold?: boolean;
   color:
     | "pink"
     | "blue"
@@ -14,6 +14,23 @@ export type Button = {
     | "none";
   children?: string | ReactNode;
   radius?: "medium" | "little" | "a little" | "none";
-  size?: "short" | "medium" | "small" | "smallest";
+  size?: "bigFont" | "short" | "medium" | "small" | "smallest";
+  className?: string;
   onClick?: () => void;
 };
+
+export type CategoryBoard = {
+  isTop?: boolean;
+  commentNum: number;
+  boardId: number;
+  categoryPath: string;
+  createdAt: Date;
+  img: string;
+  category: string;
+  content: string;
+  title: string;
+  writer: string;
+  writerId: number;
+};
+
+//"/baseBoardImg.png"

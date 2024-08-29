@@ -1,3 +1,11 @@
+import { BoardItem } from "@/app/ui/category/board";
+import { categoryInformBoard as categoryInformBoardHolder } from "../lib/placeholder-data";
+
 export default async function () {
-  return <div className="">이동확인중</div>;
+  const categoryInformBoard = categoryInformBoardHolder;
+  return (
+    <div className="px-2">
+      <BoardItem {...categoryInformBoard} />
+    </div>
+  );
 }

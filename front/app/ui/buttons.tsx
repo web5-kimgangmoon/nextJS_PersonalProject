@@ -6,27 +6,29 @@ import type { Button as ButtonTy } from "@/app/lib/definitions";
 import { ReactNode } from "react";
 
 export function Button({
-  nobold,
+  isNobold,
   color,
   children,
   radius = undefined,
   size,
+  className,
   onClick,
 }: ButtonTy) {
   return (
     <button
       className={clsx(
         "transition-colors",
-        { "font-bold": !nobold },
+        { "font-bold": !isNobold },
         {
           "w-full text-xl py-2": !size,
+          "w-full text-3xl py-4 px-8 transition-[font]": size === "bigFont",
           "text-xl py-2 px-4": size === "short",
           "text-base py-1 px-4": size === "medium",
           "text-base py-1 px-2": size === "small",
           "text-base py-1 px-1": size === "smallest",
         },
         {
-          "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#d81159]":
+          "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#D81159]":
             color === "pink",
           "bg-mainBlue text-white focus:bg-darkBlue": color === "blue",
           "border-2 border-mainBlue text-mainBlue": color === "blankBlue",
@@ -42,7 +44,8 @@ export function Button({
           "rounded-[1rem]": radius === "medium",
           "rounded-[0.5rem]": radius === "a little",
           "rounded-[0.25rem]": radius === "little",
-        }
+        },
+        className
       )}
       onClick={onClick}
     >
@@ -110,6 +113,23 @@ export function LinkButton(
   );
 }
 
-export const MenuBarBtn = () => (
-  <ImgButton icon={<img src="/menuBar.svg" />} color={"none"} size="smallest" />
-);
+export function AButton(
+  button: ButtonTy & {
+    href: string;
+    isLessGap?: boolean;
+    img?: string;
+    icon?: ReactNode;
+    isRight?: boolean;
+    isImgSmall?: boolean;
+  }
+) {
+  return (
+    <a href={button.href}>
+      {button.img !== undefined || button.icon !== undefined ? (
+        <ImgButton {...button}>{button.children}</ImgButton>
+      ) : (
+        <Button {...button}>{button.children}</Button>
+      )}
+    </a>
+  );
+}

@@ -1,28 +1,23 @@
 "use client";
 
+import { userInfo as userInfoHolder } from "@/app/lib/placeholder-data";
 import Link from "next/link";
 
-export function Footer({
-  isAdmin,
-  userId,
-}: {
-  isAdmin?: boolean;
-  userId?: number;
-}) {
+export function Footer() {
+  const userInfo = userInfoHolder;
   return (
-    <div className="py-8 px-2">
+    <div className="py-8 px-8">
       <div className="border-t border-borderGray flex flex-col gap-5 py-5">
-        {userId ? <OnLogin userId={userId} /> : <OffLogin />}
-        {isAdmin ? <OnAdmin /> : ""}
+        {userInfo.isLogin ? <OnLogin /> : <OffLogin />}
+        {userInfo.isLogin ? "" : <OnAdmin />};
       </div>
-      <div className="border-t border-borderGray flex flex-col gap-5 py-5">
-        <Link
-          href="/"
-          className="flex justify-center text-mainBlue text-3xl font-bold"
-        >
-          The board
-        </Link>
-        <div className="text-sm flex items-center flex-col gap-1 text-textBlue">
+      <div className="w-full border-t border-borderGray flex flex-col gap-5 py-5 items-center">
+        <div className="w-max">
+          <Link href="/" className="text-mainBlue text-3xl font-bold">
+            The board
+          </Link>
+        </div>
+        <div className="text-sm flex items-center flex-col gap-1 text-textBlue text-center break-keep">
           <div>@2024 kim</div>
           <div>
             위 사이트는 개인 정보를 공유하거나 거래하는 행위를 금지합니다.
@@ -48,40 +43,47 @@ export function LinkBox({
       <ul className="flex flex-col gap-3 text-[#042552]/50">
         {isExternal
           ? elements.map((item, idx) => (
-              <a
-                href={item.href}
-                key={idx}
-                className="flex justify-center focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
-                tabIndex={0}
-              >
-                <li>{item.title}</li>
-              </a>
+              <div className="flex justify-center">
+                <a
+                  href={item.href}
+                  key={idx}
+                  className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
+                  tabIndex={0}
+                >
+                  <li>{item.title}</li>
+                </a>
+              </div>
             ))
           : elements.map((item, idx) => (
-              <Link
-                href={item.href}
-                key={idx}
-                className="flex justify-center focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
-              >
-                <li>{item.title}</li>
-              </Link>
+              <div className="flex justify-center">
+                <Link
+                  href={item.href}
+                  key={idx}
+                  className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
+                >
+                  <li>{item.title}</li>
+                </Link>
+              </div>
             ))}
       </ul>
     </div>
   );
 }
 
-export function OnLogin({ userId }: { userId: number }) {
+export function OnLogin() {
   return (
     <>
       <LinkBox
         title="사용자"
-        elements={[{ title: "유저정보", href: `/user/${userId}` }]}
+        elements={[
+          { title: "유저정보", href: `/user` },
+          { title: "로그아웃", href: `/logout` },
+        ]}
       />
 
       <LinkBox
         title="게시글"
-        elements={[{ title: "글작성", href: `/write/${userId}` }]}
+        elements={[{ title: "글작성", href: `/write` }]}
       />
     </>
   );
