@@ -1,3 +1,8 @@
-export default function () {
-  return <div>이동확인중</div>;
+"use client";
+
+import { useParams } from "next/navigation";
+
+export default async function () {
+  const params = useParams();
+  return <div className="">{params.category}</div>;
 }

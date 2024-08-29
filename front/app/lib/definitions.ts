@@ -9,9 +9,11 @@ export type Button = {
     | "whiteRed"
     | "gray"
     | "blueGray"
-    | "whiteGray";
-  children: string | ReactNode;
-  radius?: "medium" | "little";
+    | "whiteGray"
+    | "noneBlue"
+    | "none";
+  children?: string | ReactNode;
+  radius?: "medium" | "little" | "a little" | "none";
   size?: "short" | "medium" | "small" | "smallest";
   onClick?: () => void;
 };
