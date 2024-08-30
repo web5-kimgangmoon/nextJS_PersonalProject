@@ -43,10 +43,9 @@ export function LinkBox({
       <ul className="flex flex-col gap-3 text-[#042552]/50">
         {isExternal
           ? elements.map((item, idx) => (
-              <div className="flex justify-center">
+              <div className="flex justify-center" key={idx}>
                 <a
                   href={item.href}
-                  key={idx}
                   className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
                   tabIndex={0}
                 >
@@ -55,10 +54,9 @@ export function LinkBox({
               </div>
             ))
           : elements.map((item, idx) => (
-              <div className="flex justify-center">
+              <div className="flex justify-center" key={idx}>
                 <Link
                   href={item.href}
-                  key={idx}
                   className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
                 >
                   <li>{item.title}</li>

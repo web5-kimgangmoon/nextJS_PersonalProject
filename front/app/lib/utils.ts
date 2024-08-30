@@ -12,3 +12,25 @@ export const getTimeString = (ta: Date) => {
     return `${Math.ceil(dif / 60000)}분 전`;
   }
 };
+
+export const pageGetter = ({
+  count,
+  current,
+  limit,
+}: {
+  count: number;
+  current: number;
+  limit: number;
+}) => {
+  if(count<6){
+    if(current===count){
+      if(count===1)
+        else if(count>1)
+    }
+  }
+  if(count>5){
+
+  }
+  "•••";
+  return {pages:["1", "2","3"], selected:"4", isLeftArrow:true, isRightArrow:true}
+};

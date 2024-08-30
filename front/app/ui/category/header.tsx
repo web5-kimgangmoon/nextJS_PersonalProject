@@ -12,10 +12,15 @@ import Image from "next/image";
 
 export function Header() {
   const userInfo = userInfoHolder;
+  const data = categoryListHolder;
+  const categoryList = data.map((item) => ({
+    title: item.title,
+    href: `/category/${item.path}`,
+  }));
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
-        <MenuBarBtn isLogin={userInfo.isLogin} />
+        <MenuBarBtn isLogin={userInfo.isLogin} categoryList={categoryList} />
         <Link href={"/category"} className="text-2xl text-mainBlue font-bold">
           The board
         </Link>
@@ -31,7 +36,13 @@ export function Header() {
   );
 }
 
-export const MenuBarBtn = ({ isLogin }: { isLogin: boolean }) => {
+export const MenuBarBtn = ({
+  isLogin,
+  categoryList,
+}: {
+  isLogin: boolean;
+  categoryList: { title: string; href: string }[];
+}) => {
   const [open, setOpen] = useState<boolean>(false);
   const closeModal = useCallback(() => {
     setOpen(false);
@@ -39,7 +50,7 @@ export const MenuBarBtn = ({ isLogin }: { isLogin: boolean }) => {
   return (
     <>
       <Modal modalCtl={open} closeModalCtl={closeModal}>
-        <MenuModalContent isLogin={isLogin} />
+        <MenuModalContent isLogin={isLogin} categoryList={categoryList} />
       </Modal>
       <ImgButton
         icon={<img src="/menuBar.svg" />}
@@ -110,8 +121,13 @@ export function OffLogin() {
   );
 }
 
-export const MenuModalContent = ({ isLogin }: { isLogin: boolean }) => {
-  const categoryList = categoryListHolder;
+export const MenuModalContent = ({
+  isLogin,
+  categoryList,
+}: {
+  isLogin: boolean;
+  categoryList: { title: string; href: string }[];
+}) => {
   const [openObj, setOpenObj] = useState<{ user: boolean; category: boolean }>({
     user: false,
     category: false,

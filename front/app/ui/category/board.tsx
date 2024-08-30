@@ -1,12 +1,34 @@
 "use client";
 
 import clsx from "clsx";
-import { Button, LinkButton } from "@/app/ui/buttons";
+import { LinkButton } from "@/app/ui/buttons";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { getTimeString } from "@/app/lib/utils";
 import Link from "next/link";
 import { CategoryBoard } from "@/app/lib/definitions";
 import Image from "next/image";
+import {
+  boardList as boardListHolder,
+  categoryInformBoard as categoryInformBoardHolder,
+} from "@/app/lib/placeholder-data";
+import { NoBoard } from "./noBoard";
+
+export const InformBoard = () => {
+  const categoryInformBoard = categoryInformBoardHolder;
+  return <BoardItem {...categoryInformBoard} />;
+};
+
+export const BoardList = () => {
+  const boardList = boardListHolder;
+  if (boardList.length === 0) return <NoBoard />;
+  return (
+    <div>
+      {boardList.map((item, idx) => (
+        <BoardItem {...item} key={idx} />
+      ))}
+    </div>
+  );
+};
 
 export const BoardItem = ({
   isTop,
@@ -24,8 +46,15 @@ export const BoardItem = ({
   return (
     <div className="flex flex-col gap-2 py-4">
       {!isTop && (
-        <div className="drop-shadow-xl py-2">
-          <img src={img} className="w-full" alt="image loading failed" />
+        <div className="drop-shadow-xl py-2 flex justify-center">
+          <Image
+            src={img}
+            className="w-full max-w-96"
+            alt="image loading failed"
+            width={100}
+            height={100}
+            priority={true}
+          />
         </div>
       )}
       <div className={clsx(!isTop && "flex justify-between items-center")}>
@@ -80,13 +109,14 @@ export const BoardItem = ({
         </Link>
       )}
       {isTop && (
-        <div className="drop-shadow-xl py-2">
+        <div className="drop-shadow-xl py-2 flex justify-center">
           <Image
             src={img}
-            className="w-full"
+            className="w-full max-w-96"
             alt="image loading failed"
             width={100}
             height={100}
+            priority={true}
           />
         </div>
       )}

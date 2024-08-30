@@ -1,8 +1,12 @@
-"use client";
+import { BoardList, InformBoard } from "@/app/ui/category/board";
+import { CategorySlideBar } from "@/app/ui/slideBar";
 
-import { useParams } from "next/navigation";
-
-export default async function () {
-  const params = useParams();
-  return <div className="">{params.category}</div>;
+export default function () {
+  return (
+    <div className="px-2">
+      <InformBoard />
+      <CategorySlideBar />
+      <BoardList />
+    </div>
+  );
 }

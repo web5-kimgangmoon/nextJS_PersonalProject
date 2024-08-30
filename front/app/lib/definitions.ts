@@ -32,5 +32,9 @@ export type CategoryBoard = {
   writer: string;
   writerId: number;
 };
-
+export type setLocationTy = (value: {
+  current: number;
+  dif: number;
+  translate: number;
+}) => { current: number; dif: number; translate: number };
 //"/baseBoardImg.png"

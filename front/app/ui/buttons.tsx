@@ -4,6 +4,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import type { Button as ButtonTy } from "@/app/lib/definitions";
 import { ReactNode } from "react";
+import Image from "next/image";
 
 export function Button({
   isNobold,
@@ -82,7 +83,13 @@ export function ImgButton(
           } flex justify-center items-center`}
         >
           {button.img && (
-            <img src={button.img} alt="no image" className="w-full h-full" />
+            <Image
+              src={button.img}
+              alt="no image"
+              className="w-full h-full"
+              width={100}
+              height={100}
+            />
           )}
           {Icon}
         </div>

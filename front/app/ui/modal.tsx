@@ -25,7 +25,7 @@ export function Modal({
       <Curtain modalCtl={modalCtl} curtainColor={curtainColor} />
       <div
         className={clsx(
-          "fixed transition-transform w-full top-0 left-0 z-20",
+          "fixed transition-transform w-full top-0 left-0 z-50",
           {
             "bg-white": !isTranslucent,
           },
@@ -69,7 +69,7 @@ export function Curtain({
         `fixed top-0 left-0 w-screen h-screen flex flex-col backdrop-blur transition`,
         {
           "opacity-0 z-[-1]": !modalCtl,
-          "z-10": modalCtl,
+          "z-40": modalCtl,
         },
         {
           "bg-black/70": curtainColor === "black",
