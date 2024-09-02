@@ -15,9 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className={clsx(inter.className, "container sm:text-base")}>
-        {children}
-      </body>
+      <body className={clsx(inter.className, "sm:text-base")}>{children}</body>
     </html>
   );
 }

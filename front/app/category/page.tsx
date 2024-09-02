@@ -1,30 +1,16 @@
-import { Button, LinkButton, ImgButton } from "../ui/buttons";
+import { BoardList, InformBoard } from "@/app/ui/category/board";
+import { CategorySlideBar } from "@/app/ui/slideBar";
+import { Pages } from "../ui/category/pageBtn";
+import { SearchBox } from "../ui/category/searchBar";
 
-export default function () {
+export default async function () {
   return (
-    <div className="p-5">
-      <ImgButton
-        color="whiteGray"
-        img={"./googleLogo.svg"}
-        size="short"
-        nobold={true}
-        radius="little"
-      >
-        Google
-      </ImgButton>
-      <Button color="pink" radius="little">
-        검색
-      </Button>
-      <LinkButton
-        href="/"
-        color="whiteGray"
-        img={"./googleLogo.svg"}
-        size="smallest"
-        nobold={true}
-        radius="little"
-      >
-        게시글 작성 완료
-      </LinkButton>
+    <div className="px-2">
+      <InformBoard />
+      <CategorySlideBar />
+      <BoardList />
+      <Pages />
+      <SearchBox />
     </div>
   );
 }
