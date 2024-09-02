@@ -13,8 +13,15 @@ export type Button = {
     | "noneBlue"
     | "none";
   children?: string | ReactNode;
-  radius?: "medium" | "little" | "a little" | "none";
-  size?: "bigFont" | "short" | "medium" | "small" | "smallest";
+  radius?: "medium" | "little" | "a little" | "none" | "full";
+  size?:
+    | "bigFont"
+    | "short"
+    | "medium"
+    | "small"
+    | "smallest"
+    | "pageImgBtn"
+    | "pageBtn";
   className?: string;
   onClick?: () => void;
 };

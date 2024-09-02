@@ -1,1 +1,3 @@
-export const BreadCrumble = () => {};
+export const BreadCrumble = () => {
+  return <div></div>;
+};

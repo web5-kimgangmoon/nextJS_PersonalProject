@@ -27,6 +27,7 @@ export function Button({
           "text-base py-1 px-4": size === "medium",
           "text-base py-1 px-2": size === "small",
           "text-base py-1 px-1": size === "smallest",
+          "w-8 h-8": size == "pageBtn",
         },
         {
           "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#D81159]":
@@ -45,10 +46,16 @@ export function Button({
           "rounded-[1rem]": radius === "medium",
           "rounded-[0.5rem]": radius === "a little",
           "rounded-[0.25rem]": radius === "little",
+          "rounded-full": radius === "full",
         },
         className
       )}
-      onClick={onClick}
+      onClick={(e) => {
+        onClick && onClick();
+        setTimeout(() => {
+          e.currentTarget.blur();
+        }, 1000);
+      }}
     >
       {children}
     </button>
@@ -62,6 +69,8 @@ export function ImgButton(
     isLessGap?: boolean;
     isRight?: boolean;
     isImgSmall?: boolean;
+    isImgBig?: boolean;
+    isNoString?: boolean;
   }
 ) {
   const Icon = button.icon;
@@ -71,16 +80,18 @@ export function ImgButton(
         className={clsx(
           "flex justify-center items-center",
           {
-            "gap-1": button.isLessGap,
-            "gap-2": !button.isLessGap,
+            "gap-1": !button.isNoString && button.isLessGap,
+            "gap-2": !button.isNoString && !button.isLessGap,
           },
           { "flex-row-reverse": button.isRight }
         )}
       >
         <div
-          className={`${
-            button.isImgSmall ? "min-h-2 min-w-2" : "min-h-4 min-w-4"
-          } flex justify-center items-center`}
+          className={clsx("flex justify-center items-center", {
+            "min-h-2 min-w-2": button.isImgSmall,
+            "min-h-4 min-w-4": !button.isImgSmall && !button.isImgBig,
+            "min-h-8 min-w-8": button.isImgBig,
+          })}
         >
           {button.img && (
             <Image
@@ -107,6 +118,8 @@ export function LinkButton(
     icon?: ReactNode;
     isRight?: boolean;
     isImgSmall?: boolean;
+    isImgBig?: boolean;
+    isNoString?: boolean;
   }
 ) {
   return (

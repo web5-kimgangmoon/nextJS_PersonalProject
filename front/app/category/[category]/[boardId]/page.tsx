@@ -1,8 +1,10 @@
-"use client";
-
-import { usePathname } from "next/navigation";
+import { BreadCrumble } from "@/app/ui/category/breadCrumble";
 
 export default async function () {
-  const path = usePathname();
-  return <div className="">{path}</div>;
+  return (
+    <div className="">
+      <BreadCrumble />
+      진입중
+    </div>
+  );
 }

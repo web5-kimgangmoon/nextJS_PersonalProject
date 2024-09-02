@@ -1,5 +1,7 @@
 import { BoardList, InformBoard } from "@/app/ui/category/board";
 import { CategorySlideBar } from "@/app/ui/slideBar";
+import { Pages } from "../ui/category/pageBtn";
+import { SearchBox } from "../ui/category/searchBar";
 
 export default async function () {
   return (
@@ -7,6 +9,8 @@ export default async function () {
       <InformBoard />
       <CategorySlideBar />
       <BoardList />
+      <Pages />
+      <SearchBox />
     </div>
   );
 }

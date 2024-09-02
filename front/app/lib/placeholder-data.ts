@@ -87,3 +87,4 @@ export const categoryInformBoard: CategoryBoard = {
   writer: "작성자",
   writerId: 23,
 };
+export const countBoard = 132;
