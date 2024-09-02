@@ -1,3 +1,12 @@
+"use client";
+
+import { useParams } from "next/navigation";
+
 export const BreadCrumble = () => {
-  return <div></div>;
+  const params = useParams();
+  return (
+    <div>
+      <div></div>
+    </div>
+  );
 };
