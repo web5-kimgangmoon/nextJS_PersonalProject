@@ -3,19 +3,25 @@
 import clsx from "clsx";
 import { ChangeEvent, useCallback, useState } from "react";
 import { LinkButton } from "../buttons";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export const SearchBox = () => {
   const base = usePathname();
+  const query = useSearchParams();
   const options = [
     { title: "내용", value: "content" },
     { title: "제목", value: "title" },
     { title: "제목과 내용", value: "contentTitle" },
   ];
+  const search = query.get("search");
+  const searchType = query.get("searchType");
   const [searchState, setSearchState] = useState<{
     search: string;
     searchType: string | null;
-  }>({ search: "", searchType: "content" });
+  }>({
+    search: search ? search : "",
+    searchType: searchType ? searchType : "content",
+  });
   const selectType = useCallback(
     (value: string) => {
       setSearchState((item) => ({ ...item, sesearchType: value }));

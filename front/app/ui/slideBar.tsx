@@ -4,9 +4,8 @@ import { categoryList as categoryListHolder } from "@/app/lib/placeholder-data";
 import clsx from "clsx";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { TouchEvent, useCallback, useContext, useState } from "react";
-import { SlideContext } from "./category/context/slideContext";
-import type { setLocationTy } from "../lib/definitions";
+import { TouchEvent, useContext } from "react";
+import { SlideContext } from "./context/slideContext";
 
 export const CategorySlideBar = () => {
   const categoryList = categoryListHolder;
@@ -14,14 +13,15 @@ export const CategorySlideBar = () => {
     title: item.title,
     params: item.path,
   }));
-  const { location, setLocation } = useContext(SlideContext);
+  const { location, touchMove, touchStart } = useContext(SlideContext);
   let params = useParams();
   params.category = params.category ? (params.category as string) : "all";
   return (
     <SlideBar
       list={list}
       location={location}
-      setLocation={setLocation}
+      touchMove={touchMove as (e: TouchEvent<HTMLDivElement>) => void}
+      touchStart={touchStart as (e: TouchEvent<HTMLDivElement>) => void}
       selected={params.category}
       path="category"
     />
@@ -33,47 +33,16 @@ export const SlideBar = ({
   list,
   location,
   selected,
-  setLocation,
+  touchStart,
+  touchMove,
 }: {
   path: string;
   list: { title: string; params: string }[];
   location: { current: number; dif: number; translate: number };
   selected: string;
-  setLocation: (fn: setLocationTy) => void;
+  touchStart: (e: TouchEvent<HTMLDivElement>) => void;
+  touchMove: (e: TouchEvent<HTMLDivElement>) => void;
 }) => {
-  const touchStart = useCallback(
-    (e: TouchEvent<HTMLDivElement>) => {
-      const parentWidth = e.currentTarget.parentElement?.clientWidth;
-      const child = e.currentTarget.clientWidth;
-      if (parentWidth) {
-        setLocation((value) => ({
-          ...value,
-          current: e.targetTouches[0].clientX,
-          dif: child - parentWidth,
-        }));
-      }
-      e.currentTarget.style.translate = `${location.translate}px`;
-    },
-    [location.current, location.dif]
-  );
-  const touchMove = useCallback(
-    (e: TouchEvent<HTMLDivElement>) => {
-      const move =
-        e.targetTouches[0].clientX - location.current + location.translate;
-      const distance = e.targetTouches[0].clientX - location.current;
-      if (
-        !(-move > location.dif && distance < 0) &&
-        !(-move < 1 && distance > 0)
-      )
-        setLocation((value) => ({
-          ...value,
-          current: e.targetTouches[0].clientX,
-          translate: move,
-        }));
-      e.currentTarget.style.translate = `${location.translate}px`;
-    },
-    [location.current, location.translate]
-  );
   return (
     <div className="relative w-full h-16 overflow-hidden border-t border-b border-borderGray">
       <div

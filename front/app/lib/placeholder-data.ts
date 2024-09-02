@@ -7,6 +7,14 @@ export const categoryList = [
   { title: "유머", path: "humor" },
   { title: "자랑", path: "goodItem" },
   { title: "질문", path: "question" },
+  { title: "자랑", path: "goodItem" },
+  { title: "질문", path: "question" },
+  { title: "자랑", path: "goodItem" },
+  { title: "질문", path: "question" },
+  { title: "자랑", path: "goodItem" },
+  { title: "질문", path: "question" },
+  { title: "자랑", path: "goodItem" },
+  { title: "질문", path: "question" },
 ];
 export const userInfo = {
   profileImg: "/placeholder-noavatar32.svg",
