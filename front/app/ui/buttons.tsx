@@ -50,12 +50,7 @@ export function Button({
         },
         className
       )}
-      onClick={(e) => {
-        onClick && onClick();
-        setTimeout(() => {
-          e.currentTarget.blur();
-        }, 1000);
-      }}
+      onClick={onClick}
     >
       {children}
     </button>

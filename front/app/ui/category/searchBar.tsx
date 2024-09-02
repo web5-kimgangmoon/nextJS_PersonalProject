@@ -35,7 +35,7 @@ export const SearchBox = () => {
         selected="content"
         setOption={selectType}
         divClassName="pb-8"
-        className="text-sm p-1 border border-borderGray outline-none"
+        className="text-sm p-1 border border-borderGray outline-none bg-white"
       />
       <SearchBar
         value={searchState.search}

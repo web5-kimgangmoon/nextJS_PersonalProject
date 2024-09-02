@@ -4,7 +4,7 @@ import { pageGetter } from "@/app/lib/utils";
 import { LinkButton } from "../buttons";
 import { countBoard } from "@/app/lib/placeholder-data";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { LeftArrow } from "@/public/left-arrow";
 import { RightArrow } from "@/public/right-arrow";
 
@@ -24,7 +24,7 @@ export const Pages = () => {
     <div className="flex gap-2 justify-center py-4">
       {info?.pages.map((item, idx) => (
         <PageBtn
-          key={idx}
+          key={item.title + "-" + idx}
           title={item.title}
           link={`${path}page=${item.page}`}
           icon={
@@ -61,7 +61,7 @@ export const PageBtn = ({
       icon={icon}
       isNoString={true}
       isImgBig={true}
-      className="hover:text-[#D92643]"
+      className="focus:text-[#D92643]"
     >
       {title}
     </LinkButton>
