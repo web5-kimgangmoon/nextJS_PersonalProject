@@ -2,13 +2,15 @@
 
 import { pageGetter } from "@/app/lib/utils";
 import { LinkButton } from "../buttons";
-import { countBoard } from "@/app/lib/placeholder-data";
+import { countBoard as countBoardHolder } from "@/app/lib/placeholder-data";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { LeftArrow } from "@/public/left-arrow";
 import { RightArrow } from "@/public/right-arrow";
 
 export const Pages = () => {
+  const countBoard = countBoardHolder;
+
   let path = usePathname() + "?";
   const query = useSearchParams();
   let page = query.get("page");

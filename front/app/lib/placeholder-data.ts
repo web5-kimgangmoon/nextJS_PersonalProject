@@ -96,3 +96,18 @@ export const categoryInformBoard: CategoryBoard = {
   writerId: 23,
 };
 export const countBoard = 132;
+export const currentBoard = {
+  isWriter: true,
+  category: "유머",
+  categoryPath: "humor",
+  title: "이타치가 왜 강한줄 아나?",
+  commentNum: 32,
+  boardId: 24,
+  createdAt: new Date(Date.now() - 6048000000),
+  img: "/baseBoardImg.png",
+  content: "내용",
+  writer: "작성자",
+  writerId: 23,
+  score: 4.3,
+  scoreUserCnt: 32,
+};

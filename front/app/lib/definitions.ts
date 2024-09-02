@@ -6,6 +6,7 @@ export type Button = {
     | "pink"
     | "blue"
     | "blankBlue"
+    | "blankRed"
     | "whiteRed"
     | "gray"
     | "blueGray"
@@ -26,8 +27,7 @@ export type Button = {
   onClick?: () => void;
 };
 
-export type CategoryBoard = {
-  isTop?: boolean;
+export interface Board {
   commentNum: number;
   boardId: number;
   categoryPath: string;
@@ -38,5 +38,15 @@ export type CategoryBoard = {
   title: string;
   writer: string;
   writerId: number;
-};
+}
+
+export interface CategoryBoard extends Board {
+  isTop?: boolean;
+}
+
+export interface BoardDetail extends Board {
+  isWriter: boolean;
+  score: number;
+  scoreUserCnt: number;
+}
 //"/baseBoardImg.png"

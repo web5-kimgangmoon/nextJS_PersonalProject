@@ -4,7 +4,9 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { AButton, ImgButton, LinkButton } from "./buttons";
+import { AButton, Button, ImgButton, LinkButton } from "./buttons";
+import { useRouter } from "next/navigation";
+
 export function Modal({
   modalCtl,
   closeModalCtl,
@@ -35,22 +37,24 @@ export function Modal({
           }
         )}
       >
-        <div className="flex justify-end">
-          {isSmallX ? (
-            <XMarkIcon
-              className="w-8 h-8 text-XMarkGray"
-              onClick={closeModalCtl}
-              strokeWidth="5"
-            />
-          ) : (
-            <XMarkIcon
-              className="w-12 h-12"
-              onClick={closeModalCtl}
-              strokeWidth="2"
-            />
-          )}
+        <div className="max-h-screen overflow-scroll">
+          <div className="flex justify-end">
+            {isSmallX ? (
+              <XMarkIcon
+                className="w-8 h-8 text-XMarkGray"
+                onClick={closeModalCtl}
+                strokeWidth="5"
+              />
+            ) : (
+              <XMarkIcon
+                className="w-12 h-12"
+                onClick={closeModalCtl}
+                strokeWidth="2"
+              />
+            )}
+          </div>
+          {children}
         </div>
-        {children}
       </div>
     </>
   );
@@ -118,6 +122,26 @@ export const ModalA = ({
   );
 };
 
+export const ModalRouter = ({
+  children,
+  onClick,
+  isBorder,
+}: {
+  children: string;
+  onClick: () => void;
+  isBorder?: boolean;
+}) => {
+  return (
+    <div className="flex justify-center">
+      <div className={clsx("w-max", isBorder && "border-t border-borderGray")}>
+        <Button onClick={onClick} color="none" isNobold={true} size="bigFont">
+          {children}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export const ModalArrowBtn = ({
   children,
   setIsOpen,
@@ -174,6 +198,42 @@ export const ModalBox = ({
             </ModalLink>
           )
         )}
+      </div>
+    </div>
+  );
+};
+export const ModalRouterBox = ({
+  isOpen,
+  setIsOpen,
+  closeModal,
+  title,
+  linkList,
+}: {
+  isOpen: boolean;
+  setIsOpen: () => void;
+  title: string;
+  closeModal: () => void;
+  linkList: { title: string; href: string }[];
+}) => {
+  const router = useRouter();
+  return (
+    <div className={clsx(isOpen && "pb-5")}>
+      <ModalArrowBtn isOpen={isOpen} setIsOpen={setIsOpen}>
+        {title}
+      </ModalArrowBtn>
+      <div className={clsx(!isOpen && "hidden")}>
+        {linkList.map((item, idx) => (
+          <ModalRouter
+            onClick={() => {
+              closeModal();
+              setIsOpen();
+              router.replace(`${item.href}`);
+            }}
+            key={idx}
+          >
+            {item.title}
+          </ModalRouter>
+        ))}
       </div>
     </div>
   );

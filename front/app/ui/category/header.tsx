@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { LinkButton, ImgButton } from "../buttons";
 import { useCallback, useState } from "react";
-import { Modal, ModalA, ModalBox, ModalLink } from "@/app/ui/modal";
+import {
+  Modal,
+  ModalA,
+  ModalBox,
+  ModalLink,
+  ModalRouterBox,
+} from "@/app/ui/modal";
 import {
   categoryList as categoryListHolder,
   userInfo as userInfoHolder,
@@ -50,7 +56,11 @@ export const MenuBarBtn = ({
   return (
     <>
       <Modal modalCtl={open} closeModalCtl={closeModal}>
-        <MenuModalContent isLogin={isLogin} categoryList={categoryList} />
+        <MenuModalContent
+          isLogin={isLogin}
+          categoryList={categoryList}
+          closeModal={closeModal}
+        />
       </Modal>
       <ImgButton
         icon={<img src="/menuBar.svg" />}
@@ -124,9 +134,11 @@ export function OffLogin() {
 export const MenuModalContent = ({
   isLogin,
   categoryList,
+  closeModal,
 }: {
   isLogin: boolean;
   categoryList: { title: string; href: string }[];
+  closeModal: () => void;
 }) => {
   const [openObj, setOpenObj] = useState<{ user: boolean; category: boolean }>({
     user: false,
@@ -163,11 +175,12 @@ export const MenuModalContent = ({
               ]
         }
       />
-      <ModalBox
+      <ModalRouterBox
         title="카테고리"
         isOpen={openObj["category"]}
         setIsOpen={() => toggleBox("category")}
         linkList={categoryList}
+        closeModal={closeModal}
       />
       {isLogin && (
         <ModalLink href="/logout" isBorder={true}>

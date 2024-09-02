@@ -75,7 +75,7 @@ export const BoardItem = ({
         )}
       >
         <div className="">{content}</div>
-        <div className="text-sm flex items-center">
+        <div className="text-sm flex items-center flex-wrap">
           <div className="text-textBlue">{getTimeString(createdAt)}</div>
           <div className="py-1 px-2">
             <div className="border-r border-textBlue h-4"></div>
@@ -148,7 +148,7 @@ export const CommentBtn = ({
       }
       isLessGap={true}
     >
-      {commentNum === 0 ? `${commentNum} 댓글들` : "댓글작성"}
+      {commentNum !== 0 ? `${commentNum} 댓글들` : "댓글작성"}
     </LinkButton>
   );
 };
