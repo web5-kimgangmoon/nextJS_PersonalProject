@@ -33,12 +33,13 @@ export function Button({
           "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#D81159]":
             color === "pink",
           "bg-mainBlue text-white focus:bg-darkBlue": color === "blue",
-          "border-2 border-mainBlue text-mainBlue": color === "blankBlue",
-          "border-2 border-alert text-alert": color === "blankRed",
+          "border-2 border-mainBlue text-mainBlue focus:text-mainBlue/60 focus:border-mainBlue/60":
+            color === "blankBlue",
+          "border-2 border-alert text-alert focus:text-alert/60 focus:border-alert/60":
+            color === "blankRed",
           "text-textBlue focus:text-mainBlue": color === "noneBlue",
           "bg-alert text-white": color === "whiteRed",
           "bg-bgGray text-white": color === "gray",
-          "bg-mainBlue text-textGray": color === "blueGray",
           "border-2 border-borderGray bg-white text-black":
             color === "whiteGray",
           "bg-bgGray opacity-40 text-white": color === "inactiveGray",

@@ -8,7 +8,7 @@ import {
 import { useCallback, useState } from "react";
 import { ImgButton } from "@/app/ui/buttons";
 import { FlagIcon } from "@heroicons/react/24/outline";
-import { ReportBox } from "@/app/ui/reasonModal";
+import { ReportBox } from "@/app/ui/reasonBox";
 
 export const CommentTop = () => {
   const boardReportList = boardReportListHolder;

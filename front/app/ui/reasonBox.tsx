@@ -32,12 +32,13 @@ export const ReportBox = ({
   return (
     <ReportBoxComp
       reasonList={reasonList}
-      id={isBoard ? `board${id}` : `cmt${id}`}
+      id={id}
       setReason={selectReason}
       reason={reason}
       action={reportRequest}
       modalClose={modalToggle}
       isOpen={isOpen}
+      isBoard={isBoard}
     />
   );
 };
@@ -47,6 +48,7 @@ export const ReportBoxComp = ({
   reasonList,
   reason,
   isOpen,
+  isBoard,
   setReason,
   modalClose,
   action,
@@ -55,15 +57,18 @@ export const ReportBoxComp = ({
   reasonList: { value: string; title: string; description?: string }[];
   reason?: string;
   isOpen: boolean;
+  isBoard?: boolean;
   setReason: (value: string) => void;
   modalClose: () => void;
   action: () => void;
 }) => {
-  const title = "게시글 신고 사유";
-  const content = "왜 이 게시글을 신고하시나요?";
+  const title = isBoard ? "게시글 신고 사유" : "댓글 신고 사유";
+  const content = isBoard
+    ? "왜 이 게시글을 신고하시나요?"
+    : "왜 이 댓글을 신고하시나요?";
   const description =
     "타인에게 불쾌감을 주지 않도록 주의해주세요. 허위신고를 할 경우, 밴을 당할 수 있습니다.";
-  const reasonName = `report${id}`;
+  const reasonName = `report${isBoard ? "Board" : "Cmt"}${id}`;
   const actionTitle = "신고완료";
   const actionColor = "whiteRed";
   return (
@@ -113,14 +118,14 @@ export const ReasonBox = ({
 }) => {
   return (
     <div
-      className="text-xs bg-black/[3%] border border-borderGray rounded-lg text-modalText p-2"
+      className="text-sm bg-black/[3%] border border-borderGray rounded-lg text-modalText p-2"
       hidden={!isOpen}
     >
       <div className="font-bold py-2">{title}</div>
       <div className="p-2">
         <div className="font-bold">{content}</div>
         <div className="p-1">
-          <ol className="font-bold flex flex-col gap-2 p-2">
+          <ol className="font-bold flex flex-col gap-4 p-2">
             {reasonList.map((item, idx) => (
               <ReasonItem
                 key={idx}
@@ -137,7 +142,7 @@ export const ReasonBox = ({
         </div>
       </div>
       <div className="break-keep">{description}</div>
-      <div className="py-4 flex gap-5">
+      <div className="py-4 flex gap-5 text-base">
         <Button
           color={reason ? actionColor : "inactiveGray"}
           size="small"

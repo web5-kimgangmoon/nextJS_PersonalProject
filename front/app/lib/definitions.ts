@@ -9,7 +9,6 @@ export type Button = {
     | "blankRed"
     | "whiteRed"
     | "gray"
-    | "blueGray"
     | "whiteGray"
     | "inactiveGray"
     | "noneBlue"
