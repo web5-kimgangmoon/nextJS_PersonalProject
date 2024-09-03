@@ -37,6 +37,7 @@ const config: Config = {
         fakeBlack: "#2A2E2E",
         blankStar: "#EBEEF2",
         star: "#FFD34F",
+        modalText: "#494E58",
       },
     },
   },

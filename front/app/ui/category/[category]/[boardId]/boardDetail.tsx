@@ -2,7 +2,7 @@
 
 import type { BoardDetail as IBoardDetail } from "@/app/lib/definitions";
 import Image from "next/image";
-import { BottomCmtBtn, CommentBtn } from "../../board";
+import { BottomCmtBtn } from "../../board";
 import clsx from "clsx";
 import { getTimeString } from "@/app/lib/utils";
 import Link from "next/link";

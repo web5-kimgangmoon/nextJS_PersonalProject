@@ -7,14 +7,6 @@ export const categoryList = [
   { title: "유머", path: "humor" },
   { title: "자랑", path: "goodItem" },
   { title: "질문", path: "question" },
-  { title: "자랑", path: "goodItem" },
-  { title: "질문", path: "question" },
-  { title: "자랑", path: "goodItem" },
-  { title: "질문", path: "question" },
-  { title: "자랑", path: "goodItem" },
-  { title: "질문", path: "question" },
-  { title: "자랑", path: "goodItem" },
-  { title: "질문", path: "question" },
 ];
 export const userInfo = {
   profileImg: "/placeholder-noavatar32.svg",
@@ -97,6 +89,7 @@ export const categoryInformBoard: CategoryBoard = {
 };
 export const countBoard = 132;
 export const currentBoard = {
+  isLogin: true,
   isWriter: true,
   category: "유머",
   categoryPath: "humor",
@@ -110,4 +103,14 @@ export const currentBoard = {
   writerId: 23,
   score: 4.3,
   scoreUserCnt: 32,
+  isGiveScore: false,
 };
+export const boardReportList: {
+  value: string;
+  title: string;
+  description?: string;
+}[] = [
+  { value: "1", title: "그냥 심심풀이" },
+  { value: "2", title: "매너가 나쁩니다", description: "ㅇㅇ." },
+  { value: "3", title: "그냥 싫습니다", description: "그럴수도 있죠" },
+];

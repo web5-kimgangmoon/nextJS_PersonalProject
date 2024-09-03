@@ -41,6 +41,7 @@ export function Button({
           "bg-mainBlue text-textGray": color === "blueGray",
           "border-2 border-borderGray bg-white text-black":
             color === "whiteGray",
+          "bg-bgGray opacity-40 text-white": color === "inactiveGray",
         },
         {
           "rounded-[1.6rem]": !radius,

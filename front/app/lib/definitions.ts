@@ -11,6 +11,7 @@ export type Button = {
     | "gray"
     | "blueGray"
     | "whiteGray"
+    | "inactiveGray"
     | "noneBlue"
     | "none";
   children?: string | ReactNode;
@@ -45,8 +46,15 @@ export interface CategoryBoard extends Board {
 }
 
 export interface BoardDetail extends Board {
+  isLogin: boolean;
   isWriter: boolean;
   score: number;
   scoreUserCnt: number;
+  isGiveScore: boolean;
+}
+export interface Reason {
+  value: string;
+  title: string;
+  description?: string;
 }
 //"/baseBoardImg.png"
