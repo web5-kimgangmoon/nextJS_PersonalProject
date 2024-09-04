@@ -7,8 +7,8 @@ import { currentBoard as currentBoardHolder } from "@/app/lib/placeholder-data";
 export const BreadCrumble = () => {
   const currentBoard = currentBoardHolder;
   return (
-    <div className="flex">
-      <div className="font-bold">
+    <div className="flex py-2">
+      <div className="font-bold text-pink hover:text-red-800">
         <Link href={`/category/${currentBoard.categoryPath}`}>
           {currentBoard.category}
         </Link>

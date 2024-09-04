@@ -9,6 +9,7 @@ import { useCallback, useState } from "react";
 import { ImgButton } from "@/app/ui/buttons";
 import { FlagIcon } from "@heroicons/react/24/outline";
 import { ReportBox } from "@/app/ui/reasonBox";
+import { WriteCmt } from "./cmtWriteBox";
 
 export const CommentTop = () => {
   const boardReportList = boardReportListHolder;
@@ -42,6 +43,11 @@ export const CommentTop = () => {
             isOpen={isOpen}
             modalToggle={modalToggle}
           />
+        )}
+      </div>
+      <div className="pb-5 pt-10">
+        {currentBoard.isLogin && (
+          <WriteCmt boardId={currentBoard.boardId} isOpen={true} />
         )}
       </div>
     </div>

@@ -115,3 +115,16 @@ export const boardReportList: {
   { value: "2", title: "매너가 나쁩니다", description: "ㅇㅇ." },
   { value: "3", title: "그냥 싫습니다", description: "그럴수도 있죠" },
 ];
+export const categoryInfo = {
+  path: "/humor",
+  name: "유머",
+  img: "/baseBoardImg.png",
+  description: "아아아",
+  cmtPlacholder: "댓글 placeholder입니다~",
+  titlePlaceholder: "게시글 제목 placeholder입니다~",
+  descriptionPlaceholder: "게시글  설명글 placeholder입니다~",
+  contentPlaceholder: "게시글 내용 placeholder입니다~",
+  boardCnt: "게",
+  rules: ["아아", "이런곳에서"],
+  categoryInformBoard,
+};

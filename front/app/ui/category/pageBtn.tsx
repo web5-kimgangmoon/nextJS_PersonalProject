@@ -63,7 +63,7 @@ export const PageBtn = ({
       icon={icon}
       isNoString={true}
       isImgBig={true}
-      className="focus:text-[#D92643]"
+      className="hover:text-[#D92643]"
     >
       {title}
     </LinkButton>

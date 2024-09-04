@@ -30,15 +30,15 @@ export function Button({
           "w-8 h-8": size == "pageBtn",
         },
         {
-          "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#D81159]":
+          "transition-[backgorund-image] bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white hover:bg-none hover:bg-[#D81159]":
             color === "pink",
-          "bg-mainBlue text-white focus:bg-darkBlue": color === "blue",
-          "border-2 border-mainBlue text-mainBlue focus:text-darkBlue focus:border-darkBlue":
+          "bg-mainBlue text-white hover:bg-darkBlue": color === "blue",
+          "border-2 border-mainBlue text-mainBlue hover:text-darkBlue hover:border-darkBlue":
             color === "blankBlue",
-          "border-2 border-alert text-alert focus:text-red-800 focus:border-red-800":
+          "border-2 border-alert text-alert hover:text-red-800 hover:border-red-800":
             color === "blankRed",
-          "text-textBlue focus:text-mainBlue": color === "noneBlue",
-          "bg-alert text-white focus:bg-red-800": color === "whiteRed",
+          "text-textBlue hover:text-mainBlue": color === "noneBlue",
+          "bg-alert text-white hover:bg-red-800": color === "whiteRed",
           "bg-bgGray text-white": color === "gray",
           "border-2 border-borderGray bg-white text-black":
             color === "whiteGray",

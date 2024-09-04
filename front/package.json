@@ -10,8 +10,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.5",
+    "@types/jsdom": "^21.1.7",
     "clsx": "^2.1.1",
     "dompurify": "^3.1.6",
+    "html-react-parser": "^5.1.15",
+    "jsdom": "^25.0.0",
     "next": "14.2.7",
     "react": "^18",
     "react-dom": "^18",

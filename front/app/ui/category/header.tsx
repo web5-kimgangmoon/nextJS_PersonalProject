@@ -19,6 +19,7 @@ import Image from "next/image";
 export function Header() {
   const userInfo = userInfoHolder;
   const data = categoryListHolder;
+
   const categoryList = data.map((item) => ({
     title: item.title,
     href: `/category/${item.path}`,

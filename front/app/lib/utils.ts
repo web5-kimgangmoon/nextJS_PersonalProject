@@ -123,3 +123,29 @@ function repeatNumber(
   }
   return arr;
 }
+
+export const newCopyFormData = (
+  target: FormData,
+  keys: string[],
+  ...options: string[]
+) => {
+  const formData = new FormData();
+  keys.concat(options);
+  for (let item of keys) {
+    const temp = target.get(item);
+    temp && formData.set(item, temp);
+  }
+  return formData;
+};
+
+export const pushedFormData = (
+  target: FormData,
+  set: { name: string; value: string }[],
+  ...options: { name: string; value: string }[]
+) => {
+  set.concat(options);
+  for (let item of set) {
+    target.set(item.name, item.value);
+  }
+  return target;
+};

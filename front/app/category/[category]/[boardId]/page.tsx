@@ -1,9 +1,8 @@
 import { BoardDetail } from "@/app/ui/category/[category]/[boardId]/boardDetail";
 import { GiveScoreBox } from "@/app/ui/category/[category]/[boardId]/giveScoreBox";
-import { ReasonBox } from "@/app/ui/reasonBox";
-import { BreadCrumble } from "@/app/ui/category/breadCrumble";
-import { CommentTop } from "@/app/ui/category/[category]/[boardId]/commentWrite";
-import { WriteCmt } from "@/app/ui/category/[category]/[boardId]/commentBox";
+import { BreadCrumble } from "@/app/ui/category/[category]/[boardId]/breadCrumble";
+import { CommentTop } from "@/app/ui/category/[category]/[boardId]/cmtTop";
+import { CmtList } from "@/app/ui/category/[category]/[boardId]/cmtList";
 
 export default async function () {
   return (
@@ -13,7 +12,7 @@ export default async function () {
       <GiveScoreBox />
       {/* <ReasonBox /> */}
       <CommentTop />
-      <WriteCmt />
+      <CmtList />
     </div>
   );
 }

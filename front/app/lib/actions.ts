@@ -15,3 +15,5 @@ export const addCmt = (
   formData: FormData,
   replyId?: number
 ) => {};
+export const updateCmt = (cmtId: number, formData: FormData) => {};
+export const deleteCmt = (cmtId: number) => {};

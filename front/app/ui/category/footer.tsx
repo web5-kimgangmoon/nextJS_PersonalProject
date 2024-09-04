@@ -46,7 +46,7 @@ export function LinkBox({
               <div className="flex justify-center" key={idx}>
                 <a
                   href={item.href}
-                  className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
+                  className="w-max hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
                   tabIndex={0}
                 >
                   <li>{item.title}</li>
@@ -57,7 +57,7 @@ export function LinkBox({
               <div className="flex justify-center" key={idx}>
                 <Link
                   href={item.href}
-                  className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
+                  className="w-max hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
                 >
                   <li>{item.title}</li>
                 </Link>

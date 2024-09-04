@@ -4,8 +4,9 @@ import { categoryList as categoryListHolder } from "@/app/lib/placeholder-data";
 import clsx from "clsx";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { TouchEvent, useContext } from "react";
+import { useContext } from "react";
 import { SlideContext } from "../hooks/context/slideContext";
+import { useSearchParams } from "next/navigation";
 
 export const CategorySlideBar = () => {
   const categoryList = categoryListHolder;
@@ -13,16 +14,14 @@ export const CategorySlideBar = () => {
     title: item.title,
     params: item.path,
   }));
-  const { location, touchMove, touchStart } = useContext(SlideContext);
-  let params = useParams();
-  params.category = params.category ? (params.category as string) : "all";
+
   return (
     <SlideBar
       list={list}
-      location={location}
-      touchMove={touchMove as (e: TouchEvent<HTMLDivElement>) => void}
-      touchStart={touchStart as (e: TouchEvent<HTMLDivElement>) => void}
-      selected={params.category}
+      // location={location}
+      // touchMove={touchMove as (e: TouchEvent<HTMLDivElement>) => void}
+      // touchStart={touchStart as (e: TouchEvent<HTMLDivElement>) => void}
+      // selected={params.category}
       path="category"
     />
   );
@@ -31,18 +30,24 @@ export const CategorySlideBar = () => {
 export const SlideBar = ({
   path,
   list,
-  location,
-  selected,
-  touchStart,
-  touchMove,
-}: {
+}: // location,
+// selected,
+// touchStart,
+// touchMove,
+{
   path: string;
   list: { title: string; params: string }[];
-  location: { current: number; dif: number; translate: number };
-  selected: string;
-  touchStart: (e: TouchEvent<HTMLDivElement>) => void;
-  touchMove: (e: TouchEvent<HTMLDivElement>) => void;
+  // location: { current: number; dif: number; translate: number };
+  // selected: string;
+  // touchStart: (e: TouchEvent<HTMLDivElement>) => void;
+  // touchMove: (e: TouchEvent<HTMLDivElement>) => void;
 }) => {
+  const query = useSearchParams();
+  const params = useParams();
+  const search = query.get("search");
+  const searchType = query.get("searchType");
+  params.category = params.category ? (params.category as string) : "all";
+  const { location, touchMove, touchStart } = useContext(SlideContext);
   return (
     <div className="relative w-full h-16 overflow-hidden border-t border-b border-borderGray">
       <div
@@ -55,8 +60,12 @@ export const SlideBar = ({
           <Item
             key={idx}
             title={item.title}
-            path={`/${path}/${item.params}`}
-            selected={selected === item.params}
+            path={`/${path}/${item.params}${
+              search && searchType
+                ? `?search=${search}&searchType=${searchType}`
+                : ""
+            }`}
+            selected={params.category === item.params}
           />
         ))}
       </div>
