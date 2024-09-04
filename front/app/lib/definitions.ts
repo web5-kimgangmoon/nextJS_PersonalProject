@@ -12,7 +12,8 @@ export type Button = {
     | "whiteGray"
     | "inactiveGray"
     | "noneBlue"
-    | "none";
+    | "none"
+    | "blankInactive";
   children?: string | ReactNode;
   radius?: "medium" | "little" | "a little" | "none" | "full";
   size?:

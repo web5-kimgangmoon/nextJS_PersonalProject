@@ -104,6 +104,7 @@ export const currentBoard = {
   score: 4.3,
   scoreUserCnt: 32,
   isGiveScore: false,
+  isDidReport: false,
 };
 export const boardReportList: {
   value: string;

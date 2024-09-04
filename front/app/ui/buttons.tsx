@@ -33,16 +33,17 @@ export function Button({
           "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#D81159]":
             color === "pink",
           "bg-mainBlue text-white focus:bg-darkBlue": color === "blue",
-          "border-2 border-mainBlue text-mainBlue focus:text-mainBlue/60 focus:border-mainBlue/60":
+          "border-2 border-mainBlue text-mainBlue focus:text-darkBlue focus:border-darkBlue":
             color === "blankBlue",
-          "border-2 border-alert text-alert focus:text-alert/60 focus:border-alert/60":
+          "border-2 border-alert text-alert focus:text-red-800 focus:border-red-800":
             color === "blankRed",
           "text-textBlue focus:text-mainBlue": color === "noneBlue",
-          "bg-alert text-white": color === "whiteRed",
+          "bg-alert text-white focus:bg-red-800": color === "whiteRed",
           "bg-bgGray text-white": color === "gray",
           "border-2 border-borderGray bg-white text-black":
             color === "whiteGray",
           "bg-bgGray opacity-40 text-white": color === "inactiveGray",
+          "border-2 border-bgGray text-bgGray": color === "blankInactive",
         },
         {
           "rounded-[1.6rem]": !radius,

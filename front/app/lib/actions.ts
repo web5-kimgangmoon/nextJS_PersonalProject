@@ -10,3 +10,8 @@ export const boardGiveScore = (score: number) => {
 
 export const boardReport = (boardId: number, reasonId: number) => {};
 export const cmtReport = (cmtId: number, reasonId: number) => {};
+export const addCmt = (
+  boardId: number,
+  formData: FormData,
+  replyId?: number
+) => {};

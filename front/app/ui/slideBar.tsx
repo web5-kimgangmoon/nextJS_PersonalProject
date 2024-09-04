@@ -5,7 +5,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { TouchEvent, useContext } from "react";
-import { SlideContext } from "../context/slideContext";
+import { SlideContext } from "../hooks/context/slideContext";
 
 export const CategorySlideBar = () => {
   const categoryList = categoryListHolder;

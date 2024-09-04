@@ -26,33 +26,44 @@ export const CommentTop = () => {
           </div>
           {currentBoard.isLogin && (
             <div>
-              <ReportBtn openModal={modalToggle} />
+              <ReportBtn
+                openModal={modalToggle}
+                isDidReport={currentBoard.isDidReport}
+              />
             </div>
           )}
         </div>
 
-        <ReportBox
-          id={String(currentBoard.boardId)}
-          isBoard={true}
-          reasonList={boardReportList}
-          isOpen={isOpen}
-          modalToggle={modalToggle}
-        />
+        {currentBoard.isLogin && !currentBoard.isDidReport && (
+          <ReportBox
+            id={String(currentBoard.boardId)}
+            isBoard={true}
+            reasonList={boardReportList}
+            isOpen={isOpen}
+            modalToggle={modalToggle}
+          />
+        )}
       </div>
     </div>
   );
 };
 
-export const ReportBtn = ({ openModal }: { openModal: () => void }) => (
+export const ReportBtn = ({
+  openModal,
+  isDidReport,
+}: {
+  openModal: () => void;
+  isDidReport: boolean;
+}) => (
   <ImgButton
     isRight={true}
     size="small"
-    color="blankRed"
+    color={isDidReport ? "blankInactive" : "blankRed"}
     icon={<FlagIcon />}
     isLessGap={true}
     radius="medium"
-    onClick={openModal}
+    onClick={isDidReport ? undefined : openModal}
   >
-    신고
+    {isDidReport ? "신고완료" : "신고"}
   </ImgButton>
 );
