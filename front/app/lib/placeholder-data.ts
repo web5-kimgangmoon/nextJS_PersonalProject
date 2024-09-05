@@ -1,4 +1,9 @@
-import { CategoryBoard } from "./definitions";
+import {
+  CategoryBoard,
+  CmtData,
+  ReasonListData,
+  UserInfoData,
+} from "./definitions";
 
 export const categoryList = [
   { title: "전체", path: "all" },
@@ -8,10 +13,18 @@ export const categoryList = [
   { title: "자랑", path: "goodItem" },
   { title: "질문", path: "question" },
 ];
-export const userInfo = {
+export const userInfoData: UserInfoData = {
   profileImg: "/placeholder-noavatar32.svg",
-  isLogin: true,
+  id: 3,
+  nick: "나야나",
+  email: "rk@naver.com",
+  cmtCnt: 44,
+  boardsCnt: 22,
+  like: 312,
+  dislike: 222,
+  createdAt: new Date(Date.now() - 3000000),
 };
+
 export const boardList: CategoryBoard[] = [
   {
     commentNum: 32,
@@ -106,15 +119,20 @@ export const currentBoard = {
   isGiveScore: false,
   isDidReport: false,
 };
-export const boardReportList: {
-  value: string;
-  title: string;
-  description?: string;
-}[] = [
-  { value: "1", title: "그냥 심심풀이" },
-  { value: "2", title: "매너가 나쁩니다", description: "ㅇㅇ." },
-  { value: "3", title: "그냥 싫습니다", description: "그럴수도 있죠" },
-];
+export const boardReportList: ReasonListData = {
+  reasonList: [
+    { id: 1, title: "그냥 심심풀이" },
+    { id: 2, title: "매너가 나쁩니다", description: "ㅇㅇ." },
+    { id: 3, title: "그냥 싫습니다", description: "그럴수도 있죠" },
+  ],
+};
+export const cmtReportList: ReasonListData = {
+  reasonList: [
+    { id: 1, title: "그냥 심심풀이" },
+    { id: 2, title: "매너가 나쁩니다", description: "ㅇㅇ." },
+    { id: 3, title: "그냥 싫습니다", description: "그럴수도 있죠" },
+  ],
+};
 export const categoryInfo = {
   path: "/humor",
   name: "유머",
@@ -129,25 +147,87 @@ export const categoryInfo = {
   categoryInformBoard,
 };
 
-{
-  cmtList: Array<{
-    id: number;
-    writer: string;
-    writerId: number;
-    createdAt: Date;
-    content: string;
-    isUpdated: boolean;
-    like: number;
-    dislike: number;
-    img: string;
-    isDoLike: boolean;
-    isDoDislike: boolean;
-    boardId: number;
-    categoryPath: string;
-    category: string;
-    boardTitle: string;
-    cmtCnt: number;
-    isDeleted: boolean;
-  }>;
-}
+export const cmtData: CmtData = {
+  cmtList: [
+    {
+      id: 1,
+      writer: "나야나",
+      writerId: 3,
+      createdAt: new Date(Date.now() - 10000000),
+      content:
+        '<div><div style="width: 10rem; height: 10rem;"><img src="/baseBoardImg.png" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">(*수정됨)</span><span class="cmtTextContent">아아아</span></div></div>',
+      like: 30,
+      dislike: 32,
+      isDoLike: true,
+      isDoDislike: false,
+      isDidReport: false,
+      boardId: 24,
+      categoryPath: "/humor",
+      category: "유머",
+      boardTitle: "이타치가 왜 강한줄 아나?",
+      writerProfile: "/baseBoardImg.png",
+    },
+    {
+      id: 2,
+      writer: "샤아",
+      writerId: 4,
+      createdAt: new Date(Date.now() - 10000000),
+      content:
+        '<div><div style="width: 10rem; height: 10rem;"><img src="/baseBoardImg.png" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">(*수정됨)</span><span class="cmtTextContent">왜그러는데</span></div></div>',
+      like: 12,
+      dislike: 42,
+      isDoLike: false,
+      isDoDislike: true,
+      isDidReport: false,
+      boardId: 24,
+      categoryPath: "/humor",
+      category: "유머",
+      boardTitle: "이타치가 왜 강한줄 아나?",
+      writerProfile: "/baseBoardImg.png",
+      replyId: 1,
+      replyUserId: 3,
+      replyUser: "나야나",
+    },
+    {
+      id: 3,
+      writer: "나야나",
+      writerId: 3,
+      createdAt: new Date(Date.now() - 10000000),
+      content:
+        '<div><div><span style="color: #042552;font-size: 0.75rem;">(*수정됨)</span><span class="cmtTextContent">솔직하게 말할래 그만하자고 헷갈리는 이 관계 정리하자고 오늘부터 </span></div></div>',
+      like: 30,
+      dislike: 32,
+      isDoLike: true,
+      isDoDislike: false,
+      isDidReport: true,
+      boardId: 24,
+      categoryPath: "/humor",
+      category: "유머",
+      boardTitle: "이타치가 왜 강한줄 아나?",
+      writerProfile: "/baseBoardImg.png",
+      replyId: 2,
+      replyUserId: 4,
+      replyUser: "샤아",
+    },
+    {
+      id: 4,
+      writer: "누군가가쓰는",
+      writerId: 5,
+      createdAt: new Date(Date.now() - 10000000),
+      content:
+        '<div><div style="width: 10rem; height: 10rem;"><img src="/search.svg" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;"></span><span class="cmtTextContent">왜일까 잘난듯한 소리가들려</span></div></div>',
+      like: 0,
+      dislike: 0,
+      isDoLike: false,
+      isDoDislike: false,
+      isDidReport: false,
+      boardId: 24,
+      categoryPath: "/humor",
+      category: "유머",
+      boardTitle: "이타치가 왜 강한줄 아나?",
+      writerProfile: "/baseBoardImg.png",
+    },
+  ],
+  cmtCnt: 30,
+};
 //'<div><div style="width: 10rem; height: 10rem;"><img src="/baseBoardImg.png" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">(*수정됨)</span>아아아</div></div>';

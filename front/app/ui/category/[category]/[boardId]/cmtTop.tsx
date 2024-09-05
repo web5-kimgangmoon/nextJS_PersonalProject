@@ -5,19 +5,16 @@ import {
   currentBoard as currentBoardHolder,
 } from "@/app/lib/placeholder-data";
 
-import { useCallback, useState } from "react";
 import { ImgButton } from "@/app/ui/buttons";
 import { FlagIcon } from "@heroicons/react/24/outline";
 import { ReportBox } from "@/app/ui/reasonBox";
 import { WriteCmt } from "./cmtWriteBox";
+import { useToggleObj } from "@/app/hooks/toggleObj";
 
 export const CommentTop = () => {
   const boardReportList = boardReportListHolder;
   const currentBoard = currentBoardHolder;
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const modalToggle = useCallback(() => {
-    setIsOpen(!isOpen);
-  }, [isOpen]);
+  const { box } = useToggleObj(["box", false]);
   return (
     <div className="p-2">
       <div className="pb-4 border-b border-borderGray">
@@ -28,7 +25,7 @@ export const CommentTop = () => {
           {currentBoard.isLogin && (
             <div>
               <ReportBtn
-                openModal={modalToggle}
+                openModal={box.toggle}
                 isDidReport={currentBoard.isDidReport}
               />
             </div>
@@ -37,11 +34,11 @@ export const CommentTop = () => {
 
         {currentBoard.isLogin && !currentBoard.isDidReport && (
           <ReportBox
-            id={String(currentBoard.boardId)}
+            id={currentBoard.boardId}
             isBoard={true}
-            reasonList={boardReportList}
-            isOpen={isOpen}
-            modalToggle={modalToggle}
+            reasonList={boardReportList.reasonList}
+            isOpen={box.is}
+            modalClose={box.close}
           />
         )}
       </div>
@@ -70,6 +67,6 @@ export const ReportBtn = ({
     radius="medium"
     onClick={isDidReport ? undefined : openModal}
   >
-    {isDidReport ? "신고완료" : "신고"}
+    {isDidReport ? "신고완료" : "신고하기"}
   </ImgButton>
 );

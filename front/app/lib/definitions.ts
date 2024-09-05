@@ -1,22 +1,23 @@
 import { ReactNode } from "react";
 
+export type ButtonColors =
+  | "pink"
+  | "blue"
+  | "blankBlue"
+  | "blankRed"
+  | "whiteRed"
+  | "gray"
+  | "whiteGray"
+  | "inactiveGray"
+  | "noneBlue"
+  | "none"
+  | "blankInactive"
+  | "onlyTextBlue"
+  | "onlyTextRed"
+  | "onlyTextInactive";
 export type Button = {
   isNobold?: boolean;
-  color:
-    | "pink"
-    | "blue"
-    | "blankBlue"
-    | "blankRed"
-    | "whiteRed"
-    | "gray"
-    | "whiteGray"
-    | "inactiveGray"
-    | "noneBlue"
-    | "none"
-    | "blankInactive"
-    | "onlyTextBlue"
-    | "onlyTextRed"
-    | "onlyTextInactive";
+  color: ButtonColors;
   children?: string | ReactNode;
   radius?: "medium" | "little" | "a little" | "none" | "full";
   size?:
@@ -26,7 +27,8 @@ export type Button = {
     | "small"
     | "smallest"
     | "pageImgBtn"
-    | "pageBtn";
+    | "pageBtn"
+    | "none";
   className?: string;
   onClick?: () => void;
 };
@@ -55,9 +57,49 @@ export interface BoardDetail extends Board {
   scoreUserCnt: number;
   isGiveScore: boolean;
 }
+//"/baseBoardImg.png"
+
+export interface Cmt {
+  id: number;
+  writer: string;
+  writerId: number;
+  writerProfile: string;
+  createdAt: Date;
+  content: string;
+  like: number;
+  dislike: number;
+  isDoLike: boolean;
+  isDoDislike: boolean;
+  isDidReport: boolean;
+  boardId: number;
+  categoryPath: string;
+  category: string;
+  boardTitle: string;
+  replyId?: number;
+  replyUserId?: number;
+  replyUser?: string;
+}
+export interface CmtData {
+  cmtList: Array<Cmt>;
+  cmtCnt: number;
+}
+
+export interface UserInfoData {
+  id: number;
+  profileImg: string;
+  nick: string;
+  email: string;
+  cmtCnt: number;
+  boardsCnt: number;
+  like: number;
+  dislike: number;
+  createdAt: Date;
+}
 export interface Reason {
-  value: string;
+  id: number;
   title: string;
   description?: string;
 }
-//"/baseBoardImg.png"
+export interface ReasonListData {
+  reasonList: Reason[];
+}

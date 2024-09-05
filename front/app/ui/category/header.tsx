@@ -12,12 +12,12 @@ import {
 } from "@/app/ui/modal";
 import {
   categoryList as categoryListHolder,
-  userInfo as userInfoHolder,
+  userInfoData,
 } from "@/app/lib/placeholder-data";
 import Image from "next/image";
 
 export function Header() {
-  const userInfo = userInfoHolder;
+  const userInfo = userInfoData;
   const data = categoryListHolder;
 
   const categoryList = data.map((item) => ({
@@ -27,17 +27,16 @@ export function Header() {
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
-        <MenuBarBtn isLogin={userInfo.isLogin} categoryList={categoryList} />
+        <MenuBarBtn
+          isLogin={userInfo.id ? true : false}
+          categoryList={categoryList}
+        />
         <Link href={"/category"} className="text-2xl text-mainBlue font-bold">
           The board
         </Link>
       </div>
       <div>
-        {userInfo.isLogin ? (
-          <OnLogin profile={userInfo.profileImg} />
-        ) : (
-          <OffLogin />
-        )}
+        {userInfo.id ? <OnLogin profile={userInfo.profileImg} /> : <OffLogin />}
       </div>
     </div>
   );

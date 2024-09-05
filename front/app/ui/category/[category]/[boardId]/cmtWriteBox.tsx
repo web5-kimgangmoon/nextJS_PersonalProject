@@ -6,7 +6,7 @@ import { useFormDataImg } from "@/app/hooks/formDataImg";
 import { usePreview } from "@/app/hooks/preview";
 import { useDeleteImg } from "@/app/hooks/callback/deleteImg";
 import { newCopyFormData, pushedFormData } from "@/app/lib/utils";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { categoryInfo as categoryInfoHolder } from "@/app/lib/placeholder-data";
 import { addCmt, updateCmt } from "@/app/lib/actions";
@@ -20,7 +20,7 @@ export const WriteCmt = ({
   isUpdate,
   baseText,
   img,
-  modalToggle,
+  modalClose,
 }: {
   boardId?: number;
   replyId?: number;
@@ -29,7 +29,7 @@ export const WriteCmt = ({
   isUpdate?: boolean;
   baseText?: string;
   img?: string;
-  modalToggle?: () => void;
+  modalClose?: () => void;
 }) => {
   const categoryInfo = categoryInfoHolder;
   const imgBtnId = `cmtWrite${
@@ -48,7 +48,7 @@ export const WriteCmt = ({
       placeholder={categoryInfo.cmtPlacholder}
       imgBtnId={imgBtnId}
       request={request}
-      modalToggle={modalToggle}
+      modalClose={modalClose}
       baseText={baseText}
       img={img}
     />
@@ -62,7 +62,7 @@ export const WriteCmtComp = ({
   imgBtnId,
   baseText,
   img,
-  modalToggle,
+  modalClose,
 }: {
   request: (formData: FormData) => void;
   isOpen: boolean;
@@ -70,10 +70,10 @@ export const WriteCmtComp = ({
   imgBtnId: string;
   baseText?: string;
   img?: string;
-  modalToggle?: () => void;
+  modalClose?: () => void;
 }) => {
   const router = useRouter();
-  const { uploadImg, formData, setFormData, onChangeText, text } = img
+  const { uploadImg, formData, setFormData, onChangeText, text, setText } = img
     ? useFormDataImg(baseText ? baseText : "", "isDeleteImg")
     : useFormDataImg(baseText ? baseText : "");
   const { preview, setPreview } = usePreview(formData);
@@ -85,8 +85,9 @@ export const WriteCmtComp = ({
   );
   const submit = useCallback(() => {
     request(pushedFormData(formData, [{ name: "content", value: text }]));
-    modalToggle && modalToggle();
-
+    modalClose && modalClose();
+    setText("");
+    deleteImg();
     router.refresh();
   }, [formData, text]);
   return (

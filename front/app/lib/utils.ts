@@ -1,9 +1,20 @@
-export const getTimeString = (ta: Date) => {
+export const getTimeString = (ta: Date, option?: "cmt") => {
   const now = new Date();
   const dif = now.getTime() - ta.getTime();
 
   if (dif > 604800000) {
-    return `${ta.getMonth() + 1}월 ${ta.getDate()}일, ${ta.getFullYear()}`;
+    switch (option) {
+      case undefined:
+        return `${ta.getMonth() + 1}월 ${ta.getDate()}일, ${ta.getFullYear()}`;
+      case "cmt":
+        return `${ta.getFullYear()}-${String(ta.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}-${String(ta.getDate()).padStart(2, "0")} ${String(
+          ta.getHours()
+        ).padStart(2, "0")}:${String(ta.getMinutes()).padStart(2, "0")}`;
+    }
+    // return `${ta.getMonth() + 1}월 ${ta.getDate()}일, ${ta.getFullYear()}`;
   } else if (dif > 86400000) {
     return `${Math.ceil(dif / 86400000)}일 전`;
   } else if (dif > 3600000) {

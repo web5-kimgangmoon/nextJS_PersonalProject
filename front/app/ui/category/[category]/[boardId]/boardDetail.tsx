@@ -9,22 +9,14 @@ import Link from "next/link";
 import { ImgButton, LinkButton } from "@/app/ui/buttons";
 import { currentBoard as currentBoardHolder } from "@/app/lib/placeholder-data";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useToggleObj } from "@/app/hooks/toggleObj";
+import { useCallback } from "react";
 import { boardDelete } from "@/app/lib/actions";
-import { useRouter } from "next/navigation";
+import { CheckDelete } from "@/app/ui/reasonBox";
 
 export const BoardDetail = () => {
-  const router = useRouter();
   const currentBoard = currentBoardHolder;
-  return (
-    <BoardDetailComp
-      {...currentBoard}
-      boardDelete={async () => {
-        await boardDelete(currentBoard.boardId);
-        router.replace(`/category`);
-        router.refresh();
-      }}
-    />
-  );
+  return <BoardDetailComp {...currentBoard} />;
 };
 
 export const BoardDetailComp = ({
@@ -39,8 +31,11 @@ export const BoardDetailComp = ({
   title,
   writer,
   writerId,
-  boardDelete,
-}: IBoardDetail & { boardDelete: () => void }) => {
+}: IBoardDetail) => {
+  const { deleteBox } = useToggleObj(["deleteBox", false]);
+  const requestDelete = useCallback(() => {
+    boardDelete(boardId);
+  }, []);
   return (
     <div className="flex flex-col gap-2 py-4">
       <div className="text-xl text-pink font-bold">{category}</div>
@@ -61,8 +56,17 @@ export const BoardDetailComp = ({
           />
         </div>
         {isWriter && (
-          <WriterRequestBtns boardId={boardId} requestDelete={boardDelete} />
+          <WriterRequestBtns boardId={boardId} modalToggle={deleteBox.toggle} />
         )}
+        <div hidden={!deleteBox.is}>
+          <CheckDelete
+            isOpen={deleteBox.is}
+            targetName="게시글"
+            modalClose={deleteBox.close}
+            action={requestDelete}
+            destination="/category"
+          />
+        </div>
         <div className="drop-shadow-xl py-2 flex justify-center">
           <Image
             src={img}
@@ -81,10 +85,10 @@ export const BoardDetailComp = ({
 
 export const WriterRequestBtns = ({
   boardId,
-  requestDelete,
+  modalToggle,
 }: {
   boardId: number;
-  requestDelete: () => void;
+  modalToggle: () => void;
 }) => {
   return (
     <div className="flex items-center gap-5">
@@ -104,7 +108,7 @@ export const WriterRequestBtns = ({
         size="small"
         color="blankRed"
         icon={<TrashIcon />}
-        onClick={requestDelete}
+        onClick={modalToggle}
         isLessGap={true}
         radius="medium"
       >

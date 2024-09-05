@@ -28,6 +28,7 @@ export function Button({
           "py-1 px-2": size === "small",
           "py-1 px-1": size === "smallest",
           "w-8 h-8": size == "pageBtn",
+          "": size == "none",
         },
         {
           "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white hover:from-[#D81159] hover:to-[#D81159]":

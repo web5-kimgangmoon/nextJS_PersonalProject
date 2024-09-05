@@ -2,22 +2,23 @@
 
 import { Button } from "@/app/ui/buttons";
 import { useCallback, useState } from "react";
-import { Reason } from "../lib/definitions";
+import { ButtonColors, Reason } from "../lib/definitions";
 import { boardReport, cmtReport } from "../lib/actions";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
 
 export const ReportBox = ({
   id,
   isBoard,
   reasonList,
   isOpen,
-  modalToggle,
+  modalClose,
 }: {
-  id: string;
+  id: number;
   isBoard?: boolean;
   reasonList: Reason[];
   isOpen: boolean;
-  modalToggle: () => void;
+  modalClose: () => void;
 }) => {
   const router = useRouter();
   const [reason, setReason] = useState<string>();
@@ -25,7 +26,7 @@ export const ReportBox = ({
     setReason(str);
   }, []);
   const reportRequest = useCallback(() => {
-    if (reason) isBoard ? boardReport(+id, +reason) : cmtReport(+id, +reason);
+    if (reason) isBoard ? boardReport(id, +reason) : cmtReport(id, +reason);
     router.refresh();
   }, [reason]);
 
@@ -36,7 +37,7 @@ export const ReportBox = ({
       setReason={selectReason}
       reason={reason}
       action={reportRequest}
-      modalClose={modalToggle}
+      modalClose={modalClose}
       isOpen={isOpen}
       isBoard={isBoard}
     />
@@ -53,8 +54,8 @@ export const ReportBoxComp = ({
   modalClose,
   action,
 }: {
-  id: string;
-  reasonList: { value: string; title: string; description?: string }[];
+  id: number;
+  reasonList: Reason[];
   reason?: string;
   isOpen: boolean;
   isBoard?: boolean;
@@ -89,6 +90,69 @@ export const ReportBoxComp = ({
   );
 };
 
+export const CheckDelete = ({
+  isOpen,
+  targetName,
+  modalClose,
+  action,
+  destination,
+}: {
+  isOpen: boolean;
+  targetName: string;
+  modalClose: () => void;
+  action: () => void;
+  destination?: string;
+}) => {
+  return (
+    <CheckBox
+      isOpen={isOpen}
+      action={action}
+      modalClose={modalClose}
+      actionColor="whiteRed"
+      actionContent={`정말로 ${targetName}을(를) 삭제하시나요?`}
+      actionTitle={"삭제완료"}
+      destination={destination}
+    />
+  );
+};
+
+export const CheckBox = ({
+  isOpen,
+  action,
+  modalClose,
+  actionContent,
+  actionColor,
+  actionTitle,
+  destination,
+}: {
+  isOpen: boolean;
+  action: () => void;
+  actionContent: string;
+  actionColor: ButtonColors;
+  actionTitle: string;
+  modalClose: () => void;
+  destination?: string;
+}) => {
+  const router = useRouter();
+  const request = useCallback(() => {
+    action();
+    modalClose();
+    destination && router.replace(destination);
+    router.refresh();
+  }, []);
+  return (
+    <ReasonBox
+      content={actionContent}
+      actionColor={actionColor}
+      actionTitle={actionTitle}
+      reason={"letsGO"}
+      action={request}
+      modalClose={modalClose}
+      isOpen={isOpen}
+    />
+  );
+};
+
 export const ReasonBox = ({
   isOpen,
   title,
@@ -104,15 +168,15 @@ export const ReasonBox = ({
   action,
 }: {
   isOpen: boolean;
-  title: string;
+  title?: string;
   content: string;
-  description: string;
-  reasonName: string;
+  description?: string;
+  reasonName?: string;
   actionTitle: string;
-  actionColor: "blue" | "whiteRed";
+  actionColor: ButtonColors;
   reason?: string;
-  setReason: (value: string) => void;
-  reasonList: { value: string; title: string; description?: string }[];
+  setReason?: (value: string) => void;
+  reasonList?: Reason[];
   modalClose: () => void;
   action: () => void;
 }) => {
@@ -121,28 +185,30 @@ export const ReasonBox = ({
       className="text-sm bg-black/[3%] border border-borderGray rounded-lg text-modalText p-2"
       hidden={!isOpen}
     >
-      <div className="font-bold py-2">{title}</div>
+      {title && <div className="font-bold py-2">{title}</div>}
       <div className="p-2">
-        <div className="font-bold">{content}</div>
-        <div className="p-1">
-          <ol className="font-bold flex flex-col gap-4 p-2">
-            {reasonList.map((item, idx) => (
-              <ReasonItem
-                key={idx}
-                idx={idx}
-                reasonName={reasonName}
-                value={item.value}
-                title={item.title}
-                description={item.description}
-                selected={reason === item.value}
-                onChange={() => setReason(item.value)}
-              />
-            ))}
-          </ol>
-        </div>
+        <div className={clsx(title && "font-bold")}>{content}</div>
+        {reasonList && reasonName && (
+          <div className="p-1">
+            <ol className="font-bold flex flex-col gap-4 p-2">
+              {reasonList.map((item, idx) => (
+                <ReasonItem
+                  key={idx}
+                  idx={idx}
+                  reasonName={reasonName}
+                  value={String(item.id)}
+                  title={item.title}
+                  description={item.description}
+                  selected={reason === String(item.id)}
+                  onChange={() => setReason && setReason(String(item.id))}
+                />
+              ))}
+            </ol>
+          </div>
+        )}
       </div>
-      <div className="break-keep">{description}</div>
-      <div className="py-4 flex gap-5 text-base">
+      {description && <div className="break-keep">{description}</div>}
+      <div className={clsx("py-4 flex gap-5 text-base", !title && "px-2")}>
         <Button
           color={reason ? actionColor : "inactiveGray"}
           size="small"

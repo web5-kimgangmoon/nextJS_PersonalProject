@@ -1,15 +1,15 @@
 "use client";
 
-import { userInfo as userInfoHolder } from "@/app/lib/placeholder-data";
+import { userInfoData } from "@/app/lib/placeholder-data";
 import Link from "next/link";
 
 export function Footer() {
-  const userInfo = userInfoHolder;
+  const userInfo = userInfoData;
   return (
     <div className="py-8 px-8">
       <div className="border-t border-borderGray flex flex-col gap-5 py-5">
-        {userInfo.isLogin ? <OnLogin /> : <OffLogin />}
-        {userInfo.isLogin ? "" : <OnAdmin />};
+        {userInfo.id ? <OnLogin /> : <OffLogin />}
+        {userInfo.id ? "" : <OnAdmin />};
       </div>
       <div className="w-full border-t border-borderGray flex flex-col gap-5 py-5 items-center">
         <div className="w-max">
