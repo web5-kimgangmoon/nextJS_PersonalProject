@@ -11,9 +11,18 @@ export const boardGiveScore = (score: number) => {
 export const boardReport = (boardId: number, reasonId: number) => {};
 export const cmtReport = (cmtId: number, reasonId: number) => {};
 export const addCmt = (
-  boardId: number,
   formData: FormData,
+  boardId?: number,
   replyId?: number
-) => {};
+) => {
+  console.log(formData.get("content"));
+  console.log(formData.get("img"));
+  console.log(boardId);
+  console.log(replyId);
+};
 export const updateCmt = (cmtId: number, formData: FormData) => {};
 export const deleteCmt = (cmtId: number) => {};
+export const likeCmt = (cmtId: number, isDisLike: boolean) => {
+  console.log(isDisLike);
+  console.log(cmtId);
+};

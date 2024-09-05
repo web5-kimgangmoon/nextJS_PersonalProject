@@ -13,7 +13,6 @@ import { addCmt, updateCmt } from "@/app/lib/actions";
 // import { Blob } from "buffer";
 
 export const WriteCmt = ({
-  idx,
   boardId,
   replyId,
   isOpen,
@@ -23,8 +22,7 @@ export const WriteCmt = ({
   img,
   modalToggle,
 }: {
-  idx?: number;
-  boardId: number;
+  boardId?: number;
   replyId?: number;
   isOpen: boolean;
   cmtId?: number;
@@ -34,11 +32,15 @@ export const WriteCmt = ({
   modalToggle?: () => void;
 }) => {
   const categoryInfo = categoryInfoHolder;
-  const imgBtnId = `cmtWrite${idx ? idx : "Plain"}`;
+  const imgBtnId = `cmtWrite${
+    replyId ? `Reply${replyId}` : cmtId ? cmtId : "Plain"
+  }`;
   const request = useCallback((formData: FormData) => {
     isUpdate && cmtId
       ? updateCmt(cmtId, formData)
-      : addCmt(boardId, formData, replyId);
+      : boardId
+      ? addCmt(formData, boardId)
+      : addCmt(formData, replyId);
   }, []);
   return (
     <WriteCmtComp
@@ -153,7 +155,7 @@ export const WriteCmtComp = ({
                 ? "blue"
                 : "inactiveGray"
             }
-            size="short"
+            size="medium"
             onClick={
               formData.get("img") ||
               text ||
@@ -161,6 +163,7 @@ export const WriteCmtComp = ({
                 ? submit
                 : undefined
             }
+            className="py-2"
           >
             작성완료
           </Button>

@@ -128,3 +128,26 @@ export const categoryInfo = {
   rules: ["아아", "이런곳에서"],
   categoryInformBoard,
 };
+
+{
+  cmtList: Array<{
+    id: number;
+    writer: string;
+    writerId: number;
+    createdAt: Date;
+    content: string;
+    isUpdated: boolean;
+    like: number;
+    dislike: number;
+    img: string;
+    isDoLike: boolean;
+    isDoDislike: boolean;
+    boardId: number;
+    categoryPath: string;
+    category: string;
+    boardTitle: string;
+    cmtCnt: number;
+    isDeleted: boolean;
+  }>;
+}
+//'<div><div style="width: 10rem; height: 10rem;"><img src="/baseBoardImg.png" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">(*수정됨)</span>아아아</div></div>';

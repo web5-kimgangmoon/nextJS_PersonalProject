@@ -13,7 +13,10 @@ export type Button = {
     | "inactiveGray"
     | "noneBlue"
     | "none"
-    | "blankInactive";
+    | "blankInactive"
+    | "onlyTextBlue"
+    | "onlyTextRed"
+    | "onlyTextInactive";
   children?: string | ReactNode;
   radius?: "medium" | "little" | "a little" | "none" | "full";
   size?:

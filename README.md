@@ -25,7 +25,7 @@ npm i @types/jsdom
 https://github.com/remarkablemark/html-react-parser/issues/94
 (html-react-parser 보안 이슈)
 
-innerHtml 기능을 쓰기 위해 xss 공격에 보호해주는 라이브러리를 설치했습니다. xss, xssfilter, html-react-parser도 있지만 가장 대중적으로 쓰이는 dompurity로 설치했습니다.
+innerHtml 기능을 쓰기 위해 xss 공격에 보호해주는 라이브러리를 설치했습니다. xss, xssfilter도 있지만 가장 대중적으로 쓰이는 dompurity로 설치했습니다.
 
 files는 읽기전용 속성이므로 변경이 불가능하지만, value값을 바꾸면 files의 값을 리셋하는 것은 가능하다.
 
@@ -36,3 +36,5 @@ https://stackoverflow.com/questions/61296940/how-to-include-dom-manipulating-scr
 https://www.reddit.com/r/nextjs/comments/kty9vi/dompurifysanitize_throws_error_that_sanitize_is/?rdt=45775
 
 브라우저 환경에서만 실행: useEffect 훅은 브라우저에서 렌더링 후에 실행됩니다. 이는 서버 사이드에서 HTML을 생성하는 과정과는 별개로, 클라이언트에서만 실행되는 코드 블록입니다. DOMPurify는 브라우저의 DOM API를 사용하기 때문에, 클라이언트 사이드에서만 사용하는 것이 적절합니다.
+
+수정: html-react-parser는 xss 공격을 보호해주는 라이브러리가 아닌 편의성을 위한 라이브러리다.

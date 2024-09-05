@@ -30,7 +30,7 @@ export function Button({
           "w-8 h-8": size == "pageBtn",
         },
         {
-          "transition-[backgorund-image] bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white hover:bg-none hover:bg-[#D81159]":
+          "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white hover:from-[#D81159] hover:to-[#D81159]":
             color === "pink",
           "bg-mainBlue text-white hover:bg-darkBlue": color === "blue",
           "border-2 border-mainBlue text-mainBlue hover:text-darkBlue hover:border-darkBlue":
@@ -42,8 +42,11 @@ export function Button({
           "bg-bgGray text-white": color === "gray",
           "border-2 border-borderGray bg-white text-black":
             color === "whiteGray",
-          "bg-bgGray opacity-40 text-white": color === "inactiveGray",
+          "bg-bgGray/40 text-white": color === "inactiveGray",
           "border-2 border-bgGray text-bgGray": color === "blankInactive",
+          "text-mainBlue hover:text-textBlue": color === "onlyTextBlue",
+          "text-alert hover:text-red-800": color === "onlyTextRed",
+          "text-textGray": color === "onlyTextInactive",
         },
         {
           "rounded-[1.6rem]": !radius,
