@@ -27,6 +27,7 @@ export const ReportBox = ({
   }, []);
   const reportRequest = useCallback(() => {
     if (reason) isBoard ? boardReport(id, +reason) : cmtReport(id, +reason);
+    modalClose();
     router.refresh();
   }, [reason]);
 

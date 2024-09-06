@@ -1,13 +1,12 @@
 "use client";
 
-import type { BoardDetail as IBoardDetail } from "@/app/lib/definitions";
 import Image from "next/image";
 import { BottomCmtBtn } from "../../board";
 import clsx from "clsx";
 import { getTimeString } from "@/app/lib/utils";
 import Link from "next/link";
 import { ImgButton, LinkButton } from "@/app/ui/buttons";
-import { currentBoard as currentBoardHolder } from "@/app/lib/placeholder-data";
+import { currentBoardData, userInfoData } from "@/app/lib/placeholder-data";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useToggleObj } from "@/app/hooks/toggleObj";
 import { useCallback } from "react";
@@ -15,14 +14,18 @@ import { boardDelete } from "@/app/lib/actions";
 import { CheckDelete } from "@/app/ui/reasonBox";
 
 export const BoardDetail = () => {
-  const currentBoard = currentBoardHolder;
-  return <BoardDetailComp {...currentBoard} />;
+  return (
+    <BoardDetailComp
+      {...currentBoardData}
+      isWriter={currentBoardData.writerId === userInfoData.userInfo?.id}
+    />
+  );
 };
 
 export const BoardDetailComp = ({
   isWriter,
-  commentNum,
-  boardId,
+  cmtCnt,
+  id,
   categoryPath,
   createdAt,
   img,
@@ -31,10 +34,22 @@ export const BoardDetailComp = ({
   title,
   writer,
   writerId,
-}: IBoardDetail) => {
+}: {
+  isWriter: boolean;
+  cmtCnt: number;
+  id: number;
+  categoryPath: string;
+  createdAt: Date;
+  img: string;
+  category: string;
+  content: string;
+  title: string;
+  writer: string;
+  writerId: number;
+}) => {
   const { deleteBox } = useToggleObj(["deleteBox", false]);
   const requestDelete = useCallback(() => {
-    boardDelete(boardId);
+    boardDelete(id);
   }, []);
   return (
     <div className="flex flex-col gap-2 py-4">
@@ -50,13 +65,13 @@ export const BoardDetailComp = ({
             <Link href={`/user/${writerId}`}>{writer}</Link>
           </div>
           <BottomCmtBtn
-            commentNum={commentNum}
+            commentNum={cmtCnt}
             categoryPath={categoryPath}
-            boardId={boardId}
+            boardId={id}
           />
         </div>
         {isWriter && (
-          <WriterRequestBtns boardId={boardId} modalToggle={deleteBox.toggle} />
+          <WriterRequestBtns boardId={id} modalToggle={deleteBox.toggle} />
         )}
         <div hidden={!deleteBox.is}>
           <CheckDelete

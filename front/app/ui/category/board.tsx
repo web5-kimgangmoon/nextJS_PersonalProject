@@ -5,25 +5,31 @@ import { LinkButton } from "@/app/ui/buttons";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { getTimeString } from "@/app/lib/utils";
 import Link from "next/link";
-import { CategoryBoard } from "@/app/lib/definitions";
 import Image from "next/image";
 import {
-  boardList as boardListHolder,
-  categoryInformBoard as categoryInformBoardHolder,
+  boardListData as boardListHolder,
+  categoryDetailData as categoryDetailDataHolder,
 } from "@/app/lib/placeholder-data";
 import { NoBoard } from "./noBoard";
 
 export const InformBoard = () => {
-  const categoryInformBoard = categoryInformBoardHolder;
-  return <BoardItem {...categoryInformBoard} />;
+  const categoryDetailData = categoryDetailDataHolder;
+  return (
+    <BoardItem
+      {...categoryDetailData.informBoard}
+      isTop={true}
+      category={categoryDetailData.name}
+      categoryPath={categoryDetailData.path}
+    />
+  );
 };
 
 export const BoardList = () => {
   const boardList = boardListHolder;
-  if (boardList.length === 0) return <NoBoard />;
+  if (boardList.boardList.length === 0) return <NoBoard />;
   return (
     <div>
-      {boardList.map((item, idx) => (
+      {boardList.boardList.map((item, idx) => (
         <BoardItem {...item} key={idx} />
       ))}
     </div>
@@ -32,17 +38,29 @@ export const BoardList = () => {
 
 export const BoardItem = ({
   isTop,
-  commentNum,
-  boardId,
+  cmtCnt,
+  id,
   categoryPath,
   createdAt,
   img,
   category,
-  content,
+  description,
   title,
   writer,
   writerId,
-}: CategoryBoard) => {
+}: {
+  isTop?: boolean;
+  cmtCnt: number;
+  id: number;
+  categoryPath: string;
+  createdAt: Date;
+  img: string;
+  category: string;
+  description: string;
+  title: string;
+  writer: string;
+  writerId: number;
+}) => {
   return (
     <div className="flex flex-col gap-2 py-4">
       {!isTop && (
@@ -62,8 +80,8 @@ export const BoardItem = ({
         {!isTop && (
           <CommentBtn
             categoryPath={categoryPath}
-            boardId={boardId}
-            commentNum={commentNum}
+            boardId={id}
+            commentNum={cmtCnt}
           />
         )}
       </div>
@@ -74,7 +92,7 @@ export const BoardItem = ({
           isTop ? "flex-col" : "flex-col-reverse"
         )}
       >
-        <div className="">{content}</div>
+        <div className="">{description}</div>
         <div className="text-sm flex items-center flex-wrap">
           <div className="text-textBlue">{getTimeString(createdAt)}</div>
           <div className="py-1 px-2">
@@ -85,16 +103,16 @@ export const BoardItem = ({
           </div>
           {isTop && (
             <BottomCmtBtn
-              commentNum={commentNum}
+              commentNum={cmtCnt}
               categoryPath={categoryPath}
-              boardId={boardId}
+              boardId={id}
             />
           )}
         </div>
       </div>
       {isTop ? (
         <LinkButton
-          href={`/category/${categoryPath}/${boardId}`}
+          href={`/category/${categoryPath}/${id}`}
           color="pink"
           radius="a little"
         >
@@ -102,7 +120,7 @@ export const BoardItem = ({
         </LinkButton>
       ) : (
         <Link
-          href={`/category/${categoryPath}/${boardId}`}
+          href={`/category/${categoryPath}/${id}`}
           className="text-xl text-pink font-bold"
         >
           전체글 보러가기 »

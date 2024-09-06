@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const getTimeString = (ta: Date, option?: "cmt") => {
   const now = new Date();
   const dif = now.getTime() - ta.getTime();
@@ -95,7 +97,7 @@ export const pageGetter = ({
 };
 
 function repeatNumber(
-  repeat: number,
+  end: number,
   offset: number,
   current: number,
   dots?: boolean
@@ -113,7 +115,7 @@ function repeatNumber(
       isRight: false,
       isLeft: true,
     });
-  for (let i = offset; i < repeat + 1; i++) {
+  for (let i = offset; i < end + 1; i++) {
     arr.push({ title: `${i}`, page: i, isRight: false, isLeft: false });
   }
   if (dots) {
@@ -124,7 +126,7 @@ function repeatNumber(
       isLeft: false,
     });
   }
-  if (current < 5) {
+  if (current < 5 && current !== end) {
     arr.push({
       title: "",
       page: offset + current,
@@ -159,4 +161,18 @@ export const pushedFormData = (
     target.set(item.name, item.value);
   }
   return target;
+};
+
+export const useTypeCheck_zod = () => {
+  // const intCheck = z.object({
+  //   target: z.coerce
+  //     .number({ invalid_type_error: "Please input number" })
+  //     .int({ message: "Please input integer" })
+  //     .gt(0, { message: "Please correct boardNumber" }),
+  // });
+  const intCheck = z.coerce
+    .number({ invalid_type_error: "Please input number" })
+    .int({ message: "Please input integer" })
+    .gt(0, { message: "Please correct boardNumber" });
+  return { intCheck };
 };

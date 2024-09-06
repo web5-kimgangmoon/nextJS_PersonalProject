@@ -1,7 +1,10 @@
 "use client";
 
 import { boardGiveScore } from "@/app/lib/actions";
-import { currentBoard as currentBoardHolder } from "@/app/lib/placeholder-data";
+import {
+  currentBoardData as currentBoardHolder,
+  userInfoData,
+} from "@/app/lib/placeholder-data";
 import { Button, ImgButton } from "@/app/ui/buttons";
 import { Star } from "@/public/star";
 import clsx from "clsx";
@@ -10,6 +13,7 @@ import { useCallback, useState } from "react";
 
 export const GiveScoreBox = () => {
   const currentBoard = currentBoardHolder;
+
   const [score, setScore] = useState<number>();
   const router = useRouter();
   const giveScore = useCallback(
@@ -25,6 +29,7 @@ export const GiveScoreBox = () => {
   return (
     <GiveScoreBoxComp
       {...currentBoard}
+      isLogin={userInfoData.userInfo?.id ? true : false}
       score={score}
       giveScore={giveScore}
       submit={submit}

@@ -1,6 +1,6 @@
 "use client";
 
-import { categoryList as categoryListHolder } from "@/app/lib/placeholder-data";
+import { categoryListData as categoryListHolder } from "@/app/lib/placeholder-data";
 import clsx from "clsx";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -10,8 +10,8 @@ import { useSearchParams } from "next/navigation";
 
 export const CategorySlideBar = () => {
   const categoryList = categoryListHolder;
-  const list = categoryList.map((item) => ({
-    title: item.title,
+  const list = categoryList.categories.map((item) => ({
+    title: item.name,
     params: item.path,
   }));
 

@@ -10,33 +10,31 @@ import {
   ModalLink,
   ModalRouterBox,
 } from "@/app/ui/modal";
-import {
-  categoryList as categoryListHolder,
-  userInfoData,
-} from "@/app/lib/placeholder-data";
+import { categoryListData, userInfoData } from "@/app/lib/placeholder-data";
 import Image from "next/image";
 
 export function Header() {
-  const userInfo = userInfoData;
-  const data = categoryListHolder;
-
-  const categoryList = data.map((item) => ({
-    title: item.title,
+  const categoryList = categoryListData.categories.map((item) => ({
+    name: item.name,
     href: `/category/${item.path}`,
   }));
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
         <MenuBarBtn
-          isLogin={userInfo.id ? true : false}
+          isLogin={userInfoData.userInfo?.id ? true : false}
           categoryList={categoryList}
         />
-        <Link href={"/category"} className="text-2xl text-mainBlue font-bold">
+        <Link href={"/category"} className="text-xl text-mainBlue font-bold">
           The board
         </Link>
       </div>
       <div>
-        {userInfo.id ? <OnLogin profile={userInfo.profileImg} /> : <OffLogin />}
+        {userInfoData.userInfo?.id ? (
+          <OnLogin profile={userInfoData.userInfo?.profileImg} />
+        ) : (
+          <OffLogin />
+        )}
       </div>
     </div>
   );
@@ -47,7 +45,7 @@ export const MenuBarBtn = ({
   categoryList,
 }: {
   isLogin: boolean;
-  categoryList: { title: string; href: string }[];
+  categoryList: { name: string; href: string }[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const closeModal = useCallback(() => {
@@ -72,7 +70,7 @@ export const MenuBarBtn = ({
   );
 };
 
-export function OnLogin({ profile }: { profile: string }) {
+export function OnLogin({ profile }: { profile?: string }) {
   const [open, setOpen] = useState<boolean>(false);
   const ctlClose = useCallback(() => {
     setOpen(false);
@@ -84,7 +82,7 @@ export function OnLogin({ profile }: { profile: string }) {
       </Modal>
       <div className="pr-1">
         <Image
-          src={profile}
+          src={profile ? profile : "/placeholder-noavatar32.svg"}
           width={35}
           height={35}
           alt="no userImg"
@@ -137,7 +135,7 @@ export const MenuModalContent = ({
   closeModal,
 }: {
   isLogin: boolean;
-  categoryList: { title: string; href: string }[];
+  categoryList: { name: string; href: string }[];
   closeModal: () => void;
 }) => {
   const [openObj, setOpenObj] = useState<{ user: boolean; category: boolean }>({
@@ -179,7 +177,10 @@ export const MenuModalContent = ({
         title="카테고리"
         isOpen={openObj["category"]}
         setIsOpen={() => toggleBox("category")}
-        linkList={categoryList}
+        linkList={categoryList.map((item) => ({
+          title: item.name,
+          href: item.href,
+        }))}
         closeModal={closeModal}
       />
       {isLogin && (

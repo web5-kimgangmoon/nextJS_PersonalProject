@@ -18,11 +18,14 @@ export function Button({
   return (
     <button
       className={clsx(
-        "transition-colors",
+        {
+          "transition-colors": size !== "bigFont",
+          "transition-[font]": size === "bigFont",
+        },
         { "font-bold": !isNobold },
         {
           "w-full text-xl py-2": !size,
-          "w-full text-3xl py-4 px-8 transition-[font]": size === "bigFont",
+          "w-full text-3xl py-4 px-8": size === "bigFont",
           "text-xl py-2 px-4": size === "short",
           "py-1 px-4": size === "medium",
           "py-1 px-2": size === "small",

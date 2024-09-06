@@ -1,3 +1,5 @@
+import { GetCmt } from "./definitions";
+
 export const boardDelete = (boardId: number) => {
   return "";
 };
@@ -20,9 +22,24 @@ export const addCmt = (
   console.log(boardId);
   console.log(replyId);
 };
-export const updateCmt = (cmtId: number, formData: FormData) => {};
+export const updateCmt = (cmtId: number, formData: FormData) => {
+  console.log(formData.get("content"));
+  console.log(formData.get("img"));
+  console.log(cmtId);
+};
 export const deleteCmt = (cmtId: number) => {};
 export const likeCmt = (cmtId: number, isDisLike: boolean) => {
   console.log(isDisLike);
   console.log(cmtId);
+};
+export const useMutation_getCmt = (data: GetCmt) => {
+  return {
+    mutate: async () => {
+      console.log(data);
+    },
+    isPending: false,
+    isSuccess: true,
+    status: "success",
+    data: [],
+  };
 };

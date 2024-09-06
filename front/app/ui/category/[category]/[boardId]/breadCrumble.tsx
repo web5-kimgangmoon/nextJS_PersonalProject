@@ -2,7 +2,7 @@
 
 import { RightArrow } from "@/public/right-arrow";
 import Link from "next/link";
-import { currentBoard as currentBoardHolder } from "@/app/lib/placeholder-data";
+import { currentBoardData as currentBoardHolder } from "@/app/lib/placeholder-data";
 
 export const BreadCrumble = () => {
   const currentBoard = currentBoardHolder;

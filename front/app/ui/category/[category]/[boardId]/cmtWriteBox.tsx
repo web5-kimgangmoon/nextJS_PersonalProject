@@ -8,7 +8,7 @@ import { useDeleteImg } from "@/app/hooks/callback/deleteImg";
 import { newCopyFormData, pushedFormData } from "@/app/lib/utils";
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { categoryInfo as categoryInfoHolder } from "@/app/lib/placeholder-data";
+import { categoryDetailData as categoryInfoHolder } from "@/app/lib/placeholder-data";
 import { addCmt, updateCmt } from "@/app/lib/actions";
 // import { Blob } from "buffer";
 
@@ -83,13 +83,15 @@ export const WriteCmtComp = ({
     imgBtnId,
     "isDeleteImg"
   );
+  const resetForm = useDeleteImg(setPreview, setFormData, imgBtnId);
+
   const submit = useCallback(() => {
     request(pushedFormData(formData, [{ name: "content", value: text }]));
     modalClose && modalClose();
-    setText("");
-    deleteImg();
+    resetForm();
     router.refresh();
-  }, [formData, text]);
+    setText(baseText ? baseText : "");
+  }, [formData, text, baseText]);
   return (
     <div hidden={!isOpen} className="w-full h-full">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
@@ -125,7 +127,8 @@ export const WriteCmtComp = ({
           name={"text"}
           className="w-full h-full outline-none"
           onChange={onChangeText}
-          defaultValue={baseText}
+          value={text}
+          // defaultValue={baseText}
         />
       </div>
       <div className="border-4 border-t-0 border-borderGray rounded-b-[2.5rem] px-5 py-2 flex justify-between bg-white items-center">

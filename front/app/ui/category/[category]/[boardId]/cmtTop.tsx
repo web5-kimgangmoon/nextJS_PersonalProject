@@ -1,8 +1,9 @@
 "use client";
 
 import {
-  boardReportList as boardReportListHolder,
-  currentBoard as currentBoardHolder,
+  boardReportReasonListData as boardReportListHolder,
+  currentBoardData as currentBoardHolder,
+  userInfoData,
 } from "@/app/lib/placeholder-data";
 
 import { ImgButton } from "@/app/ui/buttons";
@@ -20,9 +21,9 @@ export const CommentTop = () => {
       <div className="pb-4 border-b border-borderGray">
         <div className="py-2 flex items-center justify-between">
           <div className="text-sm text-fakeBlack">
-            {currentBoard.commentNum} Comments
+            {currentBoard.cmtCnt} Comments
           </div>
-          {currentBoard.isLogin && (
+          {userInfoData.userInfo?.id && (
             <div>
               <ReportBtn
                 openModal={box.toggle}
@@ -32,9 +33,9 @@ export const CommentTop = () => {
           )}
         </div>
 
-        {currentBoard.isLogin && !currentBoard.isDidReport && (
+        {userInfoData.userInfo?.id && !currentBoard.isDidReport && (
           <ReportBox
-            id={currentBoard.boardId}
+            id={currentBoard.id}
             isBoard={true}
             reasonList={boardReportList.reasonList}
             isOpen={box.is}
@@ -43,9 +44,10 @@ export const CommentTop = () => {
         )}
       </div>
       <div className="pb-5 pt-10">
-        {currentBoard.isLogin && (
-          <WriteCmt boardId={currentBoard.boardId} isOpen={true} />
-        )}
+        {userInfoData.userInfo?.id &&
+          userInfoData.userInfo?.id !== currentBoard.writerId && (
+            <WriteCmt boardId={currentBoard.id} isOpen={true} />
+          )}
       </div>
     </div>
   );

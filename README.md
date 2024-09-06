@@ -16,7 +16,12 @@ npm i clsx zod
 npm i @heroicons/react
 npm i dompurity
 npm i html-react-parser
+npm i axios
+npm i @tanstack/react-query
+npm i @types/axios
 ```
+
+개발자용 라이브러리를 따로 구분 안 해줬습니다. 어차피 react가 컴파일 돌릴 때, 필요없는 코드들은 빼주기 때문에
 
 ### dompurity
 

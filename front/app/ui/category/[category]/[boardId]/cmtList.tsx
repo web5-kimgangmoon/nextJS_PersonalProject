@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 import {
   cmtData,
-  cmtReportList as cmtReportListHolder,
+  cmtReportReasonListData as cmtReportListHolder,
   userInfoData,
 } from "@/app/lib/placeholder-data";
 
@@ -24,21 +24,35 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Button, ImgButton } from "@/app/ui/buttons";
-import { deleteCmt, likeCmt } from "@/app/lib/actions";
+import { deleteCmt, useMutation_getCmt, likeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
 import { useToggleObj } from "@/app/hooks/toggleObj";
 import { useRouter } from "next/navigation";
 import { getTimeString } from "@/app/lib/utils";
 import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
-import { Cmt, Reason } from "@/app/lib/definitions";
+import { CmtItem, Reason } from "@/app/lib/definitions";
 
-export const CmtList = () => {
+export const CmtList = ({boardId}:{boardId:number}) => {
+  const getCmt_recently = useMutation_getCmt({searh:{"boardId"}})
+  const getCmt_old = useMutation_getCmt({})
+  const getCmt_like = useMutation_getCmt({})
+  // const cmtData = cmtData;
+  // const [cmtData, setD] = useState(() => cmtDataGetter(count));
+  const [limit, setLimit] = useState<number>(10);
+  const stretchLimit = useCallback(()=>{
+    setLimit((value)=>value+10);
+  },[]);
+  getCmt
   const cmtList = cmtData.cmtList;
   const cmtCnt = cmtData.cmtCnt;
   const cmtReportList = cmtReportListHolder;
-  const userInfo = userInfoData;
   return (
     <div className="px-2">
+      <div>
+        <div>추천댓글</div>
+        <div></div>
+        <div></div>
+      </div>
       {cmtList.map(
         (item, idx) =>
           !item.replyId && (
@@ -47,12 +61,12 @@ export const CmtList = () => {
               isDoDislike={item.isDoDislike}
               isDoLike={item.isDoLike}
               isFirst={true}
-              isWriter={item.writerId === userInfo.id}
+              isWriter={item.writerId === userInfoData.userInfo?.id}
               cmtId={item.id}
-              userId={userInfo.id}
+              userId={userInfoData.userInfo?.id}
               writerId={item.writerId}
               replyUserId={item.replyUserId}
-              userProfile={userInfo.profileImg}
+              userProfile={userInfoData.userInfo?.profileImg}
               replyUser={item.replyUser}
               writer={item.writer}
               writerProfile={item.writerProfile}
@@ -83,7 +97,7 @@ export const CmtBox = ({
   isDoLike,
   isDoDislike,
   isWriter,
-  userProfile,
+  userProfile = "/placeholder-noavatar32.svg",
   isDidReport,
   userId,
   replyUser,
@@ -102,15 +116,14 @@ export const CmtBox = ({
   isDoLike: boolean;
   isDoDislike: boolean;
   isWriter: boolean;
-  userProfile: string;
+  userProfile?: string;
   isDidReport: boolean;
   userId?: number;
   replyUser?: string;
   replyUserId?: number;
   cmtReportList: Reason[];
   isFirst?: boolean;
-
-  cmtList: Cmt[];
+  cmtList: CmtItem[];
 }) => {
   const imgPath = content.split('src="')[1]?.split('"')[0];
 
@@ -181,6 +194,7 @@ export const CmtBox = ({
                 modalClose={remake.close}
                 img={imgPath}
                 baseText={contentText}
+                isUpdate={true}
               />
             </div>
             <CmtBoxBottom
@@ -195,33 +209,29 @@ export const CmtBox = ({
           </div>
         </div>
       </div>
-      <div className="flex gap-2" hidden={!reply.is && !cmt.is}>
+      <div className="flex gap-2" hidden={!reply.is}>
         <Image
-          hidden={!reply.is || !cmt.is}
+          hidden={!reply.is}
           src={userProfile}
           alt="no image"
           className="w-14 h-14 rounded-2xl"
           width={0}
           height={0}
         />
-        <WriteCmt
-          replyId={cmtId}
-          isOpen={reply.is && cmt.is}
-          modalClose={reply.close}
-        />
+        <WriteCmt replyId={cmtId} isOpen={reply.is} modalClose={reply.close} />
       </div>
-      <div className="flex pl-16" hidden={!deleteBox.is || !cmt.is}>
+      <div className="flex pl-16" hidden={!deleteBox.is}>
         <CheckDelete
-          isOpen={deleteBox.is && cmt.is}
+          isOpen={deleteBox.is}
           modalClose={deleteBox.close}
           targetName={"댓글"}
           action={requestDelete}
         />
       </div>
-      <div className="flex pl-16" hidden={!report.is && !cmt.is}>
+      <div className="flex pl-16" hidden={!report.is}>
         <ReportBox
           id={cmtId}
-          isOpen={report.is && cmt.is}
+          isOpen={report.is}
           modalClose={report.close}
           isBoard={false}
           reasonList={cmtReportList}

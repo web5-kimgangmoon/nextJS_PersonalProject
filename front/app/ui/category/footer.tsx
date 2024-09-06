@@ -4,12 +4,11 @@ import { userInfoData } from "@/app/lib/placeholder-data";
 import Link from "next/link";
 
 export function Footer() {
-  const userInfo = userInfoData;
   return (
     <div className="py-8 px-8">
       <div className="border-t border-borderGray flex flex-col gap-5 py-5">
-        {userInfo.id ? <OnLogin /> : <OffLogin />}
-        {userInfo.id ? "" : <OnAdmin />};
+        {userInfoData.userInfo?.id ? <OnLogin /> : <OffLogin />}
+        {userInfoData.userInfo?.id ? "" : <OnAdmin />}
       </div>
       <div className="w-full border-t border-borderGray flex flex-col gap-5 py-5 items-center">
         <div className="w-max">
