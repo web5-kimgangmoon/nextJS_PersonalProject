@@ -9,7 +9,7 @@ import {
 
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { Dots } from "@/public/dots2";
+import { Dots } from "@/public/dots";
 import Link from "next/link";
 import parse from "html-react-parser";
 import DOMPurify from "dompurify";

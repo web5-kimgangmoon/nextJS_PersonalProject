@@ -15,32 +15,15 @@ export const CategorySlideBar = () => {
     params: item.path,
   }));
 
-  return (
-    <SlideBar
-      list={list}
-      // location={location}
-      // touchMove={touchMove as (e: TouchEvent<HTMLDivElement>) => void}
-      // touchStart={touchStart as (e: TouchEvent<HTMLDivElement>) => void}
-      // selected={params.category}
-      path="category"
-    />
-  );
+  return <SlideBar list={list} path="category" />;
 };
 
 export const SlideBar = ({
   path,
   list,
-}: // location,
-// selected,
-// touchStart,
-// touchMove,
-{
+}: {
   path: string;
   list: { title: string; params: string }[];
-  // location: { current: number; dif: number; translate: number };
-  // selected: string;
-  // touchStart: (e: TouchEvent<HTMLDivElement>) => void;
-  // touchMove: (e: TouchEvent<HTMLDivElement>) => void;
 }) => {
   const query = useSearchParams();
   const params = useParams();
