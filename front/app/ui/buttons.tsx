@@ -24,7 +24,7 @@ export function Button({
         },
         { "font-bold": !isNobold },
         {
-          "w-full text-xl py-2": !size,
+          "w-full text-xl py-2 px-4": !size,
           "w-full text-3xl py-4 px-8": size === "bigFont",
           "text-xl py-2 px-4": size === "short",
           "py-1 px-4": size === "medium",
@@ -51,6 +51,7 @@ export function Button({
           "text-mainBlue hover:text-textBlue": color === "onlyTextBlue",
           "text-alert hover:text-red-800": color === "onlyTextRed",
           "text-textGray": color === "onlyTextInactive",
+          "text-black border border-borderGray bg-white": color === "logoBtn",
         },
         {
           "rounded-[1.6rem]": !radius,
@@ -129,7 +130,13 @@ export function LinkButton(
   }
 ) {
   return (
-    <Link href={button.href}>
+    <Link
+      href={button.href}
+      className={clsx(
+        "inline-block",
+        (!button.size || button.size === "bigFont") && "w-full"
+      )}
+    >
       {button.img !== undefined || button.icon !== undefined ? (
         <ImgButton {...button}>{button.children}</ImgButton>
       ) : (
@@ -150,7 +157,13 @@ export function AButton(
   }
 ) {
   return (
-    <a href={button.href}>
+    <a
+      href={button.href}
+      className={clsx(
+        "inline-block",
+        (!button.size || button.size === "bigFont") && "w-full"
+      )}
+    >
       {button.img !== undefined || button.icon !== undefined ? (
         <ImgButton {...button}>{button.children}</ImgButton>
       ) : (

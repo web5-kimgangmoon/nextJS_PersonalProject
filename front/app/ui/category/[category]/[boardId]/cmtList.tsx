@@ -23,15 +23,16 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Button, ImgButton } from "@/app/ui/buttons";
-import { deleteCmt, useQuery_getCmt, likeCmt } from "@/app/lib/actions";
+import { deleteCmt, likeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
 import { useToggleObj } from "@/app/hooks/toggleObj";
 import { useRouter } from "next/navigation";
 import { getTimeString } from "@/app/lib/utils";
 import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
 import { CmtItem, Reason } from "@/app/lib/definitions";
-import { Loading } from "@/app/ui/loadingSpin";
+import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
+import { useQuery_getCmt } from "@/app/lib/data";
 
 export const CmtList = ({ boardId }: { boardId: number }) => {
   const cmtReportList = cmtReportListHolder;
@@ -40,7 +41,6 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
   const [sortState, setSortState] = useState<"recently" | "old" | "like">(
     "like"
   );
-
   const cmtData = useQuery_getCmt({
     searh: {
       boardId: boardId,
@@ -63,7 +63,7 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
     "old",
     "like"
   );
-  if (cmtData.isLoading) return <Loading bgColorClass="bg-categoryGray" />;
+  if (cmtData.isLoading) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <div className="px-2">
       <div className="flex gap-2 pb-10 font-bold">

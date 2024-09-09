@@ -3,7 +3,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
-import { ReactNode } from "react";
+import { ReactNode, useCallback } from "react";
 import { AButton, Button, ImgButton, LinkButton } from "./buttons";
 import { useRouter } from "next/navigation";
 
@@ -83,6 +83,36 @@ export function Curtain({
     ></div>
   );
 }
+
+export const ModalRequest = ({
+  children,
+  request,
+  isBorder,
+  closeModal,
+}: {
+  children: string;
+  request: () => void;
+  isBorder?: boolean;
+  closeModal: () => void;
+}) => {
+  return (
+    <div className="flex justify-center">
+      <div className={clsx("w-max", isBorder && "border-t border-borderGray")}>
+        <Button
+          onClick={() => {
+            request();
+            closeModal();
+          }}
+          color="none"
+          isNobold={true}
+          size="bigFont"
+        >
+          {children}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export const ModalLink = ({
   children,

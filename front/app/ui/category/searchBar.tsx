@@ -49,7 +49,7 @@ export const SearchBox = () => {
           inputSearch(e.currentTarget.value);
         }}
       />
-      <div className="p-2">
+      <div className="py-2 flex">
         <LinkButton
           color="pink"
           href={
@@ -58,6 +58,7 @@ export const SearchBox = () => {
               : "/category"
           }
           radius="a little"
+          className="grow"
         >
           검색
         </LinkButton>

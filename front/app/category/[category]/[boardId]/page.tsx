@@ -13,8 +13,8 @@ export default async function ({
 }) {
   const { intCheck } = useTypeCheck_zod();
   const invalid = intCheck.safeParse(params.boardId);
-  // if (!invalid.success)
-  //   return <div>{invalid.error.errors.map((item) => item.message)}</div>;
+  if (!invalid.success)
+    return <div>{invalid.error.errors.map((item) => item.message)}</div>;
   const target = intCheck.parse(params.boardId);
 
   return (

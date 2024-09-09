@@ -50,18 +50,18 @@ export const categoryListData: CategoryListData = {
   ],
 };
 export const userInfoData: UserInfoData = {
-  userInfo: {
-    profileImg: "/placeholder-noavatar32.svg",
-    id: 3,
-    nick: "나야나",
-    email: "rk@naver.com",
-    cmtCnt: 44,
-    boardsCnt: 22,
-    like: 312,
-    dislike: 222,
-    createdAt: new Date(Date.now() - 3000000),
-  },
-  // userInfo:undefined
+  // userInfo: {
+  //   profileImg: "/placeholder-noavatar32.svg",
+  //   id: 3,
+  //   nick: "나야나",
+  //   email: "rk@naver.com",
+  //   cmtCnt: 44,
+  //   boardsCnt: 22,
+  //   like: 312,
+  //   dislike: 222,
+  //   createdAt: new Date(Date.now() - 3000000),
+  // },
+  userInfo: undefined,
 };
 
 export const boardListData: BoardListData = {

@@ -1,5 +1,6 @@
 "use client";
 
+import { logout } from "@/app/lib/actions";
 import { userInfoData } from "@/app/lib/placeholder-data";
 import Link from "next/link";
 
@@ -27,12 +28,12 @@ export function Footer() {
   );
 }
 
-export function LinkBox({
+export function FooterBox({
   elements,
   title,
   isExternal,
 }: {
-  elements: Array<{ href: string; title: string }>;
+  elements: Array<{ href?: string; request?: () => void; title: string }>;
   title: string;
   isExternal?: boolean;
 }) {
@@ -42,26 +43,41 @@ export function LinkBox({
       <ul className="flex flex-col gap-3 text-[#042552]/50">
         {isExternal
           ? elements.map((item, idx) => (
-              <div className="flex justify-center" key={idx}>
+              <li className="flex justify-center" key={idx}>
                 <a
                   href={item.href}
-                  className="w-max hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
+                  className="hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
                   tabIndex={0}
                 >
-                  <li>{item.title}</li>
+                  {item.title}
                 </a>
-              </div>
+              </li>
             ))
-          : elements.map((item, idx) => (
-              <div className="flex justify-center" key={idx}>
-                <Link
-                  href={item.href}
-                  className="w-max hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
+          : elements.map((item, idx) =>
+              item.href ? (
+                <li className="flex justify-center" key={idx}>
+                  <Link
+                    href={item.href}
+                    className="hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
+                  >
+                    {item.title}
+                  </Link>
+                </li>
+              ) : (
+                <li
+                  className="hover:text-mainBlue hover:text-mainBlue/100 transition-colors flex justify-center"
+                  key={idx}
                 >
-                  <li>{item.title}</li>
-                </Link>
-              </div>
-            ))}
+                  <button
+                    onClick={() => {
+                      item.request && item.request();
+                    }}
+                  >
+                    {item.title}
+                  </button>
+                </li>
+              )
+            )}
       </ul>
     </div>
   );
@@ -70,15 +86,15 @@ export function LinkBox({
 export function OnLogin() {
   return (
     <>
-      <LinkBox
+      <FooterBox
         title="사용자"
         elements={[
           { title: "유저정보", href: `/user` },
-          { title: "로그아웃", href: `/logout` },
+          { title: "로그아웃", request: logout },
         ]}
       />
 
-      <LinkBox
+      <FooterBox
         title="게시글"
         elements={[{ title: "글작성", href: `/write` }]}
       />
@@ -88,7 +104,7 @@ export function OnLogin() {
 export function OffLogin() {
   return (
     <>
-      <LinkBox
+      <FooterBox
         title="사용자"
         elements={[
           { title: "로그인", href: `/login` },
@@ -101,7 +117,7 @@ export function OffLogin() {
 export function OnAdmin() {
   return (
     <>
-      <LinkBox
+      <FooterBox
         title="운영자"
         isExternal={true}
         elements={[

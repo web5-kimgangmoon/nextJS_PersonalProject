@@ -174,5 +174,22 @@ export const useTypeCheck_zod = () => {
     .number({ invalid_type_error: "Please input number" })
     .int({ message: "Please input integer" })
     .gt(0, { message: "Please correct boardNumber" });
-  return { intCheck };
+  const emailCheck = z
+    .string()
+    .email({ message: "Please input email" })
+    .min(0, { message: "Please input value" })
+    .max(50, { message: "Please shorten value's length" });
+  const phoneCheck = z.coerce
+    .number({ invalid_type_error: "Please input number" })
+    .int({ message: "Please input integer" })
+    .min(0, { message: "Please input value" })
+    .max(15, { message: "Please shorten value's length" });
+  const nickCheck = z
+    .string()
+    .regex(/\c\f\r\n\t\s\!\@\#\$\%\^\&\*\(\)\-\_\+\=\`\~\'\"\<\,\>\.\?\/\\\|/, {
+      message: "Please input value in only letters",
+    })
+    .min(0, { message: "Please input value" })
+    .max(8, { message: "Please shorten value's length" });
+  return { intCheck, emailCheck, phoneCheck, nickCheck };
 };
