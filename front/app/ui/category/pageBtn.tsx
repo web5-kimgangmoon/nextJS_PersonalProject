@@ -2,11 +2,12 @@
 
 import { pageGetter } from "@/app/lib/utils";
 import { LinkButton } from "../buttons";
-import { countBoard } from "@/app/lib/placeholder-data";
+import { categoryDetailData } from "@/app/lib/placeholder-data";
 import { usePathname, useSearchParams } from "next/navigation";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { LeftArrow } from "@/public/left-arrow";
 import { RightArrow } from "@/public/right-arrow";
+import clsx from "clsx";
 
 export const Pages = () => {
   let path = usePathname() + "?";
@@ -19,7 +20,11 @@ export const Pages = () => {
   path += query.get("searchType")
     ? `searchType=${query.get("searchType")}&`
     : "";
-  const info = pageGetter({ count: countBoard, target: +page, limit: 10 });
+  const info = pageGetter({
+    count: categoryDetailData.boardCnt,
+    target: +page,
+    limit: 10,
+  });
   return (
     <div className="flex gap-2 justify-center py-4">
       {info?.pages.map((item, idx) => (
@@ -61,7 +66,7 @@ export const PageBtn = ({
       icon={icon}
       isNoString={true}
       isImgBig={true}
-      className="focus:text-[#D92643]"
+      className={clsx(!isSelected && "hover:text-[#D92643]")}
     >
       {title}
     </LinkButton>

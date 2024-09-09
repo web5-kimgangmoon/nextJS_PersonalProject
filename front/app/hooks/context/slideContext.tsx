@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, createContext, useCallback, useState } from "react";
 import type { TouchEvent } from "react";
 interface ILocation {

@@ -1,9 +1,7 @@
-"use client";
-
 import { ReactNode } from "react";
 import { Header } from "../ui/category/header";
 import { Footer } from "../ui/category/footer";
-import { SlideContextProvider } from "@/app/ui/context/slideContext";
+import { SlideContextProvider } from "@/app/hooks/context/slideContext";
 
 export default function ({ children }: { children: ReactNode }) {
   return (

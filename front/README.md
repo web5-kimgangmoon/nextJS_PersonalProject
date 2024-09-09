@@ -34,3 +34,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+### files 읽기
+
+files는 읽기전용 속성이므로 변경이 불가능하지만, value값을 바꾸면 files의 값을 리셋하는 것은 가능하다.
+
+### 댓글정렬
+
+댓글정렬을 할 때, 추천순, 최신순, 과거순은 답글이 아닌 본댓글을 기준으로 한다.
+또한 댓글갯수도 답글이 아닌 본 댓글을 기준으로 한다.

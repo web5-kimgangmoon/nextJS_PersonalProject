@@ -3,31 +3,35 @@
 import Link from "next/link";
 import { LinkButton, ImgButton } from "../buttons";
 import { useCallback, useState } from "react";
-import { Modal, ModalA, ModalBox, ModalLink } from "@/app/ui/modal";
 import {
-  categoryList as categoryListHolder,
-  userInfo as userInfoHolder,
-} from "@/app/lib/placeholder-data";
+  Modal,
+  ModalA,
+  ModalBox,
+  ModalLink,
+  ModalRouterBox,
+} from "@/app/ui/modal";
+import { categoryListData, userInfoData } from "@/app/lib/placeholder-data";
 import Image from "next/image";
 
 export function Header() {
-  const userInfo = userInfoHolder;
-  const data = categoryListHolder;
-  const categoryList = data.map((item) => ({
-    title: item.title,
+  const categoryList = categoryListData.categories.map((item) => ({
+    name: item.name,
     href: `/category/${item.path}`,
   }));
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
-        <MenuBarBtn isLogin={userInfo.isLogin} categoryList={categoryList} />
-        <Link href={"/category"} className="text-2xl text-mainBlue font-bold">
+        <MenuBarBtn
+          isLogin={userInfoData.userInfo?.id ? true : false}
+          categoryList={categoryList}
+        />
+        <Link href={"/category"} className="text-xl text-mainBlue font-bold">
           The board
         </Link>
       </div>
       <div>
-        {userInfo.isLogin ? (
-          <OnLogin profile={userInfo.profileImg} />
+        {userInfoData.userInfo?.id ? (
+          <OnLogin profile={userInfoData.userInfo?.profileImg} />
         ) : (
           <OffLogin />
         )}
@@ -41,7 +45,7 @@ export const MenuBarBtn = ({
   categoryList,
 }: {
   isLogin: boolean;
-  categoryList: { title: string; href: string }[];
+  categoryList: { name: string; href: string }[];
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const closeModal = useCallback(() => {
@@ -50,7 +54,11 @@ export const MenuBarBtn = ({
   return (
     <>
       <Modal modalCtl={open} closeModalCtl={closeModal}>
-        <MenuModalContent isLogin={isLogin} categoryList={categoryList} />
+        <MenuModalContent
+          isLogin={isLogin}
+          categoryList={categoryList}
+          closeModal={closeModal}
+        />
       </Modal>
       <ImgButton
         icon={<img src="/menuBar.svg" />}
@@ -62,7 +70,7 @@ export const MenuBarBtn = ({
   );
 };
 
-export function OnLogin({ profile }: { profile: string }) {
+export function OnLogin({ profile }: { profile?: string }) {
   const [open, setOpen] = useState<boolean>(false);
   const ctlClose = useCallback(() => {
     setOpen(false);
@@ -74,7 +82,7 @@ export function OnLogin({ profile }: { profile: string }) {
       </Modal>
       <div className="pr-1">
         <Image
-          src={profile}
+          src={profile ? profile : "/placeholder-noavatar32.svg"}
           width={35}
           height={35}
           alt="no userImg"
@@ -124,9 +132,11 @@ export function OffLogin() {
 export const MenuModalContent = ({
   isLogin,
   categoryList,
+  closeModal,
 }: {
   isLogin: boolean;
-  categoryList: { title: string; href: string }[];
+  categoryList: { name: string; href: string }[];
+  closeModal: () => void;
 }) => {
   const [openObj, setOpenObj] = useState<{ user: boolean; category: boolean }>({
     user: false,
@@ -163,11 +173,15 @@ export const MenuModalContent = ({
               ]
         }
       />
-      <ModalBox
+      <ModalRouterBox
         title="카테고리"
         isOpen={openObj["category"]}
         setIsOpen={() => toggleBox("category")}
-        linkList={categoryList}
+        linkList={categoryList.map((item) => ({
+          title: item.name,
+          href: item.href,
+        }))}
+        closeModal={closeModal}
       />
       {isLogin && (
         <ModalLink href="/logout" isBorder={true}>

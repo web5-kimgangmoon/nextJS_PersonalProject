@@ -1,9 +1,22 @@
-export const getTimeString = (ta: Date) => {
+import { z } from "zod";
+
+export const getTimeString = (ta: Date, option?: "cmt") => {
   const now = new Date();
   const dif = now.getTime() - ta.getTime();
 
   if (dif > 604800000) {
-    return `${ta.getMonth() + 1}월 ${ta.getDate()}일, ${ta.getFullYear()}`;
+    switch (option) {
+      case undefined:
+        return `${ta.getMonth() + 1}월 ${ta.getDate()}일, ${ta.getFullYear()}`;
+      case "cmt":
+        return `${ta.getFullYear()}-${String(ta.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}-${String(ta.getDate()).padStart(2, "0")} ${String(
+          ta.getHours()
+        ).padStart(2, "0")}:${String(ta.getMinutes()).padStart(2, "0")}`;
+    }
+    // return `${ta.getMonth() + 1}월 ${ta.getDate()}일, ${ta.getFullYear()}`;
   } else if (dif > 86400000) {
     return `${Math.ceil(dif / 86400000)}일 전`;
   } else if (dif > 3600000) {
@@ -84,7 +97,7 @@ export const pageGetter = ({
 };
 
 function repeatNumber(
-  repeat: number,
+  end: number,
   offset: number,
   current: number,
   dots?: boolean
@@ -102,7 +115,7 @@ function repeatNumber(
       isRight: false,
       isLeft: true,
     });
-  for (let i = offset; i < repeat + 1; i++) {
+  for (let i = offset; i < end + 1; i++) {
     arr.push({ title: `${i}`, page: i, isRight: false, isLeft: false });
   }
   if (dots) {
@@ -113,7 +126,7 @@ function repeatNumber(
       isLeft: false,
     });
   }
-  if (current < 5) {
+  if (current < 5 && current !== end) {
     arr.push({
       title: "",
       page: offset + current,
@@ -123,3 +136,43 @@ function repeatNumber(
   }
   return arr;
 }
+
+export const newCopyFormData = (
+  target: FormData,
+  keys: string[],
+  ...options: string[]
+) => {
+  const formData = new FormData();
+  keys.concat(options);
+  for (let item of keys) {
+    const temp = target.get(item);
+    temp && formData.set(item, temp);
+  }
+  return formData;
+};
+
+export const pushedFormData = (
+  target: FormData,
+  set: { name: string; value: string }[],
+  ...options: { name: string; value: string }[]
+) => {
+  set.concat(options);
+  for (let item of set) {
+    target.set(item.name, item.value);
+  }
+  return target;
+};
+
+export const useTypeCheck_zod = () => {
+  // const intCheck = z.object({
+  //   target: z.coerce
+  //     .number({ invalid_type_error: "Please input number" })
+  //     .int({ message: "Please input integer" })
+  //     .gt(0, { message: "Please correct boardNumber" }),
+  // });
+  const intCheck = z.coerce
+    .number({ invalid_type_error: "Please input number" })
+    .int({ message: "Please input integer" })
+    .gt(0, { message: "Please correct boardNumber" });
+  return { intCheck };
+};

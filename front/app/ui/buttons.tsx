@@ -18,28 +18,39 @@ export function Button({
   return (
     <button
       className={clsx(
-        "transition-colors",
+        {
+          "transition-colors": size !== "bigFont",
+          "transition-[font]": size === "bigFont",
+        },
         { "font-bold": !isNobold },
         {
           "w-full text-xl py-2": !size,
-          "w-full text-3xl py-4 px-8 transition-[font]": size === "bigFont",
+          "w-full text-3xl py-4 px-8": size === "bigFont",
           "text-xl py-2 px-4": size === "short",
-          "text-base py-1 px-4": size === "medium",
-          "text-base py-1 px-2": size === "small",
-          "text-base py-1 px-1": size === "smallest",
+          "py-1 px-4": size === "medium",
+          "py-1 px-2": size === "small",
+          "py-1 px-1": size === "smallest",
           "w-8 h-8": size == "pageBtn",
+          "": size == "none",
         },
         {
-          "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white focus:bg-[#D81159]":
+          "bg-gradient-to-br from-[#D81159] to-[#FF4966] text-white hover:from-[#D81159] hover:to-[#D81159]":
             color === "pink",
-          "bg-mainBlue text-white focus:bg-darkBlue": color === "blue",
-          "border-2 border-mainBlue text-mainBlue": color === "blankBlue",
-          "text-textBlue focus:text-mainBlue": color === "noneBlue",
-          "bg-alert text-white": color === "whiteRed",
+          "bg-mainBlue text-white hover:bg-darkBlue": color === "blue",
+          "border-2 border-mainBlue text-mainBlue hover:text-darkBlue hover:border-darkBlue":
+            color === "blankBlue",
+          "border-2 border-alert text-alert hover:text-red-800 hover:border-red-800":
+            color === "blankRed",
+          "text-textBlue hover:text-mainBlue": color === "noneBlue",
+          "bg-alert text-white hover:bg-red-800": color === "whiteRed",
           "bg-bgGray text-white": color === "gray",
-          "bg-mainBlue text-textGray": color === "blueGray",
           "border-2 border-borderGray bg-white text-black":
             color === "whiteGray",
+          "bg-bgGray/40 text-white": color === "inactiveGray",
+          "border-2 border-bgGray text-bgGray": color === "blankInactive",
+          "text-mainBlue hover:text-textBlue": color === "onlyTextBlue",
+          "text-alert hover:text-red-800": color === "onlyTextRed",
+          "text-textGray": color === "onlyTextInactive",
         },
         {
           "rounded-[1.6rem]": !radius,

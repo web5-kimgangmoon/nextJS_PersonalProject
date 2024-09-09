@@ -1,15 +1,14 @@
 "use client";
 
-import { userInfo as userInfoHolder } from "@/app/lib/placeholder-data";
+import { userInfoData } from "@/app/lib/placeholder-data";
 import Link from "next/link";
 
 export function Footer() {
-  const userInfo = userInfoHolder;
   return (
     <div className="py-8 px-8">
       <div className="border-t border-borderGray flex flex-col gap-5 py-5">
-        {userInfo.isLogin ? <OnLogin /> : <OffLogin />}
-        {userInfo.isLogin ? "" : <OnAdmin />};
+        {userInfoData.userInfo?.id ? <OnLogin /> : <OffLogin />}
+        {userInfoData.userInfo?.id ? "" : <OnAdmin />}
       </div>
       <div className="w-full border-t border-borderGray flex flex-col gap-5 py-5 items-center">
         <div className="w-max">
@@ -46,7 +45,7 @@ export function LinkBox({
               <div className="flex justify-center" key={idx}>
                 <a
                   href={item.href}
-                  className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
+                  className="w-max hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
                   tabIndex={0}
                 >
                   <li>{item.title}</li>
@@ -57,7 +56,7 @@ export function LinkBox({
               <div className="flex justify-center" key={idx}>
                 <Link
                   href={item.href}
-                  className="w-max focus:text-mainBlue focus:text-mainBlue/100 transition-colors"
+                  className="w-max hover:text-mainBlue hover:text-mainBlue/100 transition-colors"
                 >
                   <li>{item.title}</li>
                 </Link>
