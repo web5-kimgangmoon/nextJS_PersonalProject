@@ -125,6 +125,7 @@ export interface CmtItem {
   replyId?: number;
   replyUserId?: number;
   replyUser?: string;
+  containCmt?: Array<CmtItem>;
 }
 export interface CmtListData {
   cmtList: Array<CmtItem>;
@@ -163,6 +164,6 @@ export interface GetCmt {
     search: string | null;
     boardId: number | null;
     searchType: "content" | "writer" | "contentWriter" | null;
-    sort: "like" | "recently" | "old";
+    sort: "like" | "recently" | "old" | null;
   };
 }

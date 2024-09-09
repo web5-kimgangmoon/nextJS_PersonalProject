@@ -1,4 +1,5 @@
-import { GetCmt } from "./definitions";
+import { CmtListData, GetCmt } from "./definitions";
+import { cmtData } from "./placeholder-data";
 
 export const boardDelete = (boardId: number) => {
   return "";
@@ -32,14 +33,36 @@ export const likeCmt = (cmtId: number, isDisLike: boolean) => {
   console.log(isDisLike);
   console.log(cmtId);
 };
-export const useMutation_getCmt = (data: GetCmt) => {
+export const useQuery_getCmt = (
+  data: GetCmt
+): {
+  isLoading: boolean;
+  isSuccess: boolean;
+  status: string;
+  data: CmtListData;
+} => {
   return {
-    mutate: async () => {
-      console.log(data);
-    },
-    isPending: false,
+    isLoading: false,
     isSuccess: true,
     status: "success",
-    data: [],
+    data: {
+      cmtCnt: cmtData.cmtCnt,
+      cmtList:
+        data.searh.sort === "like"
+          ? cmtData.cmtList
+              .sort((a, b) => {
+                return b.like - a.like;
+              })
+              .slice(0, data.searh.limit)
+          : data.searh.sort === "recently"
+          ? cmtData.cmtList
+              .sort((a, b) => {
+                return a.createdAt.getTime() - b.createdAt.getTime();
+              })
+              .slice(0, data.searh.limit)
+          : cmtData.cmtList
+              .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+              .slice(0, data.searh.limit),
+    },
   };
 };

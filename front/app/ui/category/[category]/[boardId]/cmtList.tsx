@@ -3,7 +3,6 @@
 import clsx from "clsx";
 
 import {
-  cmtData,
   cmtReportReasonListData as cmtReportListHolder,
   userInfoData,
 } from "@/app/lib/placeholder-data";
@@ -24,36 +23,83 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Button, ImgButton } from "@/app/ui/buttons";
-import { deleteCmt, useMutation_getCmt, likeCmt } from "@/app/lib/actions";
+import { deleteCmt, useQuery_getCmt, likeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
 import { useToggleObj } from "@/app/hooks/toggleObj";
 import { useRouter } from "next/navigation";
 import { getTimeString } from "@/app/lib/utils";
 import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
 import { CmtItem, Reason } from "@/app/lib/definitions";
+import { Loading } from "@/app/ui/loadingSpin";
+import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
 
-export const CmtList = ({boardId}:{boardId:number}) => {
-  const getCmt_recently = useMutation_getCmt({searh:{"boardId"}})
-  const getCmt_old = useMutation_getCmt({})
-  const getCmt_like = useMutation_getCmt({})
-  // const cmtData = cmtData;
-  // const [cmtData, setD] = useState(() => cmtDataGetter(count));
-  const [limit, setLimit] = useState<number>(10);
-  const stretchLimit = useCallback(()=>{
-    setLimit((value)=>value+10);
-  },[]);
-  getCmt
-  const cmtList = cmtData.cmtList;
-  const cmtCnt = cmtData.cmtCnt;
+export const CmtList = ({ boardId }: { boardId: number }) => {
   const cmtReportList = cmtReportListHolder;
+
+  const [limit, setLimit] = useState<number>(2);
+  const [sortState, setSortState] = useState<"recently" | "old" | "like">(
+    "like"
+  );
+
+  const cmtData = useQuery_getCmt({
+    searh: {
+      boardId: boardId,
+      isDeleted: false,
+      isOwn: false,
+      limit: limit,
+      onlyDeleted: false,
+      search: "",
+      searchType: null,
+      sort: sortState,
+    },
+  });
+  const stretchLimit = useCallback(() => {
+    setLimit((value) => value + 2);
+  }, []);
+  const { setSortRecently, setSortOld, setSortLike } = useSelectCallback(
+    setSortState,
+    "setSort",
+    "recently",
+    "old",
+    "like"
+  );
+  if (cmtData.isLoading) return <Loading bgColorClass="bg-categoryGray" />;
   return (
     <div className="px-2">
-      <div>
-        <div>추천댓글</div>
-        <div></div>
-        <div></div>
+      <div className="flex gap-2 pb-10 font-bold">
+        <div
+          onClick={() => {
+            console.log(sortState);
+            setSortLike();
+          }}
+          className={clsx(
+            "p-1",
+            sortState === "like" && "border-b-4 border-mainBlue text-mainBlue"
+          )}
+        >
+          추천댓글
+        </div>
+        <div
+          onClick={setSortRecently}
+          className={clsx(
+            "p-1",
+            sortState === "recently" &&
+              "border-b-4 border-mainBlue text-mainBlue"
+          )}
+        >
+          최신순
+        </div>
+        <div
+          onClick={setSortOld}
+          className={clsx(
+            "p-1",
+            sortState === "old" && "border-b-4 border-mainBlue text-mainBlue"
+          )}
+        >
+          과거순
+        </div>
       </div>
-      {cmtList.map(
+      {cmtData.data.cmtList.map(
         (item, idx) =>
           !item.replyId && (
             <CmtBox
@@ -74,12 +120,19 @@ export const CmtList = ({boardId}:{boardId:number}) => {
               dislike={item.dislike}
               key={item.id}
               like={item.like}
-              cmtList={cmtList.slice(idx + 1)}
+              containCmt={item.containCmt}
               content={item.content}
               createdAt={item.createdAt}
             />
           )
       )}
+      <div>
+        {cmtData.data.cmtCnt > limit && (
+          <Button color="blankBlue" radius="medium" onClick={stretchLimit}>
+            댓글들 더보기
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
@@ -92,7 +145,7 @@ export const CmtBox = ({
   content,
   writerProfile,
   like,
-  cmtList,
+  containCmt,
   dislike,
   isDoLike,
   isDoDislike,
@@ -123,7 +176,7 @@ export const CmtBox = ({
   replyUserId?: number;
   cmtReportList: Reason[];
   isFirst?: boolean;
-  cmtList: CmtItem[];
+  containCmt?: CmtItem[];
 }) => {
   const imgPath = content.split('src="')[1]?.split('"')[0];
 
@@ -238,33 +291,34 @@ export const CmtBox = ({
         />
       </div>
       <div className={clsx(isFirst && "pl-2")}>
-        {cmtList.map(
-          (item, idx) =>
-            item.replyId === cmtId && (
-              <CmtBox
-                isDidReport={item.isDidReport}
-                isDoDislike={item.isDoDislike}
-                isDoLike={item.isDoLike}
-                isFirst={false}
-                isWriter={item.writerId === userId}
-                cmtId={item.id}
-                userId={userId}
-                writerId={item.writerId}
-                replyUserId={item.replyUserId}
-                userProfile={userProfile}
-                replyUser={item.replyUser}
-                writer={item.writer}
-                writerProfile={item.writerProfile}
-                cmtReportList={cmtReportList}
-                dislike={item.dislike}
-                key={item.id}
-                like={item.like}
-                cmtList={cmtList.slice(idx + 1)}
-                content={item.content}
-                createdAt={item.createdAt}
-              />
-            )
-        )}
+        {containCmt &&
+          containCmt.map(
+            (item, idx) =>
+              item.replyId === cmtId && (
+                <CmtBox
+                  isDidReport={item.isDidReport}
+                  isDoDislike={item.isDoDislike}
+                  isDoLike={item.isDoLike}
+                  isFirst={false}
+                  isWriter={item.writerId === userId}
+                  cmtId={item.id}
+                  userId={userId}
+                  writerId={item.writerId}
+                  replyUserId={item.replyUserId}
+                  userProfile={userProfile}
+                  replyUser={item.replyUser}
+                  writer={item.writer}
+                  writerProfile={item.writerProfile}
+                  cmtReportList={cmtReportList}
+                  dislike={item.dislike}
+                  key={item.id}
+                  like={item.like}
+                  containCmt={item.containCmt}
+                  content={item.content}
+                  createdAt={item.createdAt}
+                />
+              )
+          )}
       </div>
     </div>
   );
@@ -494,37 +548,6 @@ const CmtBoxTopMenuList = ({
           onClick={reportToggle}
         />
       )}
-    </div>
-  );
-};
-
-export const CmtListTest = ({
-  id,
-  cmtlist,
-  text,
-  isFirst,
-}: {
-  id: number;
-  cmtlist: { id: number; replyId?: number; text: string }[];
-  text: string;
-  isFirst?: boolean;
-}) => {
-  return (
-    <div className="flex">
-      <div className={clsx(isFirst && "bg-yellow-200")}>{text}</div>
-      <div className="bg-green-200">
-        {cmtlist.map(
-          (item, idx) =>
-            item.replyId === id && (
-              <CmtListTest
-                id={item.id}
-                key={item.id}
-                text={item.text}
-                cmtlist={cmtlist.slice(idx + 1)}
-              />
-            )
-        )}
-      </div>
     </div>
   );
 };
