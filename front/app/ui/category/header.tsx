@@ -63,7 +63,8 @@ export const MenuBarBtn = ({
         />
       </Modal>
       <ImgButton
-        icon={<img src="/menuBar.svg" />}
+        img="/menuBar.svg"
+        // icon={<Image src=  width={0}/>}
         color={"none"}
         size="smallest"
         onClick={() => setOpen(!open)}

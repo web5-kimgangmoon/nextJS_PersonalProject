@@ -10,12 +10,12 @@ import { ImgButton } from "@/app/ui/buttons";
 import { FlagIcon } from "@heroicons/react/24/outline";
 import { ReportBox } from "@/app/ui/reasonBox";
 import { WriteCmt } from "./cmtWriteBox";
-import { useToggleObj } from "@/app/hooks/toggleObj";
+import { useToggle } from "@/app/hooks/toggle";
 
 export const CommentTop = () => {
   const boardReportList = boardReportListHolder;
   const currentBoard = currentBoardHolder;
-  const { box } = useToggleObj(["box", false]);
+  const box = useToggle(["box", false]);
   return (
     <div className="p-2">
       <div className="pb-4 border-b border-borderGray">

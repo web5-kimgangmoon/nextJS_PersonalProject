@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ImgButton, LinkButton } from "@/app/ui/buttons";
 import { currentBoardData, userInfoData } from "@/app/lib/placeholder-data";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useToggleObj } from "@/app/hooks/toggleObj";
+import { useToggle } from "@/app/hooks/toggle";
 import { useCallback } from "react";
 import { boardDelete } from "@/app/lib/actions";
 import { CheckDelete } from "@/app/ui/reasonBox";
@@ -47,7 +47,7 @@ export const BoardDetailComp = ({
   writer: string;
   writerId: number;
 }) => {
-  const { deleteBox } = useToggleObj(["deleteBox", false]);
+  const deleteBox = useToggle(["deleteBox", false]);
   const requestDelete = useCallback(() => {
     boardDelete(id);
   }, []);

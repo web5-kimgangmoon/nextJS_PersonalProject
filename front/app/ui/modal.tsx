@@ -37,7 +37,7 @@ export function Modal({
           }
         )}
       >
-        <div className="max-h-screen overflow-scroll">
+        <div className="max-h-screen overflow-y-scroll">
           <div className="flex justify-end">
             {isSmallX ? (
               <XMarkIcon

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ChangeEvent, useCallback, useState } from "react";
 import { LinkButton } from "../buttons";
 import { usePathname, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export const SearchBox = () => {
   const base = usePathname();
@@ -22,18 +23,12 @@ export const SearchBox = () => {
     search: search ? search : "",
     searchType: searchType ? searchType : "content",
   });
-  const selectType = useCallback(
-    (value: string) => {
-      setSearchState((item) => ({ ...item, sesearchType: value }));
-    },
-    [searchState.searchType]
-  );
-  const inputSearch = useCallback(
-    (value: string) => {
-      setSearchState((item) => ({ ...item, search: value }));
-    },
-    [searchState.search]
-  );
+  const selectType = useCallback((value: string) => {
+    setSearchState((item) => ({ ...item, sesearchType: value }));
+  }, []);
+  const inputSearch = useCallback((value: string) => {
+    setSearchState((item) => ({ ...item, search: value }));
+  }, []);
   return (
     <div className="py-4">
       <SearchTypeSelect
@@ -106,7 +101,13 @@ export const SearchBar = ({
   return (
     <div className="relative px-2">
       <label htmlFor="searchInput" className="absolute top-1 left-2 w-8 h-8">
-        <img src="/search.svg" className="w-full h-full" />
+        <Image
+          src="/search.svg"
+          className="w-full h-full"
+          alt={"no image"}
+          width={0}
+          height={0}
+        />
       </label>
       <input
         id="searchInput"

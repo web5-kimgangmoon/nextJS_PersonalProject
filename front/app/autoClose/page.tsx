@@ -1,5 +1,5 @@
 import { AutoClose } from "../ui/autoClose/autoClose";
 
-export default function ({}: {}) {
+export default function Page({}: {}) {
   return <AutoClose />;
 }

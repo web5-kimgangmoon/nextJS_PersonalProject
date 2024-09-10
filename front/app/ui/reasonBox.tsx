@@ -29,7 +29,7 @@ export const ReportBox = ({
     if (reason) isBoard ? boardReport(id, +reason) : cmtReport(id, +reason);
     modalClose();
     router.refresh();
-  }, [reason]);
+  }, [reason, id, isBoard, modalClose, router]);
 
   return (
     <ReportBoxComp
@@ -140,7 +140,7 @@ export const CheckBox = ({
     modalClose();
     destination && router.replace(destination);
     router.refresh();
-  }, []);
+  }, [action, destination, modalClose, router]);
   return (
     <ReasonBox
       content={actionContent}

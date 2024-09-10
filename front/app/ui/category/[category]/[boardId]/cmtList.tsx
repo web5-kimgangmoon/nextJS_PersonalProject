@@ -25,7 +25,7 @@ import {
 import { Button, ImgButton } from "@/app/ui/buttons";
 import { deleteCmt, likeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
-import { useToggleObj } from "@/app/hooks/toggleObj";
+import { useToggle } from "@/app/hooks/toggle";
 import { useRouter } from "next/navigation";
 import { getTimeString } from "@/app/lib/utils";
 import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
@@ -38,9 +38,8 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
   const cmtReportList = cmtReportListHolder;
 
   const [limit, setLimit] = useState<number>(2);
-  const [sortState, setSortState] = useState<"recently" | "old" | "like">(
-    "like"
-  );
+  const [sortState, setSortState] =
+    useState<Partial<"like" | "recently" | "old">>("like");
   const cmtData = useQuery_getCmt({
     searh: {
       boardId: boardId,
@@ -56,13 +55,11 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
   const stretchLimit = useCallback(() => {
     setLimit((value) => value + 2);
   }, []);
-  const { setSortRecently, setSortOld, setSortLike } = useSelectCallback(
-    setSortState,
-    "setSort",
-    "recently",
-    "old",
-    "like"
-  );
+  const { setSortRecently, setSortOld, setSortLike } = {
+    setSortLike: useSelectCallback(setSortState, "like"),
+    setSortRecently: useSelectCallback(setSortState, "recently"),
+    setSortOld: useSelectCallback(setSortState, "old"),
+  };
   if (cmtData.isLoading) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <div className="px-2">
@@ -189,13 +186,11 @@ export const CmtBox = ({
     setCleanContent(DOMPurify.sanitize(content));
   }, [content]);
 
-  const { cmt, reply, report, remake, deleteBox } = useToggleObj(
-    ["cmt", true],
-    ["reply", false],
-    ["report", false],
-    ["remake", false],
-    ["deleteBox", false]
-  );
+  const cmt = useToggle(["cmt", true]);
+  const reply = useToggle(["reply", false]);
+  const report = useToggle(["report", false]);
+  const remake = useToggle(["remake", false]);
+  const deleteBox = useToggle(["deleteBox", false]);
   const router = useRouter();
   const requestLike = useCallback((isDisLike: boolean) => {
     likeCmt(cmtId, isDisLike);

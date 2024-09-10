@@ -14,4 +14,4 @@ export const usePopup = (address: string) =>
     //   console.log("부모 창에서 받은 메시지:", event.data);
     //   s && s.close();
     // });
-  }, []);
+  }, [address]);

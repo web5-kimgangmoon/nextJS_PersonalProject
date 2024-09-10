@@ -73,9 +73,9 @@ export const WriteCmtComp = ({
   modalClose?: () => void;
 }) => {
   const router = useRouter();
-  const { uploadImg, formData, setFormData, onChangeText, text, setText } = img
-    ? useFormDataImg(baseText ? baseText : "", "isDeleteImg")
-    : useFormDataImg(baseText ? baseText : "");
+  const { uploadImg, formData, setFormData, onChangeText, text, setText } =
+    useFormDataImg(baseText ? baseText : "", "isDeleteImg");
+
   const { preview, setPreview } = usePreview(formData);
   const deleteImg = useDeleteImg(
     setPreview,

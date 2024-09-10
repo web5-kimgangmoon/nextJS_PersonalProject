@@ -17,7 +17,7 @@ export const useFormDataImg = (defaultText: string, ...keys: string[]) => {
         return target;
       });
     },
-    [formData]
+    [formData, keys]
   );
   const onChangeText = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>

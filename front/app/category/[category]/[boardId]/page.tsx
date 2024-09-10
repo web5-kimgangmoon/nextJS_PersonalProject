@@ -5,7 +5,7 @@ import { CommentTop } from "@/app/ui/category/[category]/[boardId]/cmtTop";
 import { CmtList } from "@/app/ui/category/[category]/[boardId]/cmtList";
 import { useTypeCheck_zod } from "@/app/lib/utils";
 
-export default async function ({
+export default async function Page({
   params,
 }: {
   searchParams: {};
