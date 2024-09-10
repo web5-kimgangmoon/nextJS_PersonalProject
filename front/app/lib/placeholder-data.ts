@@ -370,8 +370,7 @@ export const cmtData: CmtListData = {
       writer: "누군가가쓰는",
       writerId: 5,
       createdAt: new Date(500000000000),
-      content:
-        '<div><div style="width: 10rem; height: 10rem;"><img src="/search.svg" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;"></span><span class="cmtTextContent">왜일까 잘난듯한 소리가들려</span></div></div>',
+      content: "", // '<div><div style="width: 10rem; height: 10rem;"><img src="/search.svg" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;"></span><span class="cmtTextContent">왜일까 잘난듯한 소리가들려</span></div></div>',
       like: 21,
       dislike: 0,
       isDoLike: false,

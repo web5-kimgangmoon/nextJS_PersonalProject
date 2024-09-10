@@ -186,20 +186,23 @@ export const CmtBox = ({
     setCleanContent(DOMPurify.sanitize(content));
   }, [content]);
 
-  const cmt = useToggle(["cmt", true]);
-  const reply = useToggle(["reply", false]);
-  const report = useToggle(["report", false]);
-  const remake = useToggle(["remake", false]);
-  const deleteBox = useToggle(["deleteBox", false]);
+  const cmt = useToggle(true);
+  const reply = useToggle(false);
+  const report = useToggle(false);
+  const remake = useToggle(false);
+  const deleteBox = useToggle(false);
   const router = useRouter();
-  const requestLike = useCallback((isDisLike: boolean) => {
-    likeCmt(cmtId, isDisLike);
-    router.refresh();
-  }, []);
+  const requestLike = useCallback(
+    (isDisLike: boolean) => {
+      likeCmt(cmtId, isDisLike);
+      router.refresh();
+    },
+    [cmtId, router]
+  );
   const requestDelete = useCallback(() => {
     deleteCmt(cmtId);
     router.refresh();
-  }, []);
+  }, [cmtId, router]);
   return (
     <div>
       <div
@@ -212,8 +215,8 @@ export const CmtBox = ({
           src={writerProfile}
           alt="no image"
           className={`w-14 h-14 rounded-2xl`}
-          width={0}
-          height={0}
+          width={32}
+          height={32}
         />
         <div className="grow pl-2">
           <CmtBoxTop

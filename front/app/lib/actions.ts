@@ -36,3 +36,21 @@ export const likeCmt = (cmtId: number, isDisLike: boolean) => {
 export const logout = () => {
   console.log("로그아웃했음");
 };
+export const login = (
+  id: string,
+  pwd: string,
+  isAdminLogin: boolean,
+  setLoginFail: () => void
+) => {
+  console.log("로그인 요청 보냄");
+  setLoginFail();
+};
+export const regist = (
+  nick: string,
+  email: string,
+  pwd: string,
+  setRegistFail: () => void
+) => {
+  console.log("회원가입 보냈습니다");
+  setRegistFail();
+};

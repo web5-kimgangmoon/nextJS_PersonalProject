@@ -177,19 +177,53 @@ export const useTypeCheck_zod = () => {
   const emailCheck = z
     .string()
     .email({ message: "Please input email" })
-    .min(0, { message: "Please input value" })
+    .min(1, { message: "Please input value" })
     .max(50, { message: "Please shorten value's length" });
   const phoneCheck = z.coerce
     .number({ invalid_type_error: "Please input number" })
-    .int({ message: "Please input integer" })
-    .min(0, { message: "Please input value" })
-    .max(15, { message: "Please shorten value's length" });
+    .min(1, { message: "Please input value" })
+    .max(15, { message: "Please shorten value's length" })
+    .int({ message: "Please input integer" });
   const nickCheck = z
     .string()
-    .regex(/\c\f\r\n\t\s\!\@\#\$\%\^\&\*\(\)\-\_\+\=\`\~\'\"\<\,\>\.\?\/\\\|/, {
+    .min(1, { message: "Please input value" })
+    .min(2, { message: "Please stretch valuse's length" })
+    .max(20, { message: "Please shorten value's length" })
+    .regex(/^[0-9a-zㄱ-ㅎA-z가-힣]+$/, {
       message: "Please input value in only letters",
+    });
+
+  const passwordCheck = z
+    .string()
+    .min(1, { message: "Please input value" })
+    .min(8, { message: "Please stretch value's length" })
+    .max(50, { message: "Please shorten value's length" })
+    .regex(/^[0-9a-zA-z!@#$%^&*+=-]+$/, {
+      message:
+        "Please input value in only alphabet or number or some of letters('!@#$%^&*+=-')",
     })
-    .min(0, { message: "Please input value" })
-    .max(8, { message: "Please shorten value's length" });
-  return { intCheck, emailCheck, phoneCheck, nickCheck };
+    .regex(/[a-zA-z]/, {
+      message: "Please input value in more than one alphabet",
+    })
+    .regex(/[0-9]/, {
+      message: "Please input value in more than one number",
+    })
+    .regex(/[!@#$%^&*+=-]+/, {
+      message:
+        "Please input value in more than one special letters('!@#$%^&*+=-')",
+    });
+
+  const stringCheck = (max: number) =>
+    z
+      .string()
+      .min(1, { message: "Please input value" })
+      .max(max, { message: "Please shorten value's length" });
+  return {
+    intCheck,
+    emailCheck,
+    phoneCheck,
+    nickCheck,
+    stringCheck,
+    passwordCheck,
+  };
 };

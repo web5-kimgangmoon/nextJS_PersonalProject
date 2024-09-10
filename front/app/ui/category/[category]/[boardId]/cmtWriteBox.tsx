@@ -10,6 +10,7 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { categoryDetailData as categoryInfoHolder } from "@/app/lib/placeholder-data";
 import { addCmt, updateCmt } from "@/app/lib/actions";
+import Image from "next/image";
 // import { Blob } from "buffer";
 
 export const WriteCmt = ({
@@ -35,13 +36,16 @@ export const WriteCmt = ({
   const imgBtnId = `cmtWrite${
     replyId ? `Reply${replyId}` : cmtId ? cmtId : "Plain"
   }`;
-  const request = useCallback((formData: FormData) => {
-    isUpdate && cmtId
-      ? updateCmt(cmtId, formData)
-      : boardId
-      ? addCmt(formData, boardId)
-      : addCmt(formData, replyId);
-  }, []);
+  const request = useCallback(
+    (formData: FormData) => {
+      isUpdate && cmtId
+        ? updateCmt(cmtId, formData)
+        : boardId
+        ? addCmt(formData, boardId)
+        : addCmt(formData, replyId);
+    },
+    [boardId, cmtId, isUpdate, replyId]
+  );
   return (
     <WriteCmtComp
       isOpen={isOpen}
@@ -91,13 +95,22 @@ export const WriteCmtComp = ({
     resetForm();
     router.refresh();
     setText(baseText ? baseText : "");
-  }, [formData, text, baseText]);
+  }, [
+    formData,
+    text,
+    baseText,
+    modalClose,
+    request,
+    resetForm,
+    router,
+    setText,
+  ]);
   return (
     <div hidden={!isOpen} className="w-full h-full">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
         {preview && (
           <div className="w-40 h-40 relative">
-            <img src={preview} alt="no image" className="w-full h-full" />
+            <Image src={preview} alt="no image" className="w-full h-full" />
             <div
               className="w-6 h-6 absolute top-2 right-2 border rounded-full border-black bg-white"
               onClick={deleteImg}
@@ -108,7 +121,13 @@ export const WriteCmtComp = ({
         )}
         {!preview && img && formData.get("isDeleteImg") !== "true" && (
           <div className="w-40 h-40 relative">
-            <img src={img} alt="no image" className="w-full h-full" />
+            <Image
+              src={img}
+              alt="no image"
+              className="w-full h-full"
+              layout="fill"
+              objectFit="contain"
+            />
             <div
               className="w-6 h-6 absolute top-2 right-2 border rounded-full border-black bg-white"
               onClick={() => {

@@ -47,10 +47,10 @@ export const BoardDetailComp = ({
   writer: string;
   writerId: number;
 }) => {
-  const deleteBox = useToggle(["deleteBox", false]);
+  const deleteBox = useToggle(false);
   const requestDelete = useCallback(() => {
     boardDelete(id);
-  }, []);
+  }, [id]);
   return (
     <div className="flex flex-col gap-2 py-4">
       <div className="text-xl text-pink font-bold">{category}</div>

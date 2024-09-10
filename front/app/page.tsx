@@ -7,7 +7,7 @@ export default function Home() {
   const { replace } = useRouter();
   useEffect(() => {
     replace("/category");
-  }, []);
+  }, [replace]);
 
   return (
     <main className="">

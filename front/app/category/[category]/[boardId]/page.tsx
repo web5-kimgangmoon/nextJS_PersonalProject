@@ -4,6 +4,7 @@ import { BreadCrumble } from "@/app/ui/category/[category]/[boardId]/breadCrumbl
 import { CommentTop } from "@/app/ui/category/[category]/[boardId]/cmtTop";
 import { CmtList } from "@/app/ui/category/[category]/[boardId]/cmtList";
 import { useTypeCheck_zod } from "@/app/lib/utils";
+import { categoryListData } from "@/app/lib/placeholder-data";
 
 export default async function Page({
   params,
@@ -28,3 +29,10 @@ export default async function Page({
     </div>
   );
 }
+
+// export async function generateStaticParams() {
+//   const categories = categoryListData["categories"].map((item) => ({
+//     category: item.path,
+//   }));
+//   return categories;
+// }

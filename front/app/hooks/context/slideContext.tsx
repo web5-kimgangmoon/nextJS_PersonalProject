@@ -37,7 +37,7 @@ export const SlideContextProvider = ({
       }
       e.currentTarget.style.translate = `${location.translate}px`;
     },
-    [location.current, location.dif, location.translate]
+    [location.translate]
   );
   const touchMove = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
@@ -55,7 +55,7 @@ export const SlideContextProvider = ({
         }));
       e.currentTarget.style.translate = `${location.translate}px`;
     },
-    [location.current, location.translate, location]
+    [location]
   );
   return (
     <SlideContext.Provider value={{ location, touchMove, touchStart }}>

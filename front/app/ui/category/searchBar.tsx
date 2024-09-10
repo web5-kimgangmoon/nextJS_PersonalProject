@@ -101,13 +101,13 @@ export const SearchBar = ({
   return (
     <div className="relative px-2">
       <label htmlFor="searchInput" className="absolute top-1 left-2 w-8 h-8">
-        <Image
+        {/* <Image
           src="/search.svg"
           className="w-full h-full"
+          width={24}
+          height={24}
           alt={"no image"}
-          width={0}
-          height={0}
-        />
+        /> */}
       </label>
       <input
         id="searchInput"

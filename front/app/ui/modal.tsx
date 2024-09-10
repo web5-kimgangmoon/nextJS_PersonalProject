@@ -3,7 +3,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import clsx from "clsx";
-import { ReactNode, useCallback } from "react";
+import { ReactNode } from "react";
 import { AButton, Button, ImgButton, LinkButton } from "./buttons";
 import { useRouter } from "next/navigation";
 
@@ -60,11 +60,42 @@ export function Modal({
   );
 }
 
+export function Modal_little({
+  modalCtl,
+  closeModalCtl,
+  children,
+}: {
+  modalCtl: boolean;
+  closeModalCtl: () => void;
+  children: ReactNode | string;
+}) {
+  return (
+    <div
+      className={clsx(
+        "fixed transition w-full h-screen top-0 left-0  flex justify-center items-center backdrop-blur bg-black/70",
+        {
+          "opacity-0 z-[-1]": !modalCtl,
+          "z-50": modalCtl,
+        }
+      )}
+      onClick={closeModalCtl}
+    >
+      <div className="bg-white p-2 rounded-xl bg-borderGray">
+        <div className="p-2 border-4 border-mainBlue bg-categoryGray rounded-xl font-bold text-mainBlue">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Curtain({
   curtainColor = "black",
+  onClick,
   modalCtl,
 }: {
   curtainColor?: string;
+  onClick?: () => void;
   modalCtl: boolean;
 }) {
   return (
@@ -80,6 +111,7 @@ export function Curtain({
           "bg-white/70": curtainColor === "white",
         }
       )}
+      onClick={onClick}
     ></div>
   );
 }

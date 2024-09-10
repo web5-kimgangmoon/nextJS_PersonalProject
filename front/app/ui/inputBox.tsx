@@ -1,38 +1,69 @@
 import { ChangeEvent } from "react";
-import { useTypeCheck_zod } from "@/app/lib/utils";
 import { useZodCheckInput } from "@/app/hooks/zodCheckInput";
+import { ZodBigInt, ZodBoolean, ZodDate, ZodNumber, ZodString } from "zod";
+import { useToggle } from "../hooks/toggle";
+import { ImgButton } from "./buttons";
 
 export const InputBox = ({
   title,
   value,
   placeholder,
+  type = "text",
   onChange,
-  setBtnIsActive,
+  setIsOK,
+  setIsNO,
+  checkType,
 }: {
   title: string;
   value: string;
   placeholder: string;
+  type?: "text" | "number" | "password" | "email";
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  setBtnIsActive: (isActive: boolean) => void;
+  setIsNO: () => void;
+  setIsOK: () => void;
+  checkType: ZodString | ZodBoolean | ZodBigInt | ZodDate | ZodNumber;
 }) => {
-  const { nickCheck } = useTypeCheck_zod();
   const { errors, onChangeInput } = useZodCheckInput(
-    setBtnIsActive,
+    setIsNO,
+    setIsOK,
     onChange,
-    nickCheck
+    checkType
   );
+  const stretchError = useToggle(false);
   return (
-    <div className="px-2 py-4 flex flex-col gap-2">
-      <div className="text-textBlue">{title}</div>
+    <div className="px-4 py-2 flex flex-col gap-2">
+      <div className="text-textBlue text-sm">{title}</div>
       <input
+        type={type}
         value={value}
         onChange={onChangeInput}
         placeholder={placeholder}
-      ></input>
+        className="border-2 border-borderGray p-3 rounded-xl focus:border-mainBlue outline-none transition-colors"
+      />
       <div className="text-alert">
-        {errors.map((item, idx) => (
-          <div key={idx}>{item.message}</div>
-        ))}
+        <div className="flex items-center gap-2">
+          <div>{errors.length > 0 && errors[0].message}</div>
+          {errors.length > 1 && (
+            <ImgButton
+              img={
+                stretchError.is
+                  ? "/noLineArrowReverse_red.svg"
+                  : "/noLineArrow_red.svg"
+              }
+              size="small"
+              color={"blankRed"}
+              onClick={stretchError.toggle}
+            >
+              more
+            </ImgButton>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          {stretchError.is &&
+            errors
+              .slice(1)
+              .map((item, idx) => <div key={idx}>{item.message}</div>)}
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <div className="text-sm flex items-center flex-col gap-1 text-textBlue text-center break-keep">
+    <div className="text-sm flex items-center flex-col gap-1 text-textBlue text-center break-keep bg-white">
       <div>@2024 kim</div>
       <div>위 사이트는 개인 정보를 공유하거나 거래하는 행위를 금지합니다.</div>
     </div>
@@ -13,7 +13,7 @@ export function Footer() {
 
 export function BottomLink({ isLoginPage }: { isLoginPage: boolean }) {
   return (
-    <div className="p-20 break-keep text-center text-textBlue">
+    <div className="p-10 break-keep text-center text-textBlue bg-white">
       {isLoginPage ? (
         <div>
           {`혹시 아이디가 없으신가요? `}

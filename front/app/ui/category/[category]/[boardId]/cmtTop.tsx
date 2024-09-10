@@ -15,7 +15,7 @@ import { useToggle } from "@/app/hooks/toggle";
 export const CommentTop = () => {
   const boardReportList = boardReportListHolder;
   const currentBoard = currentBoardHolder;
-  const box = useToggle(["box", false]);
+  const box = useToggle(false);
   return (
     <div className="p-2">
       <div className="pb-4 border-b border-borderGray">
