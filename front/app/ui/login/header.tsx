@@ -1,11 +1,14 @@
 "use client";
 
-import { Button, ImgButton, LinkButton } from "../buttons";
+import { ImgButton, LinkButton } from "../buttons";
 import { usePopup } from "@/app/hooks/callback/popUp";
 
 export function Header() {
-  const google_popup = usePopup("http://192.168.0.231:3000/autoClose");
-  const facebook_popup = usePopup("http://192.168.0.231:3000/autoClose");
+  const google_popup = usePopup("http://localhost:3000/oauth/google", "google");
+  const facebook_popup = usePopup(
+    "http://localhost:3000/oauth/facebook",
+    "facebook"
+  );
   return (
     <div className="">
       <div className="flex justify-center">

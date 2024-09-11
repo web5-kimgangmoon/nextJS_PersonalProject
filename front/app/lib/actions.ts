@@ -54,3 +54,6 @@ export const regist = (
   console.log("회원가입 보냈습니다");
   setRegistFail();
 };
+export const oauthLogin = (token: string, oauth: "google" | "facebook") => {
+  console.log("token은 ", token);
+};

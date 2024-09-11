@@ -1,4 +1,5 @@
 import { z } from "zod";
+import crypto from "crypto";
 
 export const getTimeString = (ta: Date, option?: "cmt") => {
   const now = new Date();
@@ -226,4 +227,14 @@ export const useTypeCheck_zod = () => {
     stringCheck,
     passwordCheck,
   };
+};
+
+export const useHash = (
+  method: "sha256" | "sha512",
+  salt: string = "소금은 좋아하세요?"
+) => {
+  return crypto
+    .createHash(method)
+    .update(`${Math.floor(Math.random() * 100000)}${salt}`)
+    .digest("hex");
 };
