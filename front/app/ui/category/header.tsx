@@ -73,7 +73,7 @@ export const MenuBarBtn = ({
   );
 };
 
-export function OnLogin({ profile }: { profile?: string }) {
+export function OnLogin({ profile }: { profile?: null | string }) {
   const [open, setOpen] = useState<boolean>(false);
   const ctlClose = useCallback(() => {
     setOpen(false);
@@ -162,7 +162,7 @@ export const MenuModalContent = ({
           isLogin
             ? [
                 { title: "유저정보", href: "/user" },
-                { title: "글작성", href: "/write" },
+                { title: "글작성", href: "/write/board" },
               ]
             : [
                 { title: "로그인", href: "/login" },

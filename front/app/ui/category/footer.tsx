@@ -96,7 +96,7 @@ export function OnLogin() {
 
       <FooterBox
         title="게시글"
-        elements={[{ title: "글작성", href: `/write` }]}
+        elements={[{ title: "글작성", href: `/write/board` }]}
       />
     </>
   );

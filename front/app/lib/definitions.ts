@@ -5,9 +5,9 @@ export type ButtonColors =
   | "blue"
   | "blankBlue"
   | "blankRed"
-  | "whiteRed"
+  | "red"
   | "gray"
-  | "whiteGray"
+  | "whiteBlue"
   | "inactiveGray"
   | "noneBlue"
   | "none"
@@ -33,6 +33,13 @@ export interface Button {
   className?: string;
   onClick?: () => void;
 }
+
+export interface ILocation {
+  current: number;
+  dif: number;
+  translate: number;
+}
+
 export interface CategoryInformBoard {
   id: number;
   title: string;
@@ -85,6 +92,7 @@ export interface BoardItem {
 
 export interface BoardListData {
   boardList: BoardItem[];
+  boardCnt: number;
 }
 
 export interface BoardDetailData {
@@ -123,10 +131,10 @@ export interface CmtItem {
   categoryPath: string;
   category: string;
   boardTitle: string;
-  replyId?: number;
-  replyUserId?: number;
-  replyUser?: string;
-  containCmt?: Array<CmtItem>;
+  replyId?: number | null;
+  replyUserId?: number | null;
+  replyUser?: string | null;
+  containCmt?: Array<CmtItem> | null;
 }
 export interface CmtListData {
   cmtList: Array<CmtItem>;
@@ -136,7 +144,7 @@ export interface CmtListData {
 export interface UserInfoData {
   userInfo?: {
     id: number;
-    profileImg: string;
+    profileImg: string | null;
     nick: string;
     email: string;
     cmtCnt: number;
@@ -144,13 +152,13 @@ export interface UserInfoData {
     like: number;
     dislike: number;
     createdAt: Date;
-  };
+  } | null;
 }
 
 export interface Reason {
   id: number;
   title: string;
-  description?: string;
+  description?: string | null;
 }
 export interface ReasonListData {
   reasonList: Reason[];

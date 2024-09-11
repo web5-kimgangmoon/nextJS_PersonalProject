@@ -1,13 +1,22 @@
 import clsx from "clsx";
 
-export const Star = ({ className }: { className?: string }) => (
+export const Star = ({
+  className,
+  isFill,
+  strokeWidth,
+}: {
+  className?: string;
+  isFill?: boolean;
+  strokeWidth?: number;
+}) => (
   <svg
     width="12"
     height="12"
     viewBox="0 0 12 12"
-    fill="none"
+    fill={isFill ? "currentColor" : "none"}
     xmlns="http://www.w3.org/2000/svg"
     className={clsx("w-full h-full", className)}
+    strokeWidth={strokeWidth}
   >
     <g clipPath="url(#clip0_18_138)">
       <path

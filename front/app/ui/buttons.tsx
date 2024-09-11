@@ -42,10 +42,10 @@ export function Button({
           "border-2 border-alert text-alert hover:text-red-800 hover:border-red-800":
             color === "blankRed",
           "text-textBlue hover:text-mainBlue": color === "noneBlue",
-          "bg-alert text-white hover:bg-red-800": color === "whiteRed",
+          "bg-alert text-white hover:bg-red-800": color === "red",
           "bg-bgGray text-white": color === "gray",
-          "border-2 border-borderGray bg-white text-black":
-            color === "whiteGray",
+          "border-2 border-mainBlue bg-white text-mainBlue":
+            color === "whiteBlue",
           "bg-bgGray/40 text-white": color === "inactiveGray",
           "border-2 border-bgGray text-bgGray": color === "blankInactive",
           "text-mainBlue hover:text-textBlue": color === "onlyTextBlue",
