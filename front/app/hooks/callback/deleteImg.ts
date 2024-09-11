@@ -19,4 +19,4 @@ export const useDeleteImg = (
     });
     const target = document.getElementById(targetId);
     if (target instanceof HTMLInputElement) target.value = "";
-  }, []);
+  }, [keys, setFormData, setPreview, targetId]);

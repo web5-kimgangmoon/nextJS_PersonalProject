@@ -4,8 +4,9 @@ import { BreadCrumble } from "@/app/ui/category/[category]/[boardId]/breadCrumbl
 import { CommentTop } from "@/app/ui/category/[category]/[boardId]/cmtTop";
 import { CmtList } from "@/app/ui/category/[category]/[boardId]/cmtList";
 import { useTypeCheck_zod } from "@/app/lib/utils";
+import { categoryListData } from "@/app/lib/placeholder-data";
 
-export default async function ({
+export default async function Page({
   params,
 }: {
   searchParams: {};
@@ -13,8 +14,8 @@ export default async function ({
 }) {
   const { intCheck } = useTypeCheck_zod();
   const invalid = intCheck.safeParse(params.boardId);
-  // if (!invalid.success)
-  //   return <div>{invalid.error.errors.map((item) => item.message)}</div>;
+  if (!invalid.success)
+    return <div>{invalid.error.errors.map((item) => item.message)}</div>;
   const target = intCheck.parse(params.boardId);
 
   return (
@@ -28,3 +29,10 @@ export default async function ({
     </div>
   );
 }
+
+// export async function generateStaticParams() {
+//   const categories = categoryListData["categories"].map((item) => ({
+//     category: item.path,
+//   }));
+//   return categories;
+// }

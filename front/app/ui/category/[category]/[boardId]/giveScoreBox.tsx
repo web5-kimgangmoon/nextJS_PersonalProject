@@ -16,16 +16,16 @@ export const GiveScoreBox = () => {
 
   const [score, setScore] = useState<number>();
   const router = useRouter();
-  const giveScore = useCallback(
-    (score: number) => {
-      setScore(score);
-    },
-    [score]
-  );
-  const submit = useCallback((score: number) => {
-    boardGiveScore(score);
-    router.refresh();
+  const giveScore = useCallback((score: number) => {
+    setScore(score);
   }, []);
+  const submit = useCallback(
+    (score: number) => {
+      boardGiveScore(score);
+      router.refresh();
+    },
+    [router]
+  );
   return (
     <GiveScoreBoxComp
       {...currentBoard}

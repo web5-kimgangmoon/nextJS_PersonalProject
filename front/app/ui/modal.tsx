@@ -37,7 +37,7 @@ export function Modal({
           }
         )}
       >
-        <div className="max-h-screen overflow-scroll">
+        <div className="max-h-screen overflow-y-scroll">
           <div className="flex justify-end">
             {isSmallX ? (
               <XMarkIcon
@@ -60,11 +60,42 @@ export function Modal({
   );
 }
 
+export function Modal_little({
+  modalCtl,
+  closeModalCtl,
+  children,
+}: {
+  modalCtl: boolean;
+  closeModalCtl: () => void;
+  children: ReactNode | string;
+}) {
+  return (
+    <div
+      className={clsx(
+        "fixed transition w-full h-screen top-0 left-0  flex justify-center items-center backdrop-blur bg-black/70",
+        {
+          "opacity-0 z-[-1]": !modalCtl,
+          "z-50": modalCtl,
+        }
+      )}
+      onClick={closeModalCtl}
+    >
+      <div className="bg-white p-2 rounded-xl bg-borderGray">
+        <div className="p-2 border-4 border-mainBlue bg-categoryGray rounded-xl font-bold text-mainBlue">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Curtain({
   curtainColor = "black",
+  onClick,
   modalCtl,
 }: {
   curtainColor?: string;
+  onClick?: () => void;
   modalCtl: boolean;
 }) {
   return (
@@ -80,9 +111,40 @@ export function Curtain({
           "bg-white/70": curtainColor === "white",
         }
       )}
+      onClick={onClick}
     ></div>
   );
 }
+
+export const ModalRequest = ({
+  children,
+  request,
+  isBorder,
+  closeModal,
+}: {
+  children: string;
+  request: () => void;
+  isBorder?: boolean;
+  closeModal: () => void;
+}) => {
+  return (
+    <div className="flex justify-center">
+      <div className={clsx("w-max", isBorder && "border-t border-borderGray")}>
+        <Button
+          onClick={() => {
+            request();
+            closeModal();
+          }}
+          color="none"
+          isNobold={true}
+          size="bigFont"
+        >
+          {children}
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export const ModalLink = ({
   children,

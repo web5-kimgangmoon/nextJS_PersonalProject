@@ -8,10 +8,12 @@ import {
   ModalA,
   ModalBox,
   ModalLink,
+  ModalRequest,
   ModalRouterBox,
 } from "@/app/ui/modal";
 import { categoryListData, userInfoData } from "@/app/lib/placeholder-data";
 import Image from "next/image";
+import { logout } from "@/app/lib/actions";
 
 export function Header() {
   const categoryList = categoryListData.categories.map((item) => ({
@@ -61,7 +63,8 @@ export const MenuBarBtn = ({
         />
       </Modal>
       <ImgButton
-        icon={<img src="/menuBar.svg" />}
+        img="/menuBar.svg"
+        // icon={<Image src=  width={0}/>}
         color={"none"}
         size="smallest"
         onClick={() => setOpen(!open)}
@@ -78,7 +81,7 @@ export function OnLogin({ profile }: { profile?: string }) {
   return (
     <>
       <Modal modalCtl={open} closeModalCtl={ctlClose} isSmallX={false}>
-        <ProfileModalContent />
+        <ProfileModalContent closeModal={ctlClose} />
       </Modal>
       <div className="pr-1">
         <Image
@@ -184,9 +187,9 @@ export const MenuModalContent = ({
         closeModal={closeModal}
       />
       {isLogin && (
-        <ModalLink href="/logout" isBorder={true}>
+        <ModalRequest closeModal={closeModal} request={logout} isBorder={true}>
           로그아웃
-        </ModalLink>
+        </ModalRequest>
       )}
     </div>
   );
@@ -203,13 +206,17 @@ export const LoginModalContent = () => {
   );
 };
 
-export const ProfileModalContent = () => {
+export const ProfileModalContent = ({
+  closeModal,
+}: {
+  closeModal: () => void;
+}) => {
   return (
     <div className="py-2">
       <ModalLink href="/user">프로필 확인</ModalLink>
-      <ModalLink href="/logout" isBorder={true}>
+      <ModalRequest request={logout} closeModal={closeModal} isBorder={true}>
         로그아웃
-      </ModalLink>
+      </ModalRequest>
     </div>
   );
 };

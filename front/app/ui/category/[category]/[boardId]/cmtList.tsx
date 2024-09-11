@@ -23,24 +23,23 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Button, ImgButton } from "@/app/ui/buttons";
-import { deleteCmt, useQuery_getCmt, likeCmt } from "@/app/lib/actions";
+import { deleteCmt, likeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
-import { useToggleObj } from "@/app/hooks/toggleObj";
+import { useToggle } from "@/app/hooks/toggle";
 import { useRouter } from "next/navigation";
 import { getTimeString } from "@/app/lib/utils";
 import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
 import { CmtItem, Reason } from "@/app/lib/definitions";
-import { Loading } from "@/app/ui/loadingSpin";
+import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
+import { useQuery_getCmt } from "@/app/lib/data";
 
 export const CmtList = ({ boardId }: { boardId: number }) => {
   const cmtReportList = cmtReportListHolder;
 
   const [limit, setLimit] = useState<number>(2);
-  const [sortState, setSortState] = useState<"recently" | "old" | "like">(
-    "like"
-  );
-
+  const [sortState, setSortState] =
+    useState<Partial<"like" | "recently" | "old">>("like");
   const cmtData = useQuery_getCmt({
     searh: {
       boardId: boardId,
@@ -56,14 +55,12 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
   const stretchLimit = useCallback(() => {
     setLimit((value) => value + 2);
   }, []);
-  const { setSortRecently, setSortOld, setSortLike } = useSelectCallback(
-    setSortState,
-    "setSort",
-    "recently",
-    "old",
-    "like"
-  );
-  if (cmtData.isLoading) return <Loading bgColorClass="bg-categoryGray" />;
+  const { setSortRecently, setSortOld, setSortLike } = {
+    setSortLike: useSelectCallback(setSortState, "like"),
+    setSortRecently: useSelectCallback(setSortState, "recently"),
+    setSortOld: useSelectCallback(setSortState, "old"),
+  };
+  if (cmtData.isLoading) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <div className="px-2">
       <div className="flex gap-2 pb-10 font-bold">
@@ -189,22 +186,23 @@ export const CmtBox = ({
     setCleanContent(DOMPurify.sanitize(content));
   }, [content]);
 
-  const { cmt, reply, report, remake, deleteBox } = useToggleObj(
-    ["cmt", true],
-    ["reply", false],
-    ["report", false],
-    ["remake", false],
-    ["deleteBox", false]
-  );
+  const cmt = useToggle(true);
+  const reply = useToggle(false);
+  const report = useToggle(false);
+  const remake = useToggle(false);
+  const deleteBox = useToggle(false);
   const router = useRouter();
-  const requestLike = useCallback((isDisLike: boolean) => {
-    likeCmt(cmtId, isDisLike);
-    router.refresh();
-  }, []);
+  const requestLike = useCallback(
+    (isDisLike: boolean) => {
+      likeCmt(cmtId, isDisLike);
+      router.refresh();
+    },
+    [cmtId, router]
+  );
   const requestDelete = useCallback(() => {
     deleteCmt(cmtId);
     router.refresh();
-  }, []);
+  }, [cmtId, router]);
   return (
     <div>
       <div
@@ -217,8 +215,8 @@ export const CmtBox = ({
           src={writerProfile}
           alt="no image"
           className={`w-14 h-14 rounded-2xl`}
-          width={0}
-          height={0}
+          width={32}
+          height={32}
         />
         <div className="grow pl-2">
           <CmtBoxTop

@@ -14,7 +14,8 @@ export type ButtonColors =
   | "blankInactive"
   | "onlyTextBlue"
   | "onlyTextRed"
-  | "onlyTextInactive";
+  | "onlyTextInactive"
+  | "logoBtn";
 export interface Button {
   isNobold?: boolean;
   color: ButtonColors;
