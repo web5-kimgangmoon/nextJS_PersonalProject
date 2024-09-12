@@ -39,13 +39,13 @@ export default class UserInfo extends Model {
   @Column({ type: DataType.TINYINT(), defaultValue: 0 })
   authority!: number;
 
-  @Column({ type: DataType.STRING(100), defaultValue: "baseImg.jpg" })
+  @Column({ type: DataType.STRING(100), defaultValue: "baseUserImg.jpg" })
   profileImg!: string;
 
   @Column({ type: DataType.STRING(20), allowNull: false, unique: true })
   nick!: number;
 
-  @Column({ type: DataType.STRING(50), allowNull: false })
+  @Column({ type: DataType.STRING(300), allowNull: false })
   password!: string;
 
   @BelongsTo(() => UserInfo, "connectId")

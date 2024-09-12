@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import router from "./controllers/index";
 import sequelize from "./models/index";
-import test from "./controllers/testcase";
+import test from "./placeholderData/testcase";
 
 config();
 test();

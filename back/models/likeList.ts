@@ -22,17 +22,17 @@ export default class Like extends Model {
   id!: number;
 
   @ForeignKey(() => UserInfo)
-  @Column(DataType.INTEGER.UNSIGNED)
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   userId?: number;
 
   @ForeignKey(() => Cmt)
-  @Column(DataType.INTEGER.UNSIGNED)
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   cmtId?: number;
 
-  @Column(DataType.BOOLEAN)
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
   isDisLike?: number;
 
-  @Column(DataType.BOOLEAN)
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
   isLike?: number;
 
   @BelongsTo(() => UserInfo, "userId")

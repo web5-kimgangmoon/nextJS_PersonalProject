@@ -23,13 +23,13 @@ export default class Category extends Model {
   id!: number;
 
   @ForeignKey(() => Board)
-  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: true })
   informId!: number;
 
-  @Column({ type: DataType.STRING(20), allowNull: false })
+  @Column({ type: DataType.STRING(20), allowNull: false, unique: true })
   path!: string;
 
-  @Column({ type: DataType.STRING(20), allowNull: false })
+  @Column({ type: DataType.STRING(20), allowNull: false, unique: true })
   name!: string;
 
   @Column({ type: DataType.STRING(100), allowNull: false })
@@ -47,7 +47,7 @@ export default class Category extends Model {
   @Column({
     type: DataType.STRING(300),
     allowNull: false,
-    defaultValue: "baseImg.jpg",
+    defaultValue: "baseCategoryImg.jpg",
   })
   img!: string;
 

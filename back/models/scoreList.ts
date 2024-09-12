@@ -29,7 +29,11 @@ export default class Score extends Model {
   @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   userId!: number;
 
-  @Column({ type: DataType.FLOAT.UNSIGNED, allowNull: false, defaultValue: 1 })
+  @Column({
+    type: DataType.TINYINT.UNSIGNED,
+    allowNull: false,
+    defaultValue: 1,
+  })
   score!: number;
 
   @BelongsTo(() => Board, "boardId")

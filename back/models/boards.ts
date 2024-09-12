@@ -40,7 +40,11 @@ export default class Board extends Model {
   @Column({ type: DataType.STRING(30), allowNull: false })
   title!: number;
 
-  @Column({ type: DataType.STRING(300), allowNull: false })
+  @Column({
+    type: DataType.STRING(300),
+    allowNull: false,
+    defaultValue: "baseBoardImg.png",
+  })
   img!: number;
 
   @Column({ type: DataType.STRING(3000), allowNull: false })
