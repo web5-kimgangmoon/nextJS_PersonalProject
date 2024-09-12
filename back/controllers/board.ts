@@ -29,12 +29,12 @@ router.get("/list", async (req: Request, res: Response) => {
     ? Number(req.query.limit)
     : 10;
   const writerId = booleanCheck.safeParse(req.query.isOwn).success
-    ? booleanCheck.parse(req.query.isOwn)
+    ? req.query.isOwn === "true"
       ? req?.session?.userId
       : undefined
     : undefined;
   const isDeleted = booleanCheck.safeParse(req.query.isDeleted).success
-    ? booleanCheck.parse(req.query.isDeleted)
+    ? req.query.isDeleted === "true"
     : false;
   const search = stringCheck.safeParse(req.query.search).success
     ? stringCheck.parse(req.query.search)
