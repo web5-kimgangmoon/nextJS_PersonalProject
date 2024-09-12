@@ -33,11 +33,12 @@ import { CmtItem, Reason } from "@/app/lib/definitions";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
 import { useQuery_getCmt } from "@/app/lib/data";
+import { useStretchBtn } from "@/app/hooks/strechBtn";
 
 export const CmtList = ({ boardId }: { boardId: number }) => {
   const cmtReportList = cmtReportListHolder;
 
-  const [limit, setLimit] = useState<number>(2);
+  const { limit, stretchLimit } = useStretchBtn();
   const [sortState, setSortState] =
     useState<Partial<"like" | "recently" | "old">>("like");
   const cmtData = useQuery_getCmt({
@@ -52,9 +53,6 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
       sort: sortState,
     },
   });
-  const stretchLimit = useCallback(() => {
-    setLimit((value) => value + 2);
-  }, []);
   const { setSortRecently, setSortOld, setSortLike } = {
     setSortLike: useSelectCallback(setSortState, "like"),
     setSortRecently: useSelectCallback(setSortState, "recently"),
@@ -66,7 +64,6 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
       <div className="flex gap-2 pb-10 font-bold">
         <div
           onClick={() => {
-            console.log(sortState);
             setSortLike();
           }}
           className={clsx(
@@ -97,7 +94,7 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
         </div>
       </div>
       {cmtData.data.cmtList.map(
-        (item, idx) =>
+        (item) =>
           !item.replyId && (
             <CmtBox
               isDidReport={item.isDidReport}
@@ -147,7 +144,7 @@ export const CmtBox = ({
   isDoLike,
   isDoDislike,
   isWriter,
-  userProfile = "/placeholder-noavatar32.svg",
+  userProfile,
   isDidReport,
   userId,
   replyUser,
@@ -166,14 +163,14 @@ export const CmtBox = ({
   isDoLike: boolean;
   isDoDislike: boolean;
   isWriter: boolean;
-  userProfile?: string;
+  userProfile?: string | null;
   isDidReport: boolean;
-  userId?: number;
-  replyUser?: string;
-  replyUserId?: number;
+  userId?: number | null;
+  replyUser?: string | null;
+  replyUserId?: number | null;
   cmtReportList: Reason[];
   isFirst?: boolean;
-  containCmt?: CmtItem[];
+  containCmt?: CmtItem[] | null;
 }) => {
   const imgPath = content.split('src="')[1]?.split('"')[0];
 
@@ -263,7 +260,7 @@ export const CmtBox = ({
       <div className="flex gap-2" hidden={!reply.is}>
         <Image
           hidden={!reply.is}
-          src={userProfile}
+          src={userProfile ? userProfile : "/placeholder-noavatar32.svg"}
           alt="no image"
           className="w-14 h-14 rounded-2xl"
           width={0}
@@ -340,8 +337,8 @@ export const CmtBoxTop = ({
   createdAt: Date;
   writerId: number;
   writer: string;
-  replyUser?: string;
-  replyUserId?: number;
+  replyUser?: string | null;
+  replyUserId?: number | null;
   isLogin: boolean;
   isOpenCmt: boolean;
   isDidReport: boolean;

@@ -72,7 +72,7 @@ export const ReportBoxComp = ({
     "타인에게 불쾌감을 주지 않도록 주의해주세요. 허위신고를 할 경우, 밴을 당할 수 있습니다.";
   const reasonName = `report${isBoard ? "Board" : "Cmt"}${id}`;
   const actionTitle = "신고완료";
-  const actionColor = "whiteRed";
+  const actionColor = "red";
   return (
     <ReasonBox
       isOpen={isOpen}
@@ -109,7 +109,7 @@ export const CheckDelete = ({
       isOpen={isOpen}
       action={action}
       modalClose={modalClose}
-      actionColor="whiteRed"
+      actionColor="red"
       actionContent={`정말로 ${targetName}을(를) 삭제하시나요?`}
       actionTitle={"삭제완료"}
       destination={destination}

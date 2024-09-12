@@ -4,9 +4,12 @@ import { ImgButton, LinkButton } from "../buttons";
 import { usePopup } from "@/app/hooks/callback/popUp";
 
 export function Header() {
-  const google_popup = usePopup("http://localhost:3000/oauth/google", "google");
+  const google_popup = usePopup(
+    process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH as string,
+    "google"
+  );
   const facebook_popup = usePopup(
-    "http://localhost:3000/oauth/facebook",
+    process.env.NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH as string,
     "facebook"
   );
   return (

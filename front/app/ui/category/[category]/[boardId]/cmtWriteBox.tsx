@@ -110,7 +110,13 @@ export const WriteCmtComp = ({
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
         {preview && (
           <div className="w-40 h-40 relative">
-            <Image src={preview} alt="no image" className="w-full h-full" />
+            <Image
+              src={preview}
+              width={30}
+              height={30}
+              alt="no image"
+              className="w-full h-full"
+            />
             <div
               className="w-6 h-6 absolute top-2 right-2 border rounded-full border-black bg-white"
               onClick={deleteImg}
@@ -124,9 +130,9 @@ export const WriteCmtComp = ({
             <Image
               src={img}
               alt="no image"
+              width={30}
+              height={30}
               className="w-full h-full"
-              layout="fill"
-              objectFit="contain"
             />
             <div
               className="w-6 h-6 absolute top-2 right-2 border rounded-full border-black bg-white"

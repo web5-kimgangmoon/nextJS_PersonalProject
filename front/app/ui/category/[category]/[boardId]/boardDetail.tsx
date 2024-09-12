@@ -108,7 +108,7 @@ export const WriterRequestBtns = ({
   return (
     <div className="flex items-center gap-5">
       <LinkButton
-        href={`write/${boardId}`}
+        href={`/write/board/${boardId}`}
         isRight={true}
         size="small"
         color="blankBlue"
