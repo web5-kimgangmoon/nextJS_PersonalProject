@@ -12,6 +12,7 @@ import UserInfo from "./userInfoList";
 
 @Table({
   tableName: "adminActLog",
+  timestamps: true,
 })
 export default class AdminAct extends Model {
   @PrimaryKey
@@ -31,6 +32,9 @@ export default class AdminAct extends Model {
 
   @Column({ type: DataType.STRING(50) })
   logDetail!: string;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => UserInfo, "userId")
   user?: UserInfo;

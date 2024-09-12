@@ -1,7 +1,12 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import path from "path";
 import session from "express-session";
 import store from "session-file-store";
+import { banCheck } from "../queries";
+
+import category from "./category";
+import user from "./user";
+import board from "./board";
 
 const FileStore = store(session);
 
@@ -13,7 +18,14 @@ declare module "express-session" {
   }
 }
 
+declare module "express" {
+  interface Request {
+    ban?: boolean;
+  }
+}
+
 const router = Router();
+
 router.use(
   session({
     resave: true,
@@ -31,18 +43,24 @@ router.use(
     },
   })
 );
-router.get("/sessionTest", (req, res) => {
+
+router.use(async (req: Request, res: Response, next) => {
+  req.ban = await banCheck(req.session.userId);
+  req.ban && req.session.destroy((err) => console.log(err));
+  next();
+});
+router.get("/img", (req, res) => {
+  res.sendFile(path.join(__dirname, `../public/${req.query.name}`));
+});
+router.get("/testSession", (req, res) => {
   req.session.userId = 1;
   req.session.isAdminLogin = false;
   req.session.isMainAdmin = false;
   res.status(204).send();
 });
 
-router.get("/sessionCheck", (req, res) => {
-  res.status(200).send(req.session);
-});
-router.get("/img", (req, res) => {
-  res.sendFile(path.join(__dirname, `../public/${req.query.name}`));
-});
+router.use("/category", category);
+router.use("/user", user);
+router.use("/board", board);
 
 export default router;

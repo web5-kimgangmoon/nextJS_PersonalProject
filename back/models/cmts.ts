@@ -17,6 +17,7 @@ import Reason from "./reasons";
 @Table({
   tableName: "cmts",
   underscored: false,
+  timestamps: true,
 })
 export default class Cmt extends Model {
   @PrimaryKey
@@ -42,6 +43,9 @@ export default class Cmt extends Model {
 
   @Column({ type: DataType.STRING(1000), allowNull: false })
   content!: string;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => Board, "boardId")
   board!: Board;

@@ -19,6 +19,7 @@ import BanItem from "./banHistory";
 @Table({
   tableName: "userInfoList",
   underscored: false,
+  timestamps: true,
 })
 export default class UserInfo extends Model {
   @PrimaryKey
@@ -39,14 +40,17 @@ export default class UserInfo extends Model {
   @Column({ type: DataType.TINYINT(), defaultValue: 0 })
   authority!: number;
 
-  @Column({ type: DataType.STRING(100), defaultValue: "baseUserImg.jpg" })
+  @Column({ type: DataType.STRING(100), defaultValue: "baseUserImg.png" })
   profileImg!: string;
 
   @Column({ type: DataType.STRING(20), allowNull: false, unique: true })
-  nick!: number;
+  nick!: string;
 
   @Column({ type: DataType.STRING(300), allowNull: false })
   password!: string;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => UserInfo, "connectId")
   baseUser!: UserInfo;

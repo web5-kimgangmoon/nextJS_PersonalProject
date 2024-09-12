@@ -18,6 +18,7 @@ import Score from "./scoreList";
 @Table({
   tableName: "boards",
   underscored: false,
+  timestamps: true,
 })
 export default class Board extends Model {
   @PrimaryKey
@@ -38,23 +39,26 @@ export default class Board extends Model {
   deleteReasonId!: number;
 
   @Column({ type: DataType.STRING(30), allowNull: false })
-  title!: number;
+  title!: string;
 
   @Column({
     type: DataType.STRING(300),
     allowNull: false,
     defaultValue: "baseBoardImg.png",
   })
-  img!: number;
+  img!: string;
 
   @Column({ type: DataType.STRING(3000), allowNull: false })
-  content!: number;
+  content!: string;
 
   @Column({ type: DataType.STRING(300), allowNull: false })
-  description!: number;
+  description!: string;
 
   @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
   looks!: number;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => Category, "categoryId")
   category!: Category;

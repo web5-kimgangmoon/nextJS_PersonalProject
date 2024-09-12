@@ -55,7 +55,7 @@ export interface CategoryDetailData {
   name: string;
   img: string;
   description: string;
-  cmtPlacholder: string;
+  cmtPlaceholder: string;
   titlePlaceholder: string;
   descriptionPlaceholder: string;
   contentPlaceholder: string;

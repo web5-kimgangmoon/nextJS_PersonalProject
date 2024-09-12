@@ -144,7 +144,7 @@ export const categoryDetailData: CategoryDetailData = {
   name: "유머",
   img: "/baseBoardImg.png",
   description: "아아아",
-  cmtPlacholder: "댓글 placeholder입니다~",
+  cmtPlaceholder: "댓글 placeholder입니다~",
   titlePlaceholder: "게시글 제목 placeholder입니다~",
   descriptionPlaceholder: "게시글  설명글 placeholder입니다~",
   contentPlaceholder: "게시글 내용 placeholder입니다~",

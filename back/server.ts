@@ -10,8 +10,7 @@ config();
 test();
 
 // (async () => {
-//   // sequelize.addModels([Todo]);
-//   await sequelize.sync({ force: true });
+//   await sequelize.sync({ force: false });
 // })();
 const app = express();
 

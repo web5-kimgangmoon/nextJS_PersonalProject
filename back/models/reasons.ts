@@ -13,6 +13,7 @@ import BanItem from "./banHistory";
 
 @Table({
   tableName: "reasons",
+  timestamps: true,
 })
 export default class Reason extends Model {
   @PrimaryKey
@@ -21,13 +22,16 @@ export default class Reason extends Model {
   id!: number;
 
   @Column({ type: DataType.STRING(20), allowNull: false })
-  title!: number;
+  title!: string;
 
   @Column({ type: DataType.STRING(100) })
-  description!: number;
+  description!: string;
 
   @Column({ type: DataType.STRING(15), allowNull: false })
-  reasonType!: number;
+  reasonType!: string;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @HasMany(() => Board, "deleteReasonId")
   Boards!: Board[];

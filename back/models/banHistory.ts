@@ -13,6 +13,7 @@ import Reason from "./reasons";
 
 @Table({
   tableName: "banHistory",
+  timestamps: true,
 })
 export default class BanItem extends Model {
   @PrimaryKey
@@ -33,6 +34,9 @@ export default class BanItem extends Model {
 
   @Column({ type: DataType.DATE, allowNull: false })
   willBanEndAt!: Date;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => UserInfo, "userId")
   bannedUser!: UserInfo;

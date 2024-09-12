@@ -49,7 +49,7 @@ export const WriteCmt = ({
   return (
     <WriteCmtComp
       isOpen={isOpen}
-      placeholder={categoryInfo.cmtPlacholder}
+      placeholder={categoryInfo.cmtPlaceholder}
       imgBtnId={imgBtnId}
       request={request}
       modalClose={modalClose}
