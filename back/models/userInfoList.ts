@@ -1,6 +1,6 @@
 import {
   AutoIncrement,
-  BelongsToMany,
+  BelongsTo,
   Column,
   DataType,
   ForeignKey,
@@ -48,7 +48,7 @@ export default class UserInfo extends Model {
   @Column({ type: DataType.STRING(50), allowNull: false })
   password!: string;
 
-  @BelongsToMany(() => UserInfo, "connectId")
+  @BelongsTo(() => UserInfo, "connectId")
   baseUser!: UserInfo;
 
   @HasMany(() => UserInfo, "connectId")
@@ -67,8 +67,8 @@ export default class UserInfo extends Model {
   doScore!: Score[];
 
   @HasMany(() => AdminAct, "userId")
-  doAdminActs?: AdminAct[];
+  doAdminActs!: AdminAct[];
 
   @HasMany(() => BanItem, "userId")
-  banHistory?: BanItem[];
+  banList!: BanItem[];
 }

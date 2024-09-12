@@ -1,7 +1,6 @@
 import {
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -10,8 +9,6 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import Like from "./likeList";
-import UserInfo from "./userInfoList";
 import CategoryRule from "./categoryRuleList";
 import Board from "./boards";
 

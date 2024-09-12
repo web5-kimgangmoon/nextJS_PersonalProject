@@ -1,7 +1,6 @@
 import {
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -11,7 +10,6 @@ import {
 } from "sequelize-typescript";
 import UserInfo from "./userInfoList";
 import Reason from "./reasons";
-import Board from "./boards";
 
 @Table({
   tableName: "banHistory",

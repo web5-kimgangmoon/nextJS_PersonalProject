@@ -19,7 +19,8 @@ const sequelize = new Sequelize({
   username: `${process.env.EC2_MYSQL_USER}`,
   password: `${process.env.EC2_MYSQL_PASSWORD}`,
   database: `${process.env.EC2_MYSQL_DATABASE}`,
-  port: 3308,
+  port: 3306,
+  logging: console.log,
   models: [
     UserInfo,
     Reason,
@@ -29,7 +30,6 @@ const sequelize = new Sequelize({
     Like,
     BanItem,
     AdminAct,
-    BanItem,
     Cmt,
     Score,
     Report,

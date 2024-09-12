@@ -1,18 +1,13 @@
 import {
-  AllowNull,
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
-  HasMany,
   Model,
   PrimaryKey,
   Table,
-  Unique,
 } from "sequelize-typescript";
-import Like from "./likeList";
 import UserInfo from "./userInfoList";
 import Cmt from "./cmts";
 import Board from "./boards";

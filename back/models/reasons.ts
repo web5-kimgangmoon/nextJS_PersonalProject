@@ -1,16 +1,12 @@
 import {
   AutoIncrement,
-  BelongsToMany,
   Column,
   DataType,
-  ForeignKey,
   HasMany,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
-import UserInfo from "./userInfoList";
 import Board from "./boards";
 import Cmt from "./cmts";
 import BanItem from "./banHistory";

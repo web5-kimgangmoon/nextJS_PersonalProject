@@ -1,8 +1,6 @@
 import {
-  AllowNull,
   AutoIncrement,
   BelongsTo,
-  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -10,7 +8,6 @@ import {
   Model,
   PrimaryKey,
   Table,
-  Unique,
 } from "sequelize-typescript";
 import Like from "./likeList";
 import UserInfo from "./userInfoList";
@@ -49,10 +46,10 @@ export default class Cmt extends Model {
   @BelongsTo(() => Board, "boardId")
   board!: Board;
 
-  @HasMany(() => Cmt, "replyId")
+  @BelongsTo(() => Cmt, "replyId")
   replyCmtTo!: Cmt;
 
-  @BelongsTo(() => Cmt, "replyId")
+  @HasMany(() => Cmt, "replyId")
   replyCmtsFrom!: Cmt[];
 
   @BelongsTo(() => UserInfo, "writerId")
