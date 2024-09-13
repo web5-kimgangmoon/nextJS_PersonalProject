@@ -158,11 +158,16 @@ export const pushedFormData = (
   set: { name: string; value: string }[],
   ...options: { name: string; value: string }[]
 ) => {
+  const newData = new FormData();
   set.concat(options);
   for (let item of set) {
-    target.set(item.name, item.value);
+    newData.set(item.name, item.value);
   }
-  return target;
+  const img = target.get("img");
+  const isDeleted = target.get("isDeleteImg");
+  img && newData.set("img", img);
+  isDeleted && newData.set("isDeleteImg", "true");
+  return newData;
 };
 
 export const useTypeCheck_zod = () => {
