@@ -104,7 +104,7 @@ jobs:
             rm -rf /var/www/front
             mkdir /var/www/front
             mkdir /var/www/front/.next'
-          rsync -avz -e "ssh" ./front/.next/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/front/.next
+          rsync -avz -e "ssh" ./front/.next/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/front/.next
           rsync -avz -e "ssh" ./front/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/front
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
 
@@ -169,4 +169,4 @@ jobs:
       - name: Start Server
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-          pm2 start /var/www/back/index.js --name back'
+          pm2 start /var/www/back/server.js --name back'
