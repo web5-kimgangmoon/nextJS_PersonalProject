@@ -56,12 +56,6 @@ router.use(async (req: Request, res: Response, next) => {
 router.get("/img", (req, res) => {
   res.sendFile(path.join(__dirname, `../public/${req.query.name}`));
 });
-router.get("/testSession", (req, res) => {
-  req.session.userId = 1;
-  req.session.isAdminLogin = false;
-  req.session.isMainAdmin = false;
-  res.status(204).send();
-});
 router.get("/categories", async (req: Request, res: Response) => {
   res.send({ ...(await getCategoryList()) });
 });
