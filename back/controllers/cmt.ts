@@ -1,9 +1,55 @@
 import { Request, Response, Router } from "express";
 import { getUserInfo, login } from "../queries/user";
 import { booleanCheck, intCheck, stringCheck } from "../services/zod";
-import { getCmts } from "../queries/cmt";
+import {
+  addCmt,
+  deleteCmt,
+  getCmts,
+  likeCmt,
+  reportCmt,
+  updateCmt,
+} from "../queries/cmt";
+import { upload } from "../services/upload";
+import { cmtMake } from "../lib/util";
 
 const router = Router();
+
+router.post(
+  "/",
+  (req, res, next) => {
+    const userId = req?.session?.userId ? req?.session?.userId : undefined;
+    const boardId = intCheck.safeParse(req.query.boardId).success
+      ? Number(req.query.boardId)
+      : undefined;
+    if (
+      !userId ||
+      !boardId ||
+      !stringCheck.safeParse(req.body.content).success ||
+      (!req.body.content && !req.file)
+    ) {
+      res.status(403).send();
+      return;
+    }
+    next();
+  },
+  upload("img"),
+  async (req: Request, res: Response) => {
+    const boardId = Number(req.query.boardId);
+    const replyId = intCheck.safeParse(req.query.replyId).success
+      ? Number(req.query.replyId)
+      : undefined;
+    console.log(req.body);
+    res.send(
+      await addCmt(
+        req.session.userId as number,
+        boardId,
+        req.body.content,
+        replyId,
+        req.file?.filename
+      )
+    );
+  }
+);
 
 router.get("/cmtList", async (req: Request, res: Response) => {
   const limit = intCheck.safeParse(req.query.limit).success
@@ -50,31 +96,81 @@ router.get("/cmtList", async (req: Request, res: Response) => {
   );
 });
 
-router.post("/", async (req: Request, res: Response) => {
-  req.session.userId
-    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
-    : res.send({ userInfo: undefined });
-});
-
 router.post("/like/:cmtId", async (req: Request, res: Response) => {
-  req.session.userId
-    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
-    : res.send({ userInfo: undefined });
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const cmtId = intCheck.safeParse(req.params.cmtId).success
+    ? Number(req.params.cmtId)
+    : undefined;
+  const isDisLike = booleanCheck.safeParse(req.query.isDisLike).success
+    ? req.query.isDisLike === "true"
+      ? true
+      : false
+    : false;
+  (await likeCmt(userId, cmtId, isDisLike))
+    ? res.status(204).send()
+    : res.status(400).send();
 });
 router.post("/report/:cmtId", async (req: Request, res: Response) => {
-  req.session.userId
-    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
-    : res.send({ userInfo: undefined });
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const cmtId = intCheck.safeParse(req.params.cmtId).success
+    ? Number(req.params.cmtId)
+    : undefined;
+  const reportReasonId = intCheck.safeParse(req.body.reportReasonId).success
+    ? Number(req.body.reportReasonId)
+    : undefined;
+  (await reportCmt(userId, cmtId, reportReasonId))
+    ? res.status(204).send()
+    : res.status(400).send();
 });
-router.patch("/:cmtId", async (req: Request, res: Response) => {
-  req.session.userId
-    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
-    : res.send({ userInfo: undefined });
-});
+
 router.delete("/:cmtId", async (req: Request, res: Response) => {
-  req.session.userId
-    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
-    : res.send({ userInfo: undefined });
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const cmtId = intCheck.safeParse(req.params.cmtId).success
+    ? Number(req.params.cmtId)
+    : undefined;
+
+  (await deleteCmt(userId, cmtId))
+    ? res.status(204).send()
+    : res.status(400).send();
 });
+
+router.patch(
+  "/:cmtId",
+  (req, res, next) => {
+    const userId = req?.session?.userId ? req?.session?.userId : undefined;
+    const cmtId = intCheck.safeParse(req.params.cmtId).success
+      ? Number(req.params.cmtId)
+      : undefined;
+    if (
+      !userId ||
+      !stringCheck.safeParse(req.body.content).success ||
+      (!req.body.content && !req.file) ||
+      !cmtId
+    ) {
+      res.status(403).send();
+      return;
+    }
+    next();
+  },
+  upload("img"),
+  async (req: Request, res: Response) => {
+    const userId = req?.session?.userId;
+    const cmtId = Number(req.params.cmtId);
+    const isDeleteImg = booleanCheck.safeParse(req.body.isDeleteImg).success
+      ? req.body.isDeleteImg === "true"
+        ? true
+        : false
+      : false;
+    (await updateCmt(
+      userId as number,
+      cmtId as number,
+      isDeleteImg,
+      req.body.content,
+      req.file?.filename
+    ))
+      ? res.status(204).send()
+      : res.status(400).send();
+  }
+);
 
 export default router;

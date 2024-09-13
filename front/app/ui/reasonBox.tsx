@@ -3,9 +3,10 @@
 import { Button } from "@/app/ui/buttons";
 import { useCallback, useState } from "react";
 import { ButtonColors, Reason } from "../lib/definitions";
-import { boardReport, cmtReport } from "../lib/actions";
+import { useBoardReport, useCmtReport } from "../lib/actions";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const ReportBox = ({
   id,
@@ -21,14 +22,22 @@ export const ReportBox = ({
   modalClose: () => void;
 }) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [reason, setReason] = useState<string>();
   const selectReason = useCallback((str: string) => {
     setReason(str);
   }, []);
+  const boardReport = useBoardReport();
+  const cmtReport = useCmtReport();
   const reportRequest = useCallback(() => {
-    if (reason) isBoard ? boardReport(id, +reason) : cmtReport(id, +reason);
+    if (reason)
+      isBoard
+        ? boardReport.mutate({ boardId: id, reasonId: +reason })
+        : cmtReport.mutate({ cmtId: id, reasonId: +reason });
     modalClose();
-    router.refresh();
+    isBoard
+      ? queryClient.refetchQueries({ queryKey: ["get", "board"] })
+      : queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
   }, [reason, id, isBoard, modalClose, router]);
 
   return (
@@ -240,7 +249,7 @@ export const ReasonItem = ({
   reasonName: string;
   value: string;
   title: string;
-  description?: string;
+  description?: string | null;
   selected?: boolean;
   onChange?: () => void;
 }) => {

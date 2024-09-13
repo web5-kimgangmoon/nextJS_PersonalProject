@@ -60,5 +60,19 @@ export const login = async (
       },
     });
   }
-  return undefined;
+};
+
+export const regist = async (nick: string, email: string, pwd: string) => {
+  const target = await UserInfo.findOne({
+    where: { [Op.or]: [{ nick: nick }, { email: email }] },
+  });
+  if (target) return false;
+
+  await UserInfo.create({
+    nick,
+    email,
+    password: mkHash("sha256", pwd),
+    profileImg: "baseUserImg.png",
+  });
+  return true;
 };

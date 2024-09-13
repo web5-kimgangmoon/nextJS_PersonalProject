@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
-import { useHash } from "@/app/lib/utils";
+import { ranHash } from "@/app/lib/utils";
 import axios from "axios";
 
 export const AutoClose = ({}: {}) => {
@@ -13,7 +13,7 @@ export const AutoClose = ({}: {}) => {
     window.opener === null && router.replace("/category");
     const params = new URLSearchParams(window.location.search.split("?")[1]);
     if (!params.get("code")) {
-      const state = useHash("sha256");
+      const state = ranHash("sha256");
       router.replace(
         `https://www.facebook.com/v20.0/dialog/oauth?client_id=${
           process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID

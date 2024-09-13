@@ -1,39 +1,42 @@
 "use client";
 
-import { boardGiveScore } from "@/app/lib/actions";
-import {
-  currentBoardData as currentBoardHolder,
-  userInfoData,
-} from "@/app/lib/placeholder-data";
+import { useBoardGiveScore } from "@/app/lib/actions";
+import { useQuery_getBoardDetail, useQuery_getUserInfo } from "@/app/lib/data";
 import { Button, ImgButton } from "@/app/ui/buttons";
+import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { Star } from "@/public/star";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 export const GiveScoreBox = () => {
-  const currentBoard = currentBoardHolder;
+  const params = useParams();
+  const currentBoard = useQuery_getBoardDetail(+params.boardId);
 
   const [score, setScore] = useState<number>();
   const router = useRouter();
   const giveScore = useCallback((score: number) => {
     setScore(score);
   }, []);
+  const boardGiveScore = useBoardGiveScore();
   const submit = useCallback(
-    (score: number) => {
-      boardGiveScore(score);
-      router.refresh();
+    async (score: number) => {
+      await boardGiveScore.mutate({ score, boardId: +params.boardId });
+      currentBoard.refetch();
     },
     [router]
   );
+  const userInfoData = useQuery_getUserInfo();
+  if (userInfoData.isLoading || currentBoard.isLoading)
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <GiveScoreBoxComp
-      {...currentBoard}
-      isLogin={userInfoData.userInfo?.id ? true : false}
+      {...currentBoard.data?.data}
+      isLogin={userInfoData.data?.data.userInfo?.id ? true : false}
       score={score}
       giveScore={giveScore}
       submit={submit}
-      defaultScore={currentBoard.score}
+      defaultScore={currentBoard.data?.data.score}
     />
   );
 };

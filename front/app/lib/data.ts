@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   CmtListData,
   GetBoardList,
@@ -6,42 +5,45 @@ import {
   GetCategoryList,
   GetCmt,
 } from "./definitions";
-import { cmtData } from "./placeholder-data";
 import { useQuery } from "@tanstack/react-query";
 import serverAxios from "./serverActionAxios";
 
-export const useQuery_getCmt = (
-  data: GetCmt
-): {
-  isLoading: boolean;
-  isSuccess: boolean;
-  status: string;
-  data: CmtListData;
-} => {
-  return {
-    isLoading: false,
-    isSuccess: true,
-    status: "success",
-    data: {
-      cmtCnt: cmtData.cmtCnt,
-      cmtList:
-        data.searh.sort === "like"
-          ? cmtData.cmtList
-              .sort((a, b) => {
-                return b.like - a.like;
-              })
-              .slice(0, data.searh.limit)
-          : data.searh.sort === "recently"
-          ? cmtData.cmtList
-              .sort((a, b) => {
-                return a.createdAt.getTime() - b.createdAt.getTime();
-              })
-              .slice(0, data.searh.limit)
-          : cmtData.cmtList
-              .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-              .slice(0, data.searh.limit),
+export const useQuery_getCmt = (get: GetCmt) => {
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["get", "cmt", "list"],
+    queryFn: async () => {
+      return await serverAxios.get(`/cmt/cmtList`, {
+        params: {
+          limit: get.searh.limit,
+          onlyDeleted: get.searh.onlyDeleted,
+          isOwn: get.searh.isOwn,
+          isDeleted: get.searh.isDeleted,
+          search: get.searh.search,
+          boardId: get.searh.boardId,
+          searchType: get.searh.searchType,
+          sort: get.searh.sort,
+        },
+      });
     },
-  };
+  });
+  return { isLoading, data, refetch };
+};
+
+export const useQuery_getReasonList = (
+  reasonType:
+    | "BAN"
+    | "CMT_REPORT"
+    | "CMT_DELETE"
+    | "BOARD_DELETE"
+    | "BOARD_REPORT"
+) => {
+  const { isLoading, data } = useQuery({
+    queryKey: ["get", "reason", "list", reasonType],
+    queryFn: async () => {
+      return await serverAxios.get(`/reason/list`);
+    },
+  });
+  return { isLoading, data };
 };
 
 export const useQuery_getCategoryDetail = (get: GetCategoryDetail) => {
@@ -54,6 +56,16 @@ export const useQuery_getCategoryDetail = (get: GetCategoryDetail) => {
   return { isLoading, data };
 };
 
+export const useQuery_getBoardDetail = (boardId: number) => {
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ["get", "board"],
+    queryFn: async () => {
+      return await serverAxios.get(`/board/${boardId}`);
+    },
+  });
+  return { isLoading, data, refetch };
+};
+
 export const useQuery_getCategories = () => {
   const { isLoading, data } = useQuery({
     queryKey: ["get", "categories"],
@@ -64,8 +76,8 @@ export const useQuery_getCategories = () => {
   return { isLoading, data };
 };
 export const useQuery_getBoardList = (get: GetBoardList) => {
-  const { isLoading, data } = useQuery({
-    queryKey: ["get", "board", "list"],
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ["get", "board", "list", get.offset],
     queryFn: async () => {
       return await serverAxios.get("/board/list", {
         params: {
@@ -80,14 +92,14 @@ export const useQuery_getBoardList = (get: GetBoardList) => {
       });
     },
   });
-  return { isLoading, data };
+  return { isLoading, data, refetch };
 };
-export const useQuery_getUserInfo = () => {
-  const { isLoading, data } = useQuery({
+export const useQuery_getUserInfo = (userId?: number) => {
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ["get", "userInfo"],
     queryFn: async () => {
-      return await serverAxios.get("/user");
+      return await serverAxios.get(`/user${userId ? "/" + userId : ""}`);
     },
   });
-  return { isLoading, data };
+  return { isLoading, data, refetch };
 };

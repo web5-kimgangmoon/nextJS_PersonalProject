@@ -7,7 +7,7 @@ export const createBoardNCategory = async () => {
       path: "inform",
       name: "공지",
       cmtPlaceholder:
-        "공지의 게시글입니다. 모두가  볼 수 있게 예쁜 댓글 부탁드려요.",
+        "공지의 댓글입니다. 모두가  볼 수 있게 예쁜 댓글 부탁드려요.",
       titlePlaceholder: "운영자가 적는 제목",
       descriptionPlaceholder: "설명글을 적습니다.",
       contentPlaceholder: "내용을 적는 공간입니다.",
@@ -90,7 +90,7 @@ export const createBoardNCategory = async () => {
     content: string;
     description: string;
   }[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 100; i++) {
     const random = Math.ceil(Math.random() * 6);
     boarddata.push({
       categoryId: random,

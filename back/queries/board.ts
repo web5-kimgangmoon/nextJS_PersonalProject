@@ -6,6 +6,7 @@ import Cmt from "../models/cmts";
 import UserInfo from "../models/userInfoList";
 import Score from "../models/scoreList";
 import Report from "../models/reportHistory";
+import Reason from "../models/reasons";
 
 export const getBoardList = async (
   path: string | null,
@@ -70,7 +71,7 @@ export const getBoardList = async (
   });
   const sendData: SendData = targetList
     ? {
-        boardList: targetList.slice(offset, limit).map((item) => ({
+        boardList: targetList.slice(offset, offset + limit).map((item) => ({
           category: item.category.name,
           categoryPath: item.category.path,
           cmtCnt: item.cmts.length,
@@ -130,7 +131,7 @@ export const getBoard = async (boardId?: number, userId?: number) => {
       ],
     });
     if (board) {
-      await board.update("looks", board.looks + 1);
+      await board.update({ looks: ++board.looks });
       const sendData: SendData = {
         id: board.id,
         category: board.category.name,
@@ -159,4 +160,59 @@ export const getBoard = async (boardId?: number, userId?: number) => {
   }
 
   return undefined;
+};
+
+export const giveScore = async (
+  userId: number | undefined,
+  boardId: number | undefined,
+  score: number | undefined
+) => {
+  let target;
+  if (!userId || !boardId || !score) return false;
+  if (!(await Board.findOne({ where: { deletedAt: null, id: boardId } })))
+    return false;
+  if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
+    return false;
+  target = await Score.findOne({
+    where: { userId: userId, boardId: boardId, deletedAt: null },
+  });
+  if (!target) {
+    await Score.create({
+      userId: userId,
+      boardId: boardId,
+      score,
+    });
+    return true;
+  }
+  return false;
+};
+
+export const reportBoard = async (
+  userId?: number,
+  boardId?: number,
+  reasonId?: number
+) => {
+  if (!userId || !boardId || !reasonId) return false;
+  if (!(await Board.findOne({ where: { deletedAt: null, id: boardId } })))
+    return false;
+  if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
+    return false;
+  if (
+    !(await Reason.findOne({
+      where: { deletedAt: null, id: reasonId, reasonType: "BOARD_REPORT" },
+    }))
+  )
+    return false;
+
+  const target = await Report.findOne({
+    where: { reporterId: userId, boardId: boardId, deletedAt: null },
+  });
+  if (target) return false;
+  await Report.create({
+    reporterId: userId,
+    boardId,
+    reasonId,
+  });
+
+  return true;
 };

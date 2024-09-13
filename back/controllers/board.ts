@@ -13,7 +13,12 @@
 //                      null
 import { Request, Response, Router } from "express";
 import { booleanCheck, intCheck, stringCheck } from "../services/zod";
-import { getBoard, getBoardList } from "../queries/board";
+import {
+  getBoard,
+  getBoardList,
+  giveScore,
+  reportBoard,
+} from "../queries/board";
 
 const router = Router();
 
@@ -57,15 +62,37 @@ router.get("/list", async (req: Request, res: Response) => {
       searchType
     )
   );
-  //   res.send({ ...(await getCategoryList()) });
 });
-
+router.post("/eval/:boardId", async (req: Request, res: Response) => {
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const boardId = intCheck.safeParse(req.params.boardId).success
+    ? Number(req.params.boardId)
+    : undefined;
+  const score = intCheck.safeParse(req.body.score).success
+    ? Number(req.body.score)
+    : undefined;
+  (await giveScore(userId, boardId, score))
+    ? res.status(204).send()
+    : res.status(403).send();
+});
+router.post("/report/:boardId", async (req: Request, res: Response) => {
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const boardId = intCheck.safeParse(req.params.boardId).success
+    ? Number(req.params.boardId)
+    : undefined;
+  const reportReasonId = intCheck.safeParse(req.body.reportReasonId).success
+    ? Number(req.body.reportReasonId)
+    : undefined;
+  (await reportBoard(userId, boardId, reportReasonId))
+    ? res.status(204).send()
+    : res.status(400).send();
+});
 router.get("/:boardId", async (req: Request, res: Response) => {
   const boardId = intCheck.safeParse(req.params.boardId).success
     ? intCheck.parse(req.params.boardId)
     : 0;
   const board = await getBoard(boardId, req.session.userId);
-  board ? res.send(board) : res.status(404).send(undefined);
+  board ? res.send(board) : res.status(404).send();
 });
 
 export default router;

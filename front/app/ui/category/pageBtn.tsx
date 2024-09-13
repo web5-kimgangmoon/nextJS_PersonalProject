@@ -79,10 +79,20 @@ export const PageBtn = ({
 }) => {
   const router = useRouter();
   const searchOn = useCallback(() => {
-    router.replace(link);
-    router.refresh();
+    router.push(link);
+    // router.refresh();
   }, [link]);
-  return (
+  return !icon ? (
+    <Button
+      color={isSelected ? "pink" : "none"}
+      radius="full"
+      size={"pageBtn"}
+      className={clsx(!isSelected && "hover:text-[#D92643]")}
+      onClick={searchOn}
+    >
+      {title}
+    </Button>
+  ) : (
     <ImgButton
       color={isSelected ? "pink" : "none"}
       radius="full"

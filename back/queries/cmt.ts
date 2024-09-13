@@ -1,12 +1,13 @@
 import { Op } from "sequelize";
 import { front } from "../lib/temporaryLocation";
 import UserInfo from "../models/userInfoList";
-import { mkHash } from "../lib/util";
+import { cmtMake, cmtRemake, mkHash } from "../lib/util";
 import Cmt from "../models/cmts";
 import Like from "../models/likeList";
 import Report from "../models/reportHistory";
 import Board from "../models/boards";
 import Category from "../models/categories";
+import Reason from "../models/reasons";
 
 interface GetCmts {
   limit: number;
@@ -153,7 +154,12 @@ export const getCmts = async (get: GetCmts) => {
     });
   }
   const sendData: SendData = {
-    cmtCnt: cmts.length,
+    cmtCnt: (
+      await Cmt.findAll({
+        where: condition,
+        include: [{ model: UserInfo, as: "writer", where: writerCondition }],
+      })
+    ).length,
     cmtList: cmts.map((item) => ({
       boardId: item.boardId,
       boardTitle: item.board.title,
@@ -226,13 +232,124 @@ export const getCmts = async (get: GetCmts) => {
   return sendData;
 };
 
+export const deleteCmt = async (userId?: number, cmtId?: number) => {
+  if (!userId || !cmtId) return false;
+  const target = await Cmt.findOne({
+    where: { writerId: userId, id: cmtId, deletedAt: null },
+  });
+  if (target) {
+    const result = cmtRemake(target.content, "(*삭제됨)");
+    if (result) {
+      await target.update({ deletedAt: new Date() });
+      await target.update({
+        content: result.cmt,
+      });
+      return true;
+    }
+  }
+  return false;
+};
+export const addCmt = async (
+  userId: number,
+  boardId: number,
 
-const deleteCmt = async (id:number) => {
-  const target = await Cmt.findByPk(id);
-  if(target){
-  await target.update("deleteAt", new Date());
- target?.content.split(`<span style="color: #042552;font-size: 0.75rem;">`)[1];
-`<span class="cmtTextContent">`
-}
-  return target;
-}
+  content: string,
+  replyId?: number,
+  img?: string
+) => {
+  const board = await Board.findOne({ where: { id: boardId } });
+  if (!board) return false;
+  const reply = replyId ? { replyId: replyId } : {};
+  const result = cmtMake(content, img);
+  return await Cmt.create({
+    boardId: boardId,
+    writerId: userId,
+    content: result.cmt,
+    ...reply,
+  });
+};
+
+export const updateCmt = async (
+  userId: number,
+  cmtId: number,
+  isDeleteImg: boolean,
+  content?: string,
+  reImg?: string
+) => {
+  const target = await Cmt.findOne({
+    where: { writerId: userId, id: cmtId, deletedAt: null },
+  });
+  if (target) {
+    const result = isDeleteImg
+      ? cmtRemake(target.content, "(*수정됨)", content, reImg)
+      : cmtRemake(target.content, "(*수정됨)", content);
+    if (result) {
+      await target.update({ updatedAt: new Date() });
+      await target.update({
+        content: result.cmt,
+      });
+      return true;
+    }
+  }
+  return false;
+};
+
+export const likeCmt = async (
+  userId: number | undefined,
+  cmtId: number | undefined,
+  isDisLike: boolean
+) => {
+  let target;
+  if (!userId || !cmtId) return false;
+  if (!(await Cmt.findOne({ where: { deletedAt: null, id: cmtId } })))
+    return false;
+  if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
+    return false;
+  target = await Like.findOne({
+    where: { userId: userId, cmtId: cmtId, deletedAt: null },
+  });
+  if (!target) {
+    target = await Like.create({
+      userId: userId,
+      cmtId: cmtId,
+      isDisLike: false,
+      isLike: false,
+    });
+  }
+  if (isDisLike) {
+    target.update("isDisLike", !target.isDisLike);
+  } else {
+    target.update("isLike", !target.isLike);
+  }
+  return true;
+};
+
+export const reportCmt = async (
+  userId?: number,
+  cmtId?: number,
+  reasonId?: number
+) => {
+  if (!userId || !cmtId || !reasonId) return false;
+  if (!(await Cmt.findOne({ where: { deletedAt: null, id: cmtId } })))
+    return false;
+  if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
+    return false;
+  if (
+    !(await Reason.findOne({
+      where: { deletedAt: null, id: reasonId, reasonType: "CMT_REPORT" },
+    }))
+  )
+    return false;
+
+  const target = await Report.findOne({
+    where: { reporterId: userId, cmtId: cmtId, deletedAt: null },
+  });
+  if (target) return false;
+  await Report.create({
+    reporterId: userId,
+    cmtId: cmtId,
+    reasonId,
+  });
+
+  return true;
+};

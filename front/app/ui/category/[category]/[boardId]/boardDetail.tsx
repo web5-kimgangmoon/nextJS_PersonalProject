@@ -6,15 +6,22 @@ import clsx from "clsx";
 import { getTimeString } from "@/app/lib/utils";
 import Link from "next/link";
 import { ImgButton, LinkButton } from "@/app/ui/buttons";
-import { currentBoardData, userInfoData } from "@/app/lib/placeholder-data";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useToggle } from "@/app/hooks/toggle";
 import { useCallback } from "react";
-import { boardDelete } from "@/app/lib/actions";
+import { boardDelete } from "@/app/lib/actions"; // 작성이 필요
 import { CheckDelete } from "@/app/ui/reasonBox";
+import { useQuery_getBoardDetail, useQuery_getUserInfo } from "@/app/lib/data";
+import { useParams } from "next/navigation";
+import { LoadingSpin } from "@/app/ui/loadingSpin";
 
 export const BoardDetail = () => {
-  if (!currentBoardData)
+  const params = useParams();
+  const currentBoardData = useQuery_getBoardDetail(+params.boardId);
+  const userInfoData = useQuery_getUserInfo();
+  if (currentBoardData.isLoading || userInfoData.isLoading)
+    <LoadingSpin bgColorClass="bg-categoryGray" />;
+  if (!currentBoardData.data?.data)
     return (
       <div className="h-10 w-full flex justify-center items-center">
         게시글이 존재하지 않습니다.
@@ -22,8 +29,11 @@ export const BoardDetail = () => {
     );
   return (
     <BoardDetailComp
-      {...currentBoardData}
-      isWriter={currentBoardData.writerId === userInfoData.userInfo?.id}
+      {...currentBoardData.data.data}
+      isWriter={
+        currentBoardData.data.data.writerId ===
+        userInfoData.data?.data.userInfo?.id
+      }
     />
   );
 };

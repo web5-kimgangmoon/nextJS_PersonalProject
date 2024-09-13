@@ -1,10 +1,10 @@
 "use client";
 
-import { logout } from "@/app/lib/actions";
+import { useLogout } from "@/app/lib/actions";
 import { useQuery_getUserInfo } from "@/app/lib/data";
-import { userInfoData } from "@/app/lib/placeholder-data";
 import Link from "next/link";
 import { LoadingSpin } from "../loadingSpin";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Footer() {
   const userInfoData = useQuery_getUserInfo();
@@ -89,13 +89,21 @@ export function FooterBox({
 }
 
 export function OnLogin() {
+  const clientQuery = useQueryClient();
+  const logout = useLogout();
   return (
     <>
       <FooterBox
         title="사용자"
         elements={[
           { title: "유저정보", href: `/user` },
-          { title: "로그아웃", request: logout },
+          {
+            title: "로그아웃",
+            request: async () => {
+              await logout.mutate();
+              clientQuery.refetchQueries({ queryKey: ["get", "userInfo"] });
+            },
+          },
         ]}
       />
 

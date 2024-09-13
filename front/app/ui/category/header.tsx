@@ -12,9 +12,10 @@ import {
   ModalRouterBox,
 } from "@/app/ui/modal";
 import Image from "next/image";
-import { logout } from "@/app/lib/actions";
+import { useLogout } from "@/app/lib/actions";
 import { useQuery_getCategories, useQuery_getUserInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../loadingSpin";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Header() {
   const categoryListData = useQuery_getCategories();
@@ -162,7 +163,8 @@ export const MenuModalContent = ({
     user: false,
     category: false,
   });
-
+  const logout = useLogout();
+  const queryClient = useQueryClient();
   const toggleBox = useCallback(
     (key: "user" | "category") => {
       setOpenObj({ ...openObj, [key]: !openObj[key] });
@@ -204,7 +206,14 @@ export const MenuModalContent = ({
         closeModal={closeModal}
       />
       {isLogin && (
-        <ModalRequest closeModal={closeModal} request={logout} isBorder={true}>
+        <ModalRequest
+          closeModal={closeModal}
+          request={() => {
+            logout.mutate();
+            queryClient.refetchQueries({ queryKey: ["get", "userInfo"] });
+          }}
+          isBorder={true}
+        >
           로그아웃
         </ModalRequest>
       )}
@@ -228,10 +237,19 @@ export const ProfileModalContent = ({
 }: {
   closeModal: () => void;
 }) => {
+  const logout = useLogout();
+  const queryClient = useQueryClient();
   return (
     <div className="py-2">
       <ModalLink href="/user">프로필 확인</ModalLink>
-      <ModalRequest request={logout} closeModal={closeModal} isBorder={true}>
+      <ModalRequest
+        request={() => {
+          logout.mutate();
+          queryClient.refetchQueries({ queryKey: ["get", "userInfo"] });
+        }}
+        closeModal={closeModal}
+        isBorder={true}
+      >
         로그아웃
       </ModalRequest>
     </div>

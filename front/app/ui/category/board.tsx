@@ -13,6 +13,7 @@ import {
 } from "@/app/lib/data";
 import { useParams, useSearchParams } from "next/navigation";
 import { LoadingSpin } from "../loadingSpin";
+import { useEffect } from "react";
 
 export const InformBoard = () => {
   const params = useParams();
@@ -39,21 +40,26 @@ export const BoardList = () => {
   const query = useSearchParams();
   const { intCheck } = useTypeCheck_zod();
   const page = query.get("page");
-  const boardListData = useQuery_getBoardList({
+  let { data, refetch, isLoading } = useQuery_getBoardList({
     category: params["category"] ? (params["category"] as string) : "all",
     isDeleted: "false",
     search: query.get("search"),
     searchType: query.get("searchType"),
     isOwn: "false",
     limit: "10",
-    offset: intCheck.safeParse(page).success ? String(Number(page) * 10) : null,
+    offset: intCheck.safeParse(page).success
+      ? String((Number(page) - 1) * 10)
+      : null,
   });
-  if (boardListData.isLoading && !boardListData.data?.data)
-    return <LoadingSpin bgColorClass="bg-categoryGray" />;
-  if (boardListData.data?.data.boardList.length === 0) return <NoBoard />;
+  useEffect(() => {
+    refetch();
+    console.log(page);
+  }, [page, query.get("search"), query.get("searchType")]);
+  if (isLoading && !data) return <LoadingSpin bgColorClass="bg-categoryGray" />;
+  if (data?.data.boardList.length === 0) return <NoBoard />;
   return (
     <div>
-      {boardListData.data?.data.boardList.map(
+      {data?.data.boardList.map(
         (
           item: {
             isTop?: boolean;

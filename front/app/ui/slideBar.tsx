@@ -7,7 +7,9 @@ import { useParams } from "next/navigation";
 import { TouchEvent, useContext } from "react";
 import { SlideContext } from "../hooks/context/slideContext";
 import { useSearchParams } from "next/navigation";
-import { ILocation } from "@/app/lib/definitions";
+import { CategoryInfo, ILocation } from "@/app/lib/definitions";
+import { useQuery_getCategories } from "../lib/data";
+import { LoadingSpin } from "./loadingSpin";
 
 export const CategorySlideBar = () => {
   const query = useSearchParams();
@@ -16,15 +18,35 @@ export const CategorySlideBar = () => {
   const search = query.get("search");
   const searchType = query.get("searchType");
 
-  const categoryList = categoryListHolder;
-  const list = categoryList.categories.map((item) => ({
+  const categoryList = useQuery_getCategories();
+
+  if (categoryList.isLoading)
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
+  const list = categoryList.data?.data.categories.map((item: CategoryInfo) => ({
     title: item.name,
     path: `/${"category"}/${item.path}${
       search && searchType ? `?search=${search}&searchType=${searchType}` : ""
     }`,
     selected: params.category === item.path ? true : false,
   }));
-  return <CategorySlideBarController list={list} />;
+  return (
+    <CategorySlideBarController
+      list={[
+        {
+          path: "/category/all",
+          title: "전체",
+          selected:
+            list.filter(
+              (item: { title: string; path: string; selected: boolean }) =>
+                item.selected
+            ).length === 0
+              ? true
+              : false,
+        },
+        ...list,
+      ]}
+    />
+  );
 };
 
 export const CategorySlideBarController = ({
