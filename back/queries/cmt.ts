@@ -225,3 +225,14 @@ export const getCmts = async (get: GetCmts) => {
   };
   return sendData;
 };
+
+
+const deleteCmt = async (id:number) => {
+  const target = await Cmt.findByPk(id);
+  if(target){
+  await target.update("deleteAt", new Date());
+ target?.content.split(`<span style="color: #042552;font-size: 0.75rem;">`)[1];
+`<span class="cmtTextContent">`
+}
+  return target;
+}

@@ -1,5 +1,10 @@
 import Reason from "../models/reasons";
 
+// reasonType: "BAN" | 
+//                      "CMT_REPORT" | 
+//                      "CMT_DELETE" | 
+//                      "BOARD_DELETE"|
+//                      "BOARD_REPORT"
 export const createReason = async () => {
   const reasonData: {
     title: string;
