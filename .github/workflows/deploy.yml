@@ -158,7 +158,7 @@ jobs:
           rsync -avz -e "ssh" ./back/public/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/back/public
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
 
-          cd  /var/www/backend
+          cd  /var/www/back
           npm i --production
           echo PORT=3080 >> .env
           echo EC2_MYSQL_USER=${{ secrets.EC2_MYSQL_USER }} >> .env
@@ -169,4 +169,4 @@ jobs:
       - name: Start Server
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-          pm2 start /var/www/back/index.js --name backend'
+          pm2 start /var/www/back/index.js --name back'
