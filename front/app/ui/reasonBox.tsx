@@ -38,7 +38,16 @@ export const ReportBox = ({
     isBoard
       ? queryClient.refetchQueries({ queryKey: ["get", "board"] })
       : queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
-  }, [reason, id, isBoard, modalClose, router]);
+  }, [
+    reason,
+    id,
+    isBoard,
+    modalClose,
+    router,
+    boardReport,
+    cmtReport,
+    queryClient,
+  ]);
 
   return (
     <ReportBoxComp

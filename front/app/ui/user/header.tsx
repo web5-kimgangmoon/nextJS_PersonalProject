@@ -19,7 +19,7 @@ export function Header() {
 
   useEffect(() => {
     !userInfo && router.replace("/category");
-  }, []);
+  }, [router, userInfo]);
 
   return (
     <div>
@@ -167,7 +167,7 @@ export function SlideUserInfo({
         title: item.title,
         selected: item.path === selectedMenu,
       })),
-    [selectedMenu]
+    [selectedMenu, userInfo.userInfo]
   );
   const { touchMove, touchStart, location } = useSlide();
   return (

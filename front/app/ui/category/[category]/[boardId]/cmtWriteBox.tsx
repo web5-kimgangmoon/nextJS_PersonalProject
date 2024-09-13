@@ -53,7 +53,7 @@ export const WriteCmt = ({
         : await addCmt.mutate({ formData, replyId });
       queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     },
-    [boardId, cmtId, isUpdate, replyId]
+    [boardId, cmtId, isUpdate, replyId, addCmt, queryClient, updateCmt]
   );
   if (categoryInfo.isLoading)
     return <LoadingSpin bgColorClass="bg-categoryGray" />;

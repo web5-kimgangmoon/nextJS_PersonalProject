@@ -60,7 +60,7 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
   };
   useEffect(() => {
     cmtData.refetch();
-  }, [sortState, limit]);
+  }, [sortState, limit, cmtData]);
   if (cmtData.isLoading || userInfoData.isLoading || cmtReportList.isLoading)
     return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
@@ -202,12 +202,12 @@ export const CmtBox = ({
       likeCmt.mutate({ cmtId, isDisLike: isDisLike ? "true" : "false" });
       queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     },
-    [cmtId, router]
+    [cmtId, router, likeCmt, queryClient]
   );
   const requestDelete = useCallback(() => {
     deleteCmt.mutate({ cmtId });
     queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
-  }, [cmtId, router]);
+  }, [cmtId, router, deleteCmt, queryClient]);
   return (
     <div>
       <div

@@ -23,8 +23,9 @@ export const GiveScoreBox = () => {
     async (score: number) => {
       await boardGiveScore.mutate({ score, boardId: +params.boardId });
       currentBoard.refetch();
+      router.refresh();
     },
-    [router]
+    [router, boardGiveScore, currentBoard, params.boardId]
   );
   const userInfoData = useQuery_getUserInfo();
   if (userInfoData.isLoading || currentBoard.isLoading)

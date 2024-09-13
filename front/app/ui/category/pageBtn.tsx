@@ -80,8 +80,7 @@ export const PageBtn = ({
   const router = useRouter();
   const searchOn = useCallback(() => {
     router.push(link);
-    // router.refresh();
-  }, [link]);
+  }, [link, router]);
   return !icon ? (
     <Button
       color={isSelected ? "pink" : "none"}

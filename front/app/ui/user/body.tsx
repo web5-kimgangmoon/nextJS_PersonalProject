@@ -9,9 +9,7 @@ import { BoardList } from "./boardList";
 export function Body() {
   const query = useSearchParams();
 
-  const selectedMenu = useMemo(() => {
-    return query.get("select");
-  }, [query.get("select")]);
+  const selectedMenu = query.get("select");
   if (selectedMenu === "boardList")
     return (
       <UserInfoBox>

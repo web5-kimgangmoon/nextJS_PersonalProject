@@ -10,4 +10,4 @@ export const usePopup = (address: string, oauth: "google" | "facebook") =>
     window.onmessageerror = (e) => {
       console.log(e);
     };
-  }, [address]);
+  }, [address, oauth]);

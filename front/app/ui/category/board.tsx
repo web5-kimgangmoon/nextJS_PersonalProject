@@ -40,11 +40,13 @@ export const BoardList = () => {
   const query = useSearchParams();
   const { intCheck } = useTypeCheck_zod();
   const page = query.get("page");
+  const search = query.get("search");
+  const searchType = query.get("searchType");
   let { data, refetch, isLoading } = useQuery_getBoardList({
     category: params["category"] ? (params["category"] as string) : "all",
     isDeleted: "false",
-    search: query.get("search"),
-    searchType: query.get("searchType"),
+    search: search,
+    searchType: searchType,
     isOwn: "false",
     limit: "10",
     offset: intCheck.safeParse(page).success
@@ -53,8 +55,7 @@ export const BoardList = () => {
   });
   useEffect(() => {
     refetch();
-    console.log(page);
-  }, [page, query.get("search"), query.get("searchType")]);
+  }, [page, search, searchType, refetch]);
   if (isLoading && !data) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   if (data?.data.boardList.length === 0) return <NoBoard />;
   return (
