@@ -13,10 +13,12 @@ import Like from "./likeList";
 import UserInfo from "./userInfoList";
 import Board from "./boards";
 import Reason from "./reasons";
+import Report from "./reportHistory";
 
 @Table({
   tableName: "cmts",
   underscored: false,
+  timestamps: true,
 })
 export default class Cmt extends Model {
   @PrimaryKey
@@ -43,6 +45,9 @@ export default class Cmt extends Model {
   @Column({ type: DataType.STRING(1000), allowNull: false })
   content!: string;
 
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
+
   @BelongsTo(() => Board, "boardId")
   board!: Board;
 
@@ -60,4 +65,7 @@ export default class Cmt extends Model {
 
   @HasMany(() => Like, "cmtId")
   likeList?: Like[];
+
+  @HasMany(() => Report, "cmtId")
+  reports!: Report[];
 }

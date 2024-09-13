@@ -14,6 +14,7 @@ import Board from "./boards";
 @Table({
   tableName: "scoreList",
   underscored: false,
+  timestamps: true,
 })
 export default class Score extends Model {
   @PrimaryKey
@@ -29,8 +30,15 @@ export default class Score extends Model {
   @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   userId!: number;
 
-  @Column({ type: DataType.FLOAT.UNSIGNED, allowNull: false, defaultValue: 1 })
+  @Column({
+    type: DataType.TINYINT.UNSIGNED,
+    allowNull: false,
+    defaultValue: 1,
+  })
   score!: number;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => Board, "boardId")
   board!: Board;

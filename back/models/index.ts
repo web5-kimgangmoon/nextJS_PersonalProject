@@ -15,7 +15,7 @@ config();
 
 const sequelize = new Sequelize({
   dialect: "mysql",
-  host: `${process.env.EC2_HOST}`,
+  host: "localhost",
   username: `${process.env.EC2_MYSQL_USER}`,
   password: `${process.env.EC2_MYSQL_PASSWORD}`,
   database: `${process.env.EC2_MYSQL_DATABASE}`,

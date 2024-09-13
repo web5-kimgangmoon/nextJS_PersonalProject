@@ -1,5 +1,5 @@
 import { useStretchBtn } from "@/app/hooks/strechBtn";
-import { likeCmt } from "@/app/lib/actions";
+import { useLikeCmt } from "@/app/lib/actions";
 import { mycmtData } from "@/app/lib/placeholder-data";
 import { getTimeString } from "@/app/lib/utils";
 import { Button, ImgButton } from "@/app/ui/buttons";
@@ -16,6 +16,7 @@ export function CmtList() {
     cmtList: mycmtData.cmtList.slice(0, limit),
     cmtCnt: mycmtData.cmtCnt,
   };
+
   const refetch = () => {};
   return (
     <div>
@@ -25,11 +26,11 @@ export function CmtList() {
           {...item}
           createdAt={getTimeString(item.createdAt)}
           requestLike={async () => {
-            await likeCmt(item.id, false);
+            // await likeCmt(item.id, false);
             refetch();
           }}
           requestDislike={async () => {
-            await likeCmt(item.id, true);
+            // await likeCmt(item.id, true);
             refetch();
           }}
           cmtCnt={mycmt.cmtCnt}

@@ -1,17 +1,27 @@
 "use client";
 
 import { pageGetter } from "@/app/lib/utils";
-import { LinkButton } from "../buttons";
-import { categoryDetailData } from "@/app/lib/placeholder-data";
-import { usePathname, useSearchParams } from "next/navigation";
-import { ReactNode } from "react";
+import { Button, ImgButton, LinkButton } from "../buttons";
+import {
+  usePathname,
+  useSearchParams,
+  useParams,
+  useRouter,
+} from "next/navigation";
+import { ReactNode, useCallback } from "react";
 import { LeftArrow } from "@/public/left-arrow";
 import { RightArrow } from "@/public/right-arrow";
 import clsx from "clsx";
+import {
+  useQuery_getBoardList,
+  useQuery_getCategoryDetail,
+} from "@/app/lib/data";
+import { LoadingSpin } from "../loadingSpin";
 
 export const Pages = () => {
   let path = usePathname() + "?";
   const query = useSearchParams();
+  const params = useParams();
   let page = query.get("page");
   if (page === null || Number.isNaN(+page)) {
     page = "1";
@@ -20,8 +30,18 @@ export const Pages = () => {
   path += query.get("searchType")
     ? `searchType=${query.get("searchType")}&`
     : "";
+  const { isLoading, data } = useQuery_getBoardList({
+    category: params["category"] ? (params["category"] as string) : "all",
+    isDeleted: "false",
+    isOwn: "false",
+    limit: String(Number(page) * 10),
+    offset: String((Number(page) - 1) * 10),
+    search: query.get("search"),
+    searchType: query.get("searchType"),
+  });
+  if (isLoading) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   const info = pageGetter({
-    count: categoryDetailData.boardCnt,
+    count: data?.data.boardCnt,
     target: +page,
     limit: 10,
   });
@@ -57,18 +77,33 @@ export const PageBtn = ({
   icon?: ReactNode;
   isSelected: boolean;
 }) => {
-  return (
-    <LinkButton
+  const router = useRouter();
+  const searchOn = useCallback(() => {
+    router.push(link);
+    // router.refresh();
+  }, [link]);
+  return !icon ? (
+    <Button
       color={isSelected ? "pink" : "none"}
       radius="full"
       size={"pageBtn"}
-      href={`${link}`}
+      className={clsx(!isSelected && "hover:text-[#D92643]")}
+      onClick={searchOn}
+    >
+      {title}
+    </Button>
+  ) : (
+    <ImgButton
+      color={isSelected ? "pink" : "none"}
+      radius="full"
+      size={"pageBtn"}
       icon={icon}
       isNoString={true}
       isImgBig={true}
       className={clsx(!isSelected && "hover:text-[#D92643]")}
+      onClick={searchOn}
     >
       {title}
-    </LinkButton>
+    </ImgButton>
   );
 };

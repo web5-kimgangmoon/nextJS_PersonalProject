@@ -4,14 +4,13 @@ import morgan from "morgan";
 import cors from "cors";
 import router from "./controllers/index";
 import sequelize from "./models/index";
-import test from "./controllers/testcase";
+import test from "./placeholderData/testcase";
 
 config();
 test();
 
 // (async () => {
-//   // sequelize.addModels([Todo]);
-//   await sequelize.sync({ force: true });
+//   await sequelize.sync({ force: false });
 // })();
 const app = express();
 

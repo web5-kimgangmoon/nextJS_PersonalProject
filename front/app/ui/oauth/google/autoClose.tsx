@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
-import { useHash } from "@/app/lib/utils";
+import { ranHash } from "@/app/lib/utils";
 import axios from "axios";
 
 export const AutoClose = ({}: {}) => {
@@ -14,12 +14,12 @@ export const AutoClose = ({}: {}) => {
     const params = new URLSearchParams(window.location.hash.substring(1));
 
     if (!params.get("code")) {
-      const nonce = useHash("sha256");
+      const nonce = ranHash("sha256");
       router.replace(
         `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH}&response_type=code id_token&scope=https://www.googleapis.com/auth/userinfo.email&nonce=${nonce}`
       );
     } else {
-      const nonce = useHash("sha256");
+      const nonce = ranHash("sha256");
       axios
         .post(
           `https://oauth2.googleapis.com/token?client_id=${

@@ -5,14 +5,17 @@ import { useToggle } from "@/app/hooks/toggle";
 import { InputBox } from "@/app/ui/inputBox";
 import { Button } from "@/app/ui/buttons";
 import { useTypeCheck_zod } from "@/app/lib/utils";
-import { login } from "@/app/lib/actions";
+import { useLogin } from "@/app/lib/actions";
 import { useRouter } from "next/navigation";
 import { Modal_little } from "@/app/ui/modal";
 import { useEffect } from "react";
-import { userInfoData } from "@/app/lib/placeholder-data";
+import { useQuery_getUserInfo } from "@/app/lib/data";
+import { LoadingSpin } from "../loadingSpin";
+import serverAxios from "@/app/lib/serverActionAxios";
 
 export function Login() {
   const router = useRouter();
+  const userInfoData = useQuery_getUserInfo();
   const { nick, password } = {
     nick: useSimpleText(""),
     password: useSimpleText(""),
@@ -23,10 +26,9 @@ export function Login() {
     loginIsFail: useToggle(true),
   };
   const { stringCheck, passwordCheck } = useTypeCheck_zod();
-  const userData = userInfoData;
-  useEffect(() => {
-    if (userData.userInfo) router.replace("/category");
-  }, []);
+  const login = useLogin(loginIsFail.close, () => router.replace("/category"));
+  if (userInfoData.isLoading)
+    return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
   return (
     <div>
       <InputBox
@@ -56,8 +58,16 @@ export function Login() {
           onClick={
             nickIsOK.is && passwordIsOK.is
               ? async () => {
-                  login(nick.text, password.text, false, loginIsFail.close);
-                  if (false) router.replace("/category");
+                  if (userInfoData.data?.data.userInfo) {
+                    router.replace("/category/all");
+                    return;
+                  }
+                  await login.mutate({
+                    id: nick.text,
+                    pwd: password.text,
+                    isAdminLogin: "false",
+                  });
+                  userInfoData.refetch();
                 }
               : undefined
           }

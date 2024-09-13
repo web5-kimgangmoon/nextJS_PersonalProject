@@ -2,11 +2,6 @@
 
 import clsx from "clsx";
 
-import {
-  cmtReportReasonListData as cmtReportListHolder,
-  userInfoData,
-} from "@/app/lib/placeholder-data";
-
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Dots } from "@/public/dots";
@@ -23,7 +18,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Button, ImgButton } from "@/app/ui/buttons";
-import { deleteCmt, likeCmt } from "@/app/lib/actions";
+import { useDeleteCmt, useLikeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
 import { useToggle } from "@/app/hooks/toggle";
 import { useRouter } from "next/navigation";
@@ -32,12 +27,17 @@ import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
 import { CmtItem, Reason } from "@/app/lib/definitions";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
-import { useQuery_getCmt } from "@/app/lib/data";
+import {
+  useQuery_getCmt,
+  useQuery_getReasonList,
+  useQuery_getUserInfo,
+} from "@/app/lib/data";
 import { useStretchBtn } from "@/app/hooks/strechBtn";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const CmtList = ({ boardId }: { boardId: number }) => {
-  const cmtReportList = cmtReportListHolder;
-
+  const cmtReportList = useQuery_getReasonList("CMT_REPORT");
+  const userInfoData = useQuery_getUserInfo();
   const { limit, stretchLimit } = useStretchBtn();
   const [sortState, setSortState] =
     useState<Partial<"like" | "recently" | "old">>("like");
@@ -58,7 +58,11 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
     setSortRecently: useSelectCallback(setSortState, "recently"),
     setSortOld: useSelectCallback(setSortState, "old"),
   };
-  if (cmtData.isLoading) return <LoadingSpin bgColorClass="bg-categoryGray" />;
+  useEffect(() => {
+    cmtData.refetch();
+  }, [sortState, limit]);
+  if (cmtData.isLoading || userInfoData.isLoading || cmtReportList.isLoading)
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <div className="px-2">
       <div className="flex gap-2 pb-10 font-bold">
@@ -93,24 +97,24 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
           과거순
         </div>
       </div>
-      {cmtData.data.cmtList.map(
-        (item) =>
+      {cmtData.data?.data.cmtList.map(
+        (item: CmtItem) =>
           !item.replyId && (
             <CmtBox
               isDidReport={item.isDidReport}
               isDoDislike={item.isDoDislike}
               isDoLike={item.isDoLike}
               isFirst={true}
-              isWriter={item.writerId === userInfoData.userInfo?.id}
+              isWriter={item.writerId === userInfoData.data?.data.userInfo?.id}
               cmtId={item.id}
-              userId={userInfoData.userInfo?.id}
+              userId={userInfoData.data?.data.userInfo?.id}
               writerId={item.writerId}
               replyUserId={item.replyUserId}
-              userProfile={userInfoData.userInfo?.profileImg}
+              userProfile={userInfoData.data?.data.userInfo?.profileImg}
               replyUser={item.replyUser}
               writer={item.writer}
               writerProfile={item.writerProfile}
-              cmtReportList={cmtReportList.reasonList}
+              cmtReportList={cmtReportList.data?.data.reasonList}
               dislike={item.dislike}
               key={item.id}
               like={item.like}
@@ -121,7 +125,8 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
           )
       )}
       <div>
-        {cmtData.data.cmtCnt > limit && (
+        {(cmtData.data?.data.cmtCnt ? cmtData.data?.data.cmtCnt : 0) >
+          limit && (
           <Button color="blankBlue" radius="medium" onClick={stretchLimit}>
             댓글들 더보기
           </Button>
@@ -189,16 +194,19 @@ export const CmtBox = ({
   const remake = useToggle(false);
   const deleteBox = useToggle(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const likeCmt = useLikeCmt();
+  const deleteCmt = useDeleteCmt();
   const requestLike = useCallback(
     (isDisLike: boolean) => {
-      likeCmt(cmtId, isDisLike);
-      router.refresh();
+      likeCmt.mutate({ cmtId, isDisLike: isDisLike ? "true" : "false" });
+      queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     },
     [cmtId, router]
   );
   const requestDelete = useCallback(() => {
-    deleteCmt(cmtId);
-    router.refresh();
+    deleteCmt.mutate({ cmtId });
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
   }, [cmtId, router]);
   return (
     <div>

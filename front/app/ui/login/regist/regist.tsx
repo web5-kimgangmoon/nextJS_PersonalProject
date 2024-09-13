@@ -5,11 +5,13 @@ import { useToggle } from "@/app/hooks/toggle";
 import { InputBox } from "@/app/ui/inputBox";
 import { Button } from "@/app/ui/buttons";
 import { useTypeCheck_zod } from "@/app/lib/utils";
-import { regist } from "@/app/lib/actions";
+import { useRegist } from "@/app/lib/actions";
 import { useRouter } from "next/navigation";
 import { Modal_little } from "@/app/ui/modal";
 import { useEffect } from "react";
 import { userInfoData } from "@/app/lib/placeholder-data";
+import { useQuery_getUserInfo } from "@/app/lib/data";
+import { LoadingSpin } from "../../loadingSpin";
 
 export function Regist() {
   const router = useRouter();
@@ -25,10 +27,13 @@ export function Regist() {
     registIsFail: useToggle(true),
   };
   const { nickCheck, passwordCheck, emailCheck } = useTypeCheck_zod();
-  const userData = userInfoData;
-  useEffect(() => {
-    if (userData.userInfo) router.replace("/category");
-  }, []);
+  const userData = useQuery_getUserInfo();
+  const regist = useRegist(registIsFail.close, () => router.replace("/login"));
+  if (userData.isLoading)
+    return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
+
+  if (userData.data?.data.userInfo) router.replace("/category");
+
   return (
     <div>
       <InputBox
@@ -72,13 +77,11 @@ export function Regist() {
           onClick={
             nickIsOK.is && passwordIsOK.is && emailIsOK.is
               ? async () => {
-                  regist(
-                    nick.text,
-                    email.text,
-                    password.text,
-                    registIsFail.close
-                  );
-                  if (false) router.replace("/login");
+                  regist.mutate({
+                    nick: nick.text,
+                    email: email.text,
+                    pwd: password.text,
+                  });
                 }
               : undefined
           }

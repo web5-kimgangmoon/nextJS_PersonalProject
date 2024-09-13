@@ -16,6 +16,7 @@ import Reason from "./reasons";
 @Table({
   tableName: "reportHistory",
   underscored: false,
+  timestamps: true,
 })
 export default class Report extends Model {
   @PrimaryKey
@@ -34,6 +35,9 @@ export default class Report extends Model {
   @ForeignKey(() => Board)
   @Column(DataType.INTEGER.UNSIGNED)
   boardId!: number;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @ForeignKey(() => Reason)
   @Column(DataType.INTEGER.UNSIGNED)

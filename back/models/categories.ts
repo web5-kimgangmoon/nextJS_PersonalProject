@@ -15,6 +15,7 @@ import Board from "./boards";
 @Table({
   tableName: "categories",
   underscored: false,
+  timestamps: true,
 })
 export default class Category extends Model {
   @PrimaryKey
@@ -23,13 +24,13 @@ export default class Category extends Model {
   id!: number;
 
   @ForeignKey(() => Board)
-  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: true })
   informId!: number;
 
-  @Column({ type: DataType.STRING(20), allowNull: false })
+  @Column({ type: DataType.STRING(20), allowNull: false, unique: true })
   path!: string;
 
-  @Column({ type: DataType.STRING(20), allowNull: false })
+  @Column({ type: DataType.STRING(20), allowNull: false, unique: true })
   name!: string;
 
   @Column({ type: DataType.STRING(100), allowNull: false })
@@ -42,17 +43,20 @@ export default class Category extends Model {
   descriptionPlaceholder!: string;
 
   @Column({ type: DataType.STRING(1000), allowNull: false })
-  contentPlaceholder!: number;
+  contentPlaceholder!: string;
 
   @Column({
     type: DataType.STRING(300),
     allowNull: false,
-    defaultValue: "baseImg.jpg",
+    defaultValue: "baseCategoryImg.png",
   })
   img!: string;
 
   @Column({ type: DataType.STRING(1000), allowNull: false })
   description!: string;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @HasMany(() => CategoryRule, "categoryId")
   rules!: CategoryRule[];

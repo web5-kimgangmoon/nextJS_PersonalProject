@@ -14,6 +14,7 @@ import Cmt from "./cmts";
 @Table({
   tableName: "likeList",
   underscored: false,
+  timestamps: true,
 })
 export default class Like extends Model {
   @PrimaryKey
@@ -22,18 +23,21 @@ export default class Like extends Model {
   id!: number;
 
   @ForeignKey(() => UserInfo)
-  @Column(DataType.INTEGER.UNSIGNED)
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   userId?: number;
 
   @ForeignKey(() => Cmt)
-  @Column(DataType.INTEGER.UNSIGNED)
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
   cmtId?: number;
 
-  @Column(DataType.BOOLEAN)
-  isDisLike?: number;
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  isDisLike?: boolean;
 
-  @Column(DataType.BOOLEAN)
-  isLike?: number;
+  @Column({ type: DataType.BOOLEAN, allowNull: false })
+  isLike?: boolean;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => UserInfo, "userId")
   user?: UserInfo;

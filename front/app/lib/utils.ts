@@ -2,6 +2,7 @@ import { z } from "zod";
 import crypto from "crypto";
 
 export const getTimeString = (ta: Date, option?: "cmt") => {
+  ta = new Date(ta);
   const now = new Date();
   const dif = now.getTime() - ta.getTime();
 
@@ -229,7 +230,7 @@ export const useTypeCheck_zod = () => {
   };
 };
 
-export const useHash = (
+export const ranHash = (
   method: "sha256" | "sha512",
   salt: string = "소금은 좋아하세요?"
 ) => {

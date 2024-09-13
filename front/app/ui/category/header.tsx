@@ -11,20 +11,38 @@ import {
   ModalRequest,
   ModalRouterBox,
 } from "@/app/ui/modal";
-import { categoryListData, userInfoData } from "@/app/lib/placeholder-data";
 import Image from "next/image";
-import { logout } from "@/app/lib/actions";
+import { useLogout } from "@/app/lib/actions";
+import { useQuery_getCategories, useQuery_getUserInfo } from "@/app/lib/data";
+import { LoadingSpin } from "../loadingSpin";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function Header() {
-  const categoryList = categoryListData.categories.map((item) => ({
-    name: item.name,
-    href: `/category/${item.path}`,
-  }));
+  const categoryListData = useQuery_getCategories();
+  const userInfoData = useQuery_getUserInfo();
+  if (
+    categoryListData.isLoading ||
+    userInfoData.isLoading ||
+    !categoryListData.data ||
+    !userInfoData.data
+  )
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
+  const categoryList = categoryListData.data.data.categories.map(
+    (item: {
+      path: string;
+      name: string;
+      img: string;
+      description: string;
+    }) => ({
+      name: item.name,
+      href: `/category/${item.path}`,
+    })
+  );
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
         <MenuBarBtn
-          isLogin={userInfoData.userInfo?.id ? true : false}
+          isLogin={userInfoData.data.data.userInfo?.id ? true : false}
           categoryList={categoryList}
         />
         <Link href={"/category"} className="text-xl text-mainBlue font-bold">
@@ -32,8 +50,8 @@ export function Header() {
         </Link>
       </div>
       <div>
-        {userInfoData.userInfo?.id ? (
-          <OnLogin profile={userInfoData.userInfo?.profileImg} />
+        {userInfoData.data.data.userInfo?.id ? (
+          <OnLogin profile={userInfoData.data.data.userInfo?.profileImg} />
         ) : (
           <OffLogin />
         )}
@@ -145,7 +163,8 @@ export const MenuModalContent = ({
     user: false,
     category: false,
   });
-
+  const logout = useLogout();
+  const queryClient = useQueryClient();
   const toggleBox = useCallback(
     (key: "user" | "category") => {
       setOpenObj({ ...openObj, [key]: !openObj[key] });
@@ -187,7 +206,14 @@ export const MenuModalContent = ({
         closeModal={closeModal}
       />
       {isLogin && (
-        <ModalRequest closeModal={closeModal} request={logout} isBorder={true}>
+        <ModalRequest
+          closeModal={closeModal}
+          request={() => {
+            logout.mutate();
+            queryClient.refetchQueries({ queryKey: ["get", "userInfo"] });
+          }}
+          isBorder={true}
+        >
           로그아웃
         </ModalRequest>
       )}
@@ -211,10 +237,19 @@ export const ProfileModalContent = ({
 }: {
   closeModal: () => void;
 }) => {
+  const logout = useLogout();
+  const queryClient = useQueryClient();
   return (
     <div className="py-2">
       <ModalLink href="/user">프로필 확인</ModalLink>
-      <ModalRequest request={logout} closeModal={closeModal} isBorder={true}>
+      <ModalRequest
+        request={() => {
+          logout.mutate();
+          queryClient.refetchQueries({ queryKey: ["get", "userInfo"] });
+        }}
+        closeModal={closeModal}
+        isBorder={true}
+      >
         로그아웃
       </ModalRequest>
     </div>

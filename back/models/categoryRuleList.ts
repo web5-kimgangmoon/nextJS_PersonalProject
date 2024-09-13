@@ -13,6 +13,7 @@ import Category from "./categories";
 @Table({
   tableName: "categoryRuleList",
   underscored: false,
+  timestamps: true,
 })
 export default class CategoryRule extends Model {
   @PrimaryKey
@@ -26,6 +27,9 @@ export default class CategoryRule extends Model {
 
   @Column({ type: DataType.STRING(100), allowNull: false })
   description!: string;
+
+  @Column({ type: DataType.DATE })
+  deletedAt!: Date;
 
   @BelongsTo(() => Category, "categoryId")
   category!: Category;

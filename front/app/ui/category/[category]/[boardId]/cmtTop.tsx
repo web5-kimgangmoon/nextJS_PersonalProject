@@ -1,52 +1,75 @@
 "use client";
 
-import {
-  boardReportReasonListData as boardReportListHolder,
-  currentBoardData as currentBoardHolder,
-  userInfoData,
-} from "@/app/lib/placeholder-data";
-
 import { ImgButton } from "@/app/ui/buttons";
 import { FlagIcon } from "@heroicons/react/24/outline";
 import { ReportBox } from "@/app/ui/reasonBox";
 import { WriteCmt } from "./cmtWriteBox";
 import { useToggle } from "@/app/hooks/toggle";
+import {
+  useQuery_getBoardDetail,
+  useQuery_getReasonList,
+  useQuery_getUserInfo,
+} from "@/app/lib/data";
+import { useParams } from "next/navigation";
+import { LoadingSpin } from "@/app/ui/loadingSpin";
 
 export const CommentTop = () => {
-  const boardReportList = boardReportListHolder;
-  const currentBoard = currentBoardHolder;
+  const params = useParams();
+  const boardReportList = useQuery_getReasonList("BOARD_REPORT");
+  const currentBoard = useQuery_getBoardDetail(+params.boardId);
+  const userInfoData = useQuery_getUserInfo();
   const box = useToggle(false);
+  if (
+    currentBoard.isLoading ||
+    boardReportList.isLoading ||
+    userInfoData.isLoading
+  )
+    <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <div className="p-2">
       <div className="pb-4 border-b border-borderGray">
         <div className="py-2 flex items-center justify-between">
           <div className="text-sm text-fakeBlack">
-            {currentBoard.cmtCnt} Comments
+            {currentBoard.data?.data.cmtCnt
+              ? currentBoard.data?.data.cmtCnt
+              : 0}
+            Comments
           </div>
-          {userInfoData.userInfo?.id && (
+          {userInfoData.data?.data.userInfo?.id && (
             <div>
               <ReportBtn
                 openModal={box.toggle}
-                isDidReport={currentBoard.isDidReport}
+                isDidReport={currentBoard.data?.data.isDidReport}
               />
             </div>
           )}
         </div>
 
-        {userInfoData.userInfo?.id && !currentBoard.isDidReport && (
-          <ReportBox
-            id={currentBoard.id}
-            isBoard={true}
-            reasonList={boardReportList.reasonList}
-            isOpen={box.is}
-            modalClose={box.close}
-          />
-        )}
+        {userInfoData.data?.data.userInfo?.id &&
+          !currentBoard.data?.data.isDidReport && (
+            <ReportBox
+              id={currentBoard.data?.data.id ? currentBoard.data?.data.id : 0}
+              isBoard={true}
+              reasonList={
+                boardReportList.data?.data.reasonList
+                  ? boardReportList.data?.data.reasonList
+                  : []
+              }
+              isOpen={box.is}
+              modalClose={box.close}
+            />
+          )}
       </div>
       <div className="pb-5 pt-10">
-        {userInfoData.userInfo?.id &&
-          userInfoData.userInfo?.id !== currentBoard.writerId && (
-            <WriteCmt boardId={currentBoard.id} isOpen={true} />
+        {userInfoData.data?.data.userInfo?.id &&
+          userInfoData.data?.data.userInfo?.id !==
+            currentBoard.data?.data.writerId && (
+            <WriteCmt
+              boardId={
+                currentBoard.data?.data.id ? currentBoard.data?.data.id : 0
+              }
+              isOpen={true}
+            />
           )}
       </div>
     </div>

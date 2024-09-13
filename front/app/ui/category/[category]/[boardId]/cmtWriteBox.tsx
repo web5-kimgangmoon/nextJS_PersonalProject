@@ -7,10 +7,12 @@ import { usePreview } from "@/app/hooks/preview";
 import { useDeleteImg } from "@/app/hooks/callback/deleteImg";
 import { newCopyFormData, pushedFormData } from "@/app/lib/utils";
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { categoryDetailData as categoryInfoHolder } from "@/app/lib/placeholder-data";
-import { addCmt, updateCmt } from "@/app/lib/actions";
+import { useParams, useRouter } from "next/navigation";
+import { useAddCmt, useUpdateCmt } from "@/app/lib/actions";
 import Image from "next/image";
+import { useQuery_getCategoryDetail } from "@/app/lib/data";
+import { LoadingSpin } from "@/app/ui/loadingSpin";
+import { useQueryClient } from "@tanstack/react-query";
 // import { Blob } from "buffer";
 
 export const WriteCmt = ({
@@ -32,24 +34,33 @@ export const WriteCmt = ({
   img?: string;
   modalClose?: () => void;
 }) => {
-  const categoryInfo = categoryInfoHolder;
+  const params = useParams();
+  const queryClient = useQueryClient();
+  const categoryInfo = useQuery_getCategoryDetail({
+    search: { category: String(params.category) },
+  });
   const imgBtnId = `cmtWrite${
     replyId ? `Reply${replyId}` : cmtId ? cmtId : "Plain"
   }`;
+  const updateCmt = useUpdateCmt();
+  const addCmt = useAddCmt();
   const request = useCallback(
-    (formData: FormData) => {
+    async (formData: FormData) => {
       isUpdate && cmtId
-        ? updateCmt(cmtId, formData)
+        ? await updateCmt.mutate({ formData, cmtId })
         : boardId
-        ? addCmt(formData, boardId)
-        : addCmt(formData, replyId);
+        ? await addCmt.mutate({ formData, boardId })
+        : await addCmt.mutate({ formData, replyId });
+      queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     },
     [boardId, cmtId, isUpdate, replyId]
   );
+  if (categoryInfo.isLoading)
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <WriteCmtComp
       isOpen={isOpen}
-      placeholder={categoryInfo.cmtPlacholder}
+      placeholder={categoryInfo.data?.data.cmtPlaceholder}
       imgBtnId={imgBtnId}
       request={request}
       modalClose={modalClose}

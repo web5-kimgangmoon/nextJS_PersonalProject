@@ -3,35 +3,82 @@
 import clsx from "clsx";
 import { LinkButton } from "@/app/ui/buttons";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
-import { getTimeString } from "@/app/lib/utils";
+import { getTimeString, useTypeCheck_zod } from "@/app/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  boardListData as boardListHolder,
-  categoryDetailData as categoryDetailDataHolder,
-} from "@/app/lib/placeholder-data";
 import { NoBoard } from "./noBoard";
+import {
+  useQuery_getBoardList,
+  useQuery_getCategoryDetail,
+} from "@/app/lib/data";
+import { useParams, useSearchParams } from "next/navigation";
+import { LoadingSpin } from "../loadingSpin";
+import { useEffect } from "react";
 
 export const InformBoard = () => {
-  const categoryDetailData = categoryDetailDataHolder;
+  const params = useParams();
+
+  const categoryDetailData = useQuery_getCategoryDetail({
+    search: {
+      category: params["category"] ? (params["category"] as string) : "all",
+    },
+  });
+  if (categoryDetailData.isLoading && !categoryDetailData.data?.data)
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <BoardItem
-      {...categoryDetailData.informBoard}
+      {...categoryDetailData.data?.data.informBoard}
       isTop={true}
-      category={categoryDetailData.name}
-      categoryPath={categoryDetailData.path}
+      category={"공지"}
+      categoryPath={"inform"}
     />
   );
 };
 
 export const BoardList = () => {
-  const boardList = boardListHolder;
-  if (boardList.boardList.length === 0) return <NoBoard />;
+  const params = useParams();
+  const query = useSearchParams();
+  const { intCheck } = useTypeCheck_zod();
+  const page = query.get("page");
+  let { data, refetch, isLoading } = useQuery_getBoardList({
+    category: params["category"] ? (params["category"] as string) : "all",
+    isDeleted: "false",
+    search: query.get("search"),
+    searchType: query.get("searchType"),
+    isOwn: "false",
+    limit: "10",
+    offset: intCheck.safeParse(page).success
+      ? String((Number(page) - 1) * 10)
+      : null,
+  });
+  useEffect(() => {
+    refetch();
+    console.log(page);
+  }, [page, query.get("search"), query.get("searchType")]);
+  if (isLoading && !data) return <LoadingSpin bgColorClass="bg-categoryGray" />;
+  if (data?.data.boardList.length === 0) return <NoBoard />;
   return (
     <div>
-      {boardList.boardList.map((item, idx) => (
-        <BoardItem {...item} key={idx} />
-      ))}
+      {data?.data.boardList.map(
+        (
+          item: {
+            isTop?: boolean;
+            cmtCnt: number;
+            id: number;
+            categoryPath: string;
+            createdAt: Date;
+            img: string;
+            category: string;
+            description: string;
+            title: string;
+            writer: string;
+            writerId: number;
+          },
+          idx: number
+        ) => (
+          <BoardItem {...item} key={idx} />
+        )
+      )}
     </div>
   );
 };
