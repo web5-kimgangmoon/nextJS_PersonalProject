@@ -38,8 +38,7 @@ jobs:
           nvm use --lts
           node -v
           npm -v
-          npm install -g pm2
-          pm2 stop all'
+          npm install -g pm2'
 
   test_mysql:
     runs-on: ubuntu-latest
