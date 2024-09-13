@@ -1,8 +1,7 @@
+import { Op } from "sequelize";
 import { front } from "../lib/temporaryLocation";
-import Board from "../models/boards";
-import Cmt from "../models/cmts";
-import Like from "../models/likeList";
 import UserInfo from "../models/userInfoList";
+import { mkHash } from "../lib/util";
 
 interface sendData {
   id: number;
@@ -43,4 +42,23 @@ export const getUserInfo = async (id: number) => {
       }
     : undefined;
   return sendData;
+};
+
+export const login = async (
+  id: string | null,
+  pwd: string | null,
+  isAdminLogin: boolean
+) => {
+  const option = isAdminLogin ? { authority: { [Op.not]: 0 } } : {};
+  if (id && pwd) {
+    return await UserInfo.findOne({
+      where: {
+        [Op.or]: [{ nick: id }, { email: id }],
+        password: mkHash("sha256", pwd),
+        deletedAt: null,
+        ...option,
+      },
+    });
+  }
+  return undefined;
 };

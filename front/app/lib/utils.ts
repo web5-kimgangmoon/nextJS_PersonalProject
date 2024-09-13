@@ -2,6 +2,7 @@ import { z } from "zod";
 import crypto from "crypto";
 
 export const getTimeString = (ta: Date, option?: "cmt") => {
+  ta = new Date(ta);
   const now = new Date();
   const dif = now.getTime() - ta.getTime();
 

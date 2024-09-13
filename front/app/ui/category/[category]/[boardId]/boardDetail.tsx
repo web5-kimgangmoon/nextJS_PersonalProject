@@ -14,6 +14,12 @@ import { boardDelete } from "@/app/lib/actions";
 import { CheckDelete } from "@/app/ui/reasonBox";
 
 export const BoardDetail = () => {
+  if (!currentBoardData)
+    return (
+      <div className="h-10 w-full flex justify-center items-center">
+        게시글이 존재하지 않습니다.
+      </div>
+    );
   return (
     <BoardDetailComp
       {...currentBoardData}

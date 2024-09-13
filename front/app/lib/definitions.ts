@@ -176,3 +176,18 @@ export interface GetCmt {
     sort: "like" | "recently" | "old" | null;
   };
 }
+
+export interface GetCategoryDetail {
+  search: { category: string | "inform" };
+}
+export interface GetBoardList {
+  category: string | "inform" | null;
+  offset: string | null;
+  limit: string | null;
+  isOwn: string | null;
+  isDeleted: string | null;
+  search: string | null;
+  searchType: string | "content" | "title" | "contentTitle" | null;
+}
+export interface GetUserInfo {}
+export interface GetCategoryList {}

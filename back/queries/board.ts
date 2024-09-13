@@ -5,6 +5,7 @@ import Category from "../models/categories";
 import Cmt from "../models/cmts";
 import UserInfo from "../models/userInfoList";
 import Score from "../models/scoreList";
+import Report from "../models/reportHistory";
 
 export const getBoardList = async (
   path: string | null,
@@ -60,18 +61,16 @@ export const getBoardList = async (
   if (writerId) condition["writerId"] = writerId;
   const targetList = await Board.findAll({
     where: condition,
-    offset: offset,
-    limit: limit,
     include: [
       { model: Category, as: "category" },
-      { model: Cmt, as: "cmts", required: false },
+      { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
       { model: Score, as: "scores", required: false },
       { model: UserInfo, as: "writer" },
     ],
   });
   const sendData: SendData = targetList
     ? {
-        boardList: targetList.map((item) => ({
+        boardList: targetList.slice(offset, limit).map((item) => ({
           category: item.category.name,
           categoryPath: item.category.path,
           cmtCnt: item.cmts.length,
@@ -93,4 +92,71 @@ export const getBoardList = async (
       }
     : { boardCnt: 0, boardList: [] };
   return sendData;
+};
+
+export const getBoard = async (boardId?: number, userId?: number) => {
+  interface SendData {
+    id: number;
+    title: string;
+    content: string;
+    description: string;
+    createdAt: Date;
+    isUpdated: boolean;
+    writer: string;
+    writerId: number;
+    cmtCnt: number;
+    category: string;
+    categoryPath: string;
+    img: string;
+    score: number;
+    scoreUserCnt: number;
+    isGiveScore: boolean;
+    isDidReport: boolean;
+  }
+  if (boardId) {
+    const board = await Board.findOne({
+      where: { id: boardId, deletedAt: null },
+      include: [
+        { model: UserInfo, as: "writer" },
+        { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
+        { model: Category, as: "category" },
+        { model: Score, as: "scores", required: false },
+        {
+          model: Report,
+          as: "reports",
+          required: false,
+          where: { deletedAt: null },
+        },
+      ],
+    });
+    if (board) {
+      await board.update("looks", board.looks + 1);
+      const sendData: SendData = {
+        id: board.id,
+        category: board.category.name,
+        categoryPath: board.category.path,
+        cmtCnt: board.cmts.length,
+        content: board.content,
+        createdAt: board.createdAt,
+        description: board.description,
+        img: `${front}${board.img}`,
+        isDidReport: board.reports.find((item) => item.reporterId === userId)
+          ? true
+          : false,
+        isGiveScore: board.scores.find((item) => item.userId === userId)
+          ? true
+          : false,
+        isUpdated: board.createdAt.getTime() !== board.updatedAt.getTime(),
+        score:
+          board.scores.reduce((a, b) => b.score + a, 0) / board.scores.length,
+        writer: board.writer.nick,
+        writerId: board.writerId,
+        title: board.title,
+        scoreUserCnt: board.scores.length,
+      };
+      return sendData;
+    }
+  }
+
+  return undefined;
 };

@@ -14,6 +14,7 @@ import Category from "./categories";
 import Reason from "./reasons";
 import Cmt from "./cmts";
 import Score from "./scoreList";
+import Report from "./reportHistory";
 
 @Table({
   tableName: "boards",
@@ -77,4 +78,7 @@ export default class Board extends Model {
 
   @HasMany(() => Score, "boardId")
   scores!: Score[];
+
+  @HasMany(() => Report, "boardId")
+  reports!: Report[];
 }

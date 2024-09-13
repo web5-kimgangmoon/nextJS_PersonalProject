@@ -13,6 +13,7 @@ import Like from "./likeList";
 import UserInfo from "./userInfoList";
 import Board from "./boards";
 import Reason from "./reasons";
+import Report from "./reportHistory";
 
 @Table({
   tableName: "cmts",
@@ -64,4 +65,7 @@ export default class Cmt extends Model {
 
   @HasMany(() => Like, "cmtId")
   likeList?: Like[];
+
+  @HasMany(() => Report, "cmtId")
+  reports!: Report[];
 }

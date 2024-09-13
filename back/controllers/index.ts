@@ -7,6 +7,9 @@ import { banCheck } from "../queries";
 import category from "./category";
 import user from "./user";
 import board from "./board";
+import reason from "./reason";
+import cmt from "./cmt";
+import { getCategoryList } from "../queries/category";
 
 const FileStore = store(session);
 
@@ -47,6 +50,7 @@ router.use(
 router.use(async (req: Request, res: Response, next) => {
   req.ban = await banCheck(req.session.userId);
   req.ban && req.session.destroy((err) => console.log(err));
+  console.log(req.session);
   next();
 });
 router.get("/img", (req, res) => {
@@ -58,9 +62,13 @@ router.get("/testSession", (req, res) => {
   req.session.isMainAdmin = false;
   res.status(204).send();
 });
+router.get("/categories", async (req: Request, res: Response) => {
+  res.send({ ...(await getCategoryList()) });
+});
 
 router.use("/category", category);
 router.use("/user", user);
 router.use("/board", board);
-
+router.use("/reason", reason);
+router.use("/cmt", cmt);
 export default router;

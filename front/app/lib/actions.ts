@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { CmtListData, GetCmt } from "./definitions";
 import { cmtData } from "./placeholder-data";
+import serverAxios from "./serverActionAxios";
 
 export const boardDelete = (boardId: number) => {
   return "";

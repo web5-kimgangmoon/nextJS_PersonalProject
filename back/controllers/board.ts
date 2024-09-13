@@ -13,7 +13,7 @@
 //                      null
 import { Request, Response, Router } from "express";
 import { booleanCheck, intCheck, stringCheck } from "../services/zod";
-import { getBoardList } from "../queries/board";
+import { getBoard, getBoardList } from "../queries/board";
 
 const router = Router();
 
@@ -58,6 +58,14 @@ router.get("/list", async (req: Request, res: Response) => {
     )
   );
   //   res.send({ ...(await getCategoryList()) });
+});
+
+router.get("/:boardId", async (req: Request, res: Response) => {
+  const boardId = intCheck.safeParse(req.params.boardId).success
+    ? intCheck.parse(req.params.boardId)
+    : 0;
+  const board = await getBoard(boardId, req.session.userId);
+  board ? res.send(board) : res.status(404).send(undefined);
 });
 
 export default router;

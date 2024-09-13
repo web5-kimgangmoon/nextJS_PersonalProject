@@ -1,15 +1,20 @@
 "use client";
 
 import { logout } from "@/app/lib/actions";
+import { useQuery_getUserInfo } from "@/app/lib/data";
 import { userInfoData } from "@/app/lib/placeholder-data";
 import Link from "next/link";
+import { LoadingSpin } from "../loadingSpin";
 
 export function Footer() {
+  const userInfoData = useQuery_getUserInfo();
+  if (userInfoData.isLoading || !userInfoData.data)
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
     <div className="py-8 px-8">
       <div className="border-t border-borderGray flex flex-col gap-5 py-5">
-        {userInfoData.userInfo?.id ? <OnLogin /> : <OffLogin />}
-        {userInfoData.userInfo?.id ? "" : <OnAdmin />}
+        {userInfoData.data.data.userInfo?.id ? <OnLogin /> : <OffLogin />}
+        {userInfoData.data.data.userInfo?.id ? "" : <OnAdmin />}
       </div>
       <div className="w-full border-t border-borderGray flex flex-col gap-5 py-5 items-center">
         <div className="w-max">

@@ -11,20 +11,37 @@ import {
   ModalRequest,
   ModalRouterBox,
 } from "@/app/ui/modal";
-import { categoryListData, userInfoData } from "@/app/lib/placeholder-data";
 import Image from "next/image";
 import { logout } from "@/app/lib/actions";
+import { useQuery_getCategories, useQuery_getUserInfo } from "@/app/lib/data";
+import { LoadingSpin } from "../loadingSpin";
 
 export function Header() {
-  const categoryList = categoryListData.categories.map((item) => ({
-    name: item.name,
-    href: `/category/${item.path}`,
-  }));
+  const categoryListData = useQuery_getCategories();
+  const userInfoData = useQuery_getUserInfo();
+  if (
+    categoryListData.isLoading ||
+    userInfoData.isLoading ||
+    !categoryListData.data ||
+    !userInfoData.data
+  )
+    return <LoadingSpin bgColorClass="bg-categoryGray" />;
+  const categoryList = categoryListData.data.data.categories.map(
+    (item: {
+      path: string;
+      name: string;
+      img: string;
+      description: string;
+    }) => ({
+      name: item.name,
+      href: `/category/${item.path}`,
+    })
+  );
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
         <MenuBarBtn
-          isLogin={userInfoData.userInfo?.id ? true : false}
+          isLogin={userInfoData.data.data.userInfo?.id ? true : false}
           categoryList={categoryList}
         />
         <Link href={"/category"} className="text-xl text-mainBlue font-bold">
@@ -32,8 +49,8 @@ export function Header() {
         </Link>
       </div>
       <div>
-        {userInfoData.userInfo?.id ? (
-          <OnLogin profile={userInfoData.userInfo?.profileImg} />
+        {userInfoData.data.data.userInfo?.id ? (
+          <OnLogin profile={userInfoData.data.data.userInfo?.profileImg} />
         ) : (
           <OffLogin />
         )}

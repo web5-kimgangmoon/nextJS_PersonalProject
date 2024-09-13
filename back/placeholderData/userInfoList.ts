@@ -2,12 +2,12 @@ import { mkHash } from "../lib/util";
 import UserInfo from "../models/userInfoList";
 
 export const createUsers = async () => {
-  UserInfo.create({
+  await UserInfo.create({
     email: "admin1@naver.com",
     authority: 2,
     profile: "baseUserImg.png",
     nick: "관리자",
-    password: "rkdans12!",
+    password: mkHash("sha256", "rkdans12!"),
   });
 
   const data = [

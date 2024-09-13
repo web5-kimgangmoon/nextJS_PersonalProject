@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { inter } from "@/app/ui/font";
 import "@/app/ui/globals.css";
 import clsx from "clsx";
+import ReactQueryProvider from "@/app/lib/reactQueryProvider";
 
 export const metadata: Metadata = {
   title: "The board",
@@ -15,7 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className={clsx(inter.className, "sm:text-base")}>{children}</body>
+      <ReactQueryProvider>
+        <body className={clsx(inter.className, "sm:text-base")}>
+          {children}
+        </body>
+      </ReactQueryProvider>
     </html>
   );
 }

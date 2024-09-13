@@ -28,6 +28,7 @@ export const getCategory = async (category: string | null) => {
       img: string;
     };
   }
+
   if (category) {
     const target = await Category.findOne({
       where: { deletedAt: null, path: category },
@@ -81,7 +82,7 @@ export const getCategory = async (category: string | null) => {
           createdAt: target.informBoard.createdAt,
           writer: target.informBoard.writer.nick,
           writerId: target.informBoard.writerId,
-          cmtCnt: target.boards.length,
+          cmtCnt: target.informBoard.cmts.length,
           img: `${front}${target.informBoard.img}`,
         },
       };
@@ -115,7 +116,7 @@ export const getCategory = async (category: string | null) => {
     ],
   });
   const inform = defaultCategory?.informBoard as Board;
-  return {
+  const sendData: SendData = {
     path: "all",
     name: "전체",
     img: `${front}${defaultCategory?.img}`,
@@ -135,9 +136,11 @@ export const getCategory = async (category: string | null) => {
       createdAt: inform?.createdAt,
       writer: inform?.writer.nick,
       writerId: inform?.writerId,
+      img: `${front}${inform.img}`,
       cmtCnt: inform?.cmts.length ? inform?.cmts.length : 0,
     },
   };
+  return sendData;
 };
 
 export const getCategoryList = async () => {
