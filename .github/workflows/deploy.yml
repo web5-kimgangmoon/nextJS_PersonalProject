@@ -107,7 +107,15 @@ jobs:
           rsync -avz -e "ssh" ./front/.next/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/front/.next
           rsync -avz -e "ssh" ./front/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/front/package.json
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || {
+          echo "nvm.sh not found"
+          exit 1
+          }
+          nvm -v
+          nvm use --lts
+          node -v
+          npm -v
           cd  /var/www/front
           npm i --production'
 
@@ -158,7 +166,11 @@ jobs:
           rsync -avz -e "ssh" ./back/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/back/package.json
           rsync -avz -e "ssh" ./back/public/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/back/public
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || {
+          echo "nvm.sh not found"
+          exit 1
+          }
           cd  /var/www/back
           npm i --production
           echo PORT=3080 >> .env
@@ -170,5 +182,10 @@ jobs:
       - name: Start Server
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || {
+          echo "nvm.sh not found"
+          exit 1
+          }          
           npm install -g pm2
           pm2 start /var/www/back/server.js --name back'
