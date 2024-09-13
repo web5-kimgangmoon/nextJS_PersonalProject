@@ -29,7 +29,7 @@ export const getCategory = async (category: string | null) => {
     };
   }
 
-  if (category !== null && !category) {
+  if (category !== null && category) {
     const target = await Category.findOne({
       where: { deletedAt: null, path: category },
       include: [

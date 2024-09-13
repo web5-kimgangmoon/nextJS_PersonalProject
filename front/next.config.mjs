@@ -10,11 +10,13 @@ const nextConfig = {
   // Optional: Change the output directory `out` -> `dist`
   // distDir: 'dist',
   images: {
-    remotePatterns: {
-      protocol: "http",
-      hostname: "52.79.197.169",
-      port: "3080",
-    },
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "52.79.197.169",
+        port: "3080",
+      },
+    ],
   },
 };
 

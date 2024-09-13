@@ -38,7 +38,7 @@ export const useQuery_getReasonList = (
     | "BOARD_REPORT"
 ) => {
   const { isLoading, data } = useQuery({
-    queryKey: ["get", "reason", "list", reasonType],
+    queryKey: ["get", "reason", "list"],
     queryFn: async () => {
       return await serverAxios.get(`/reason/list`, { params: { reasonType } });
     },
