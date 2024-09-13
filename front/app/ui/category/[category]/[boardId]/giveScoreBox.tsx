@@ -18,12 +18,10 @@ export const GiveScoreBox = () => {
   const giveScore = useCallback((score: number) => {
     setScore(score);
   }, []);
-  const boardGiveScore = useBoardGiveScore();
+  const boardGiveScore = useBoardGiveScore(() => currentBoard.refetch());
   const submit = useCallback(
     async (score: number) => {
       await boardGiveScore.mutate({ score, boardId: +params.boardId });
-      currentBoard.refetch();
-      router.refresh();
     },
     [router, boardGiveScore, currentBoard, params.boardId]
   );

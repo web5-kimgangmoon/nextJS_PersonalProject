@@ -1,1 +1,1 @@
-export const front = "api/img?name=";
+export const front = "/api/img?name=";

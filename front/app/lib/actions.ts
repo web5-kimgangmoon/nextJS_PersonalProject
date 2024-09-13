@@ -13,7 +13,7 @@ export const boardDelete = (boardId: number) => {
   return "";
 };
 
-export const useBoardGiveScore = () => {
+export const useBoardGiveScore = (refetch: () => void) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["board", "eval", "post"],
     mutationFn: async ({
@@ -24,6 +24,9 @@ export const useBoardGiveScore = () => {
       score: number;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
       return await serverAxios.post(`/board/eval/${boardId}`, { score });
+    },
+    onSuccess: () => {
+      refetch();
     },
   });
   return { mutate, mutateAsync };
