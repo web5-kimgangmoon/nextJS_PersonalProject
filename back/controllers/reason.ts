@@ -21,9 +21,8 @@ router.get("/list", async (req: Request, res: Response) => {
   ].find((item) => item === temp)
     ? (temp as string)
     : null;
-  console.log(reasonType);
   const reasonList = await getReasonList(reasonType);
-  reasonList ? res.send(reasonList) : res.status(400).send(undefined);
+  reasonList ? res.send({ reasonList }) : res.status(400).send(undefined);
   //   res.send({ ...(await getCategoryList()) });
 });
 

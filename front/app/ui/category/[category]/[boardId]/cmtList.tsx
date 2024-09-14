@@ -60,7 +60,7 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
   };
   useEffect(() => {
     cmtData.refetch();
-  }, [sortState, limit, cmtData]);
+  }, [sortState, limit]);
   if (cmtData.isLoading || userInfoData.isLoading || cmtReportList.isLoading)
     return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (

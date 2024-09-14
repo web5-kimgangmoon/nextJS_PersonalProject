@@ -197,4 +197,4 @@ jobs:
           }          
           npm install -g pm2
           pm2 stop back
-          pm2 start /var/www/back/server.js --name back'
+          pm2 start /var/www/back/server.js --name back --no-watch'

@@ -10,46 +10,36 @@ import {
   updateCmt,
 } from "../queries/cmt";
 import { upload } from "../services/upload";
-import { cmtMake } from "../lib/util";
 
 const router = Router();
 
-router.post(
-  "/",
-  (req, res, next) => {
-    const userId = req?.session?.userId ? req?.session?.userId : undefined;
-    const boardId = intCheck.safeParse(req.query.boardId).success
-      ? Number(req.query.boardId)
-      : undefined;
-    if (
-      !userId ||
-      !boardId ||
-      !stringCheck.safeParse(req.body.content).success ||
-      (!req.body.content && !req.file)
-    ) {
-      res.status(403).send();
-      return;
-    }
-    next();
-  },
-  upload("img"),
-  async (req: Request, res: Response) => {
-    const boardId = Number(req.query.boardId);
-    const replyId = intCheck.safeParse(req.query.replyId).success
-      ? Number(req.query.replyId)
-      : undefined;
-    console.log(req.body);
-    res.send(
-      await addCmt(
-        req.session.userId as number,
-        boardId,
-        req.body.content,
-        replyId,
-        req.file?.filename
-      )
-    );
+router.post("/", upload("img"), async (req: Request, res: Response) => {
+  const replyId = intCheck.safeParse(req.query.replyId).success
+    ? Number(req.query.replyId)
+    : undefined;
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const boardId = intCheck.safeParse(req.query.boardId).success
+    ? Number(req.query.boardId)
+    : undefined;
+  if (
+    !userId ||
+    !boardId ||
+    !stringCheck.safeParse(req.body.content).success ||
+    (!req.body.content && !req.file)
+  ) {
+    res.status(403).send();
+    return;
   }
-);
+  res.send(
+    await addCmt(
+      req.session.userId as number,
+      boardId,
+      req.body.content,
+      replyId,
+      req.file?.filename
+    )
+  );
+});
 
 router.get("/cmtList", async (req: Request, res: Response) => {
   const limit = intCheck.safeParse(req.query.limit).success
@@ -134,43 +124,32 @@ router.delete("/:cmtId", async (req: Request, res: Response) => {
     : res.status(400).send();
 });
 
-router.patch(
-  "/:cmtId",
-  (req, res, next) => {
-    const userId = req?.session?.userId ? req?.session?.userId : undefined;
-    const cmtId = intCheck.safeParse(req.params.cmtId).success
-      ? Number(req.params.cmtId)
-      : undefined;
-    if (
-      !userId ||
-      !stringCheck.safeParse(req.body.content).success ||
-      (!req.body.content && !req.file) ||
-      !cmtId
-    ) {
-      res.status(403).send();
-      return;
-    }
-    next();
-  },
-  upload("img"),
-  async (req: Request, res: Response) => {
-    const userId = req?.session?.userId;
-    const cmtId = Number(req.params.cmtId);
-    const isDeleteImg = booleanCheck.safeParse(req.body.isDeleteImg).success
-      ? req.body.isDeleteImg === "true"
-        ? true
-        : false
-      : false;
-    (await updateCmt(
-      userId as number,
-      cmtId as number,
-      isDeleteImg,
-      req.body.content,
-      req.file?.filename
-    ))
-      ? res.status(204).send()
-      : res.status(400).send();
+router.patch("/:cmtId", upload("img"), async (req: Request, res: Response) => {
+  const userId = req?.session?.userId;
+  const cmtId = Number(req.params.cmtId);
+  const isDeleteImg = booleanCheck.safeParse(req.body.isDeleteImg).success
+    ? req.body.isDeleteImg === "true"
+      ? true
+      : false
+    : false;
+  if (
+    !userId ||
+    !stringCheck.safeParse(req.body.content).success ||
+    (!req.body.content && !req.file) ||
+    !cmtId
+  ) {
+    res.status(403).send();
+    return;
   }
-);
+  (await updateCmt(
+    userId as number,
+    cmtId as number,
+    isDeleteImg,
+    req.body.content,
+    req.file?.filename
+  ))
+    ? res.status(204).send()
+    : res.status(400).send();
+});
 
 export default router;
