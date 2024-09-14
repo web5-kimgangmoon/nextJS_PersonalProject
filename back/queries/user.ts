@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { front } from "../lib/temporaryLocation";
+import { front } from "../lib/imgPath";
 import UserInfo from "../models/userInfoList";
 import { mkHash } from "../lib/util";
 

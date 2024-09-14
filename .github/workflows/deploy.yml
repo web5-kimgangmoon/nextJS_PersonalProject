@@ -94,6 +94,10 @@ jobs:
         working-directory: ./front
         run: npm i
 
+      - name: add .env
+        working-directory: ./front
+        run: echo NEXT_PUBLIC_SERVER_PATH={{ secrets.NEXT_PUBLIC_SERVER_PATH }} >> .env
+
       - name: Build Front
         working-directory: ./front
         run: npm run build
@@ -185,6 +189,7 @@ jobs:
           echo EC2_MYSQL_USER=${{ secrets.EC2_MYSQL_USER }} >> .env
           echo EC2_MYSQL_PASSWORD=${{ secrets.EC2_MYSQL_PASSWORD }} >> .env
           echo EC2_MYSQL_DATABASE=${{ secrets.EC2_MYSQL_DATABASE }} >> .env
+          echo IMG_PATH=${{ secrets.IMG_PATH }} >> .env
           '
 
       - name: Start Server

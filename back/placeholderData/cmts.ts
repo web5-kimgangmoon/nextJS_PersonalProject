@@ -1,4 +1,4 @@
-import { front } from "../lib/temporaryLocation";
+import { front } from "../lib/imgPath";
 import Cmt from "../models/cmts";
 
 export const createCmt = async () => {

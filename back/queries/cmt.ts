@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { front } from "../lib/temporaryLocation";
+import { front } from "../lib/imgPath";
 import UserInfo from "../models/userInfoList";
 import { cmtMake, cmtRemake, mkHash } from "../lib/util";
 import Cmt from "../models/cmts";
