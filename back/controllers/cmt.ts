@@ -25,7 +25,7 @@ router.post("/", upload("img"), async (req: Request, res: Response) => {
     !userId ||
     (!boardId && !replyId) ||
     !stringCheck.safeParse(req.body.content).success ||
-    (!req.body.content && !req.file)
+    (!req.body.content && !req.file?.filename)
   ) {
     res.status(403).send();
     return;
@@ -134,7 +134,7 @@ router.patch("/:cmtId", upload("img"), async (req: Request, res: Response) => {
   if (
     !userId ||
     !stringCheck.safeParse(req.body.content).success ||
-    (!req.body.content && !req.file) ||
+    (!req.body.content && !req.file?.filename) ||
     !cmtId
   ) {
     res.status(403).send();

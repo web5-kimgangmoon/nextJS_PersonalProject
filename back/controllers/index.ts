@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
 import path from "path";
-import session from "express-session";
-import store from "session-file-store";
+
 import { banCheck } from "../queries";
 
 import category from "./category";
@@ -11,41 +10,7 @@ import reason from "./reason";
 import cmt from "./cmt";
 import { getCategoryList } from "../queries/category";
 
-const FileStore = store(session);
-
-declare module "express-session" {
-  interface SessionData {
-    userId: number;
-    isAdminLogin: boolean;
-    isMainAdmin: boolean;
-  }
-}
-
-declare module "express" {
-  interface Request {
-    ban?: boolean;
-  }
-}
-
 const router = Router();
-
-router.use(
-  session({
-    resave: true,
-    saveUninitialized: true,
-    secret: "userInfo",
-    name: "user",
-    store: new FileStore({
-      reapInterval: 1800,
-      path: "./sessions",
-    }),
-    cookie: {
-      signed: true,
-      httpOnly: true,
-      maxAge: 1800 * 1000,
-    },
-  })
-);
 
 router.use(async (req: Request, res: Response, next) => {
   req.ban = await banCheck(req.session.userId);

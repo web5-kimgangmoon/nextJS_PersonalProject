@@ -223,7 +223,10 @@ export const addCmt = async (
     ? await Cmt.findOne({ where: { id: replyId } })
     : undefined;
   if (!board && !cmt) return false;
-  const result = cmtMake(content, "", `${front}${img}`);
+  if ((!content || content.length === 0) && !img) return false;
+  const result = img
+    ? cmtMake(content, "", `${front}${img}`)
+    : cmtMake(content);
 
   return cmt
     ? await Cmt.create({
@@ -249,6 +252,7 @@ export const updateCmt = async (
   const target = await Cmt.findOne({
     where: { writerId: userId, id: cmtId, deletedAt: null },
   });
+  if ((!content || content.length === 0) && !reImg) return false;
   if (target) {
     const result = isDeleteImg
       ? cmtRemake(target.content, "(*수정됨)", content, reImg)

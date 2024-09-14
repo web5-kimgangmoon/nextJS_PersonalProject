@@ -3,6 +3,9 @@ import { config } from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import router from "./controllers/index";
+import session from "express-session";
+import store from "session-file-store";
+const FileStore = store(session);
 
 config();
 // export const front = `http://localhost:3080/api/img?name=`;
@@ -32,6 +35,36 @@ app.use(
 );
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+declare module "express-session" {
+  interface SessionData {
+    userId: number;
+    isAdminLogin: boolean;
+    isMainAdmin: boolean;
+  }
+}
+
+declare module "express" {
+  interface Request {
+    ban?: boolean;
+  }
+}
+router.use(
+  session({
+    resave: true,
+    saveUninitialized: true,
+    secret: "userInfo",
+    name: "user",
+    store: new FileStore({
+      reapInterval: 1800,
+      path: "./sessions",
+    }),
+    cookie: {
+      signed: true,
+      httpOnly: true,
+      maxAge: 1800 * 1000,
+    },
+  })
+);
 
 app.use("/api", router);
 

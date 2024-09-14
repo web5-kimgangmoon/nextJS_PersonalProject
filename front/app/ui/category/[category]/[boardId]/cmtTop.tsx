@@ -61,16 +61,14 @@ export const CommentTop = () => {
           )}
       </div>
       <div className="pb-5 pt-10">
-        {userInfoData.data?.data.userInfo?.id &&
-          userInfoData.data?.data.userInfo?.id !==
-            currentBoard.data?.data.writerId && (
-            <WriteCmt
-              boardId={
-                currentBoard.data?.data.id ? currentBoard.data?.data.id : 0
-              }
-              isOpen={true}
-            />
-          )}
+        {userInfoData.data?.data.userInfo?.id && (
+          <WriteCmt
+            boardId={
+              currentBoard.data?.data.id ? currentBoard.data?.data.id : 0
+            }
+            isOpen={true}
+          />
+        )}
       </div>
     </div>
   );
