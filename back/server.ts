@@ -60,7 +60,7 @@ app.use(
       path: path.join(__dirname, "./sessions"),
     }),
     cookie: {
-      signed: true,
+      // signed: true,
       httpOnly: true,
       maxAge: 1800 * 1000,
     },
