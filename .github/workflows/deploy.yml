@@ -96,7 +96,7 @@ jobs:
 
       - name: add .env
         working-directory: ./front
-        run: echo NEXT_PUBLIC_SERVER_PATH={{ secrets.NEXT_PUBLIC_SERVER_PATH }} >> .env
+        run: echo NEXT_PUBLIC_SERVER_PATH=${{ secrets.NEXT_PUBLIC_SERVER_PATH }} >> .env
 
       - name: Build Front
         working-directory: ./front
