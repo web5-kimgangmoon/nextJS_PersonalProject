@@ -48,7 +48,7 @@ declare module "express" {
     ban?: boolean;
   }
 }
-router.use(
+app.use(
   session({
     resave: true,
     saveUninitialized: true,
