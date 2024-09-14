@@ -296,7 +296,7 @@ export const CmtBox = ({
       <div className={clsx(isFirst && "pl-2")}>
         {containCmt &&
           containCmt.map(
-            (item, idx) =>
+            (item) =>
               item.replyId === cmtId && (
                 <CmtBox
                   isDidReport={item.isDidReport}

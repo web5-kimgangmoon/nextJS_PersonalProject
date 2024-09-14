@@ -28,6 +28,7 @@ export const createBoardNCategory = async () => {
     {
       path: "free",
       name: "자유",
+      informId: 1,
       cmtPlaceholder:
         "자유 게시글입니다. 모두가 볼 수 있게 예쁜 댓글 부탁드려요.",
       titlePlaceholder: "자유롭게 적는 제목",

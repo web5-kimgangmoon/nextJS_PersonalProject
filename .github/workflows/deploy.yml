@@ -131,6 +131,7 @@ jobs:
           exit 1
           }
           npm install -g pm2
+          pm2 stop front
           pm2 start npm --name "front" -- run start'
 
   deploy_back:
@@ -193,6 +194,7 @@ jobs:
           [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || {
           echo "nvm.sh not found"
           exit 1
-          }          
-          npm install -g pm2
+          }        
+          npm install -g pm2          
+          pm2 stop back
           pm2 start /var/www/back/server.js --name back'

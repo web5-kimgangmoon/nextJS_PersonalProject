@@ -39,33 +39,14 @@ export const getCmts = async (get: GetCmts) => {
     replyId?: number;
     replyUserId?: number;
     replyUser?: string;
+    containCmt?: CmtItem[];
   }
   interface SendData {
-    cmtList: Array<{
-      id: number;
-      writer: string;
-      writerId: number;
-      writerProfile: string;
-      createdAt: Date;
-      content: string;
-      like: number;
-      dislike: number;
-      isDoLike: boolean;
-      isDoDislike: boolean;
-      isDidReport: boolean;
-      boardId: number;
-      categoryPath: string;
-      category: string;
-      boardTitle: string;
-      replyId?: number;
-      replyUserId?: number;
-      replyUser?: string;
-      containCmt?: CmtItem[];
-    }>;
+    cmtList: Array<CmtItem>;
     cmtCnt: number;
   }
   let cmts: Cmt[] = [];
-  let condition: any = {};
+  let condition: any = { replyId: null };
   let writerCondition: any = {};
   let order: any = [];
   let limitOption: any = { limit: get.limit };
@@ -103,21 +84,21 @@ export const getCmts = async (get: GetCmts) => {
   if (!(get.sort === "old") && !(get.sort === "recently")) {
     cmts = await Cmt.findAll({
       include: [
-        {
-          model: Board,
-          as: "board",
-          include: [{ model: Category, as: "category" }],
-        },
+        // {
+        //   model: Board,
+        //   as: "board",
+        //   include: [{ model: Category, as: "category" }],
+        // },
         { model: UserInfo, as: "writer", where: writerCondition },
         { model: Like, as: "likeList", required: false },
-        { model: Report, as: "reports", required: false },
-        {
-          model: Cmt,
-          as: "replyCmtTo",
-          required: false,
-          include: [{ model: UserInfo, as: "writer", where: writerCondition }],
-        },
-        { model: Cmt, as: "replyCmtsFrom", required: false },
+        // { model: Report, as: "reports", required: false },
+        // {
+        //   model: Cmt,
+        //   as: "replyCmtTo",
+        //   required: false,
+        //   include: [{ model: UserInfo, as: "writer", where: writerCondition }],
+        // },
+        // { model: Cmt, as: "replyCmtsFrom", required: false },
       ],
       where: condition,
       order: order,
@@ -132,27 +113,80 @@ export const getCmts = async (get: GetCmts) => {
   } else {
     cmts = await Cmt.findAll({
       include: [
-        {
-          model: Board,
-          as: "board",
-          include: [{ model: Category, as: "category" }],
-        },
+        // {
+        //   model: Board,
+        //   as: "board",
+        //   include: [{ model: Category, as: "category" }],
+        // },
         { model: UserInfo, as: "writer", where: writerCondition },
-        { model: Like, as: "likeList", required: false },
-        { model: Report, as: "reports", required: false },
-        {
-          model: Cmt,
-          as: "replyCmtTo",
-          required: false,
-          include: [{ model: UserInfo, as: "writer" }],
-        },
-        { model: Cmt, as: "replyCmtsFrom", required: false },
+        // { model: Like, as: "likeList", required: false },
+        // { model: Report, as: "reports", required: false },
+        // {
+        //   model: Cmt,
+        //   as: "replyCmtTo",
+        //   required: false,
+        //   include: [{ model: UserInfo, as: "writer" }],
+        // },
+        // { model: Cmt, as: "replyCmtsFrom", required: false },
       ],
       where: condition,
       order: order,
       ...limitOption,
     });
   }
+  const getCmt = async (cmt: Cmt): Promise<CmtItem> => {
+    const board = await cmt.$get("board");
+    const category = await board?.$get("category");
+    const reports = await cmt.$get("reports");
+    const likeList = await cmt.$get("likeList");
+    const writer = await cmt.$get("writer");
+    const replyCmtToWriter = await (
+      await cmt.$get("replyCmtTo")
+    )?.$get("writer");
+    const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
+    const like = likeList?.filter((item) => item.isLike).length;
+    const dislike = likeList?.filter((item) => item.isDisLike).length;
+
+    const cmtItems: CmtItem[] = [];
+    if (replyCmtsFrom) {
+      for (let item of replyCmtsFrom) {
+        cmtItems.push(await getCmt(item));
+      }
+    }
+    return {
+      boardId: cmt.boardId,
+      boardTitle: board!.title,
+      category: category!.name,
+      categoryPath: category!.path,
+      content: cmt.content,
+      createdAt: cmt.createdAt,
+      id: cmt.id,
+      isDidReport: reports?.find((item) => item.reporterId === get.userId)
+        ? true
+        : false,
+      isDoDislike: likeList?.find(
+        (item) => item.userId === get.userId && item.isDisLike
+      )
+        ? true
+        : false,
+      isDoLike: likeList?.find(
+        (item) => item.userId === get.userId && item.isLike
+      )
+        ? true
+        : false,
+      like: like ? like : 0,
+      dislike: dislike ? dislike : 0,
+      replyId: cmt.replyId,
+      replyUser: replyCmtToWriter?.nick,
+      replyUserId: replyCmtToWriter?.id,
+      writer: writer!.nick,
+      writerId: cmt.writerId,
+      writerProfile: `${front}${
+        writer?.profileImg ? writer?.profileImg : `baseUserImg.png`
+      }`,
+      containCmt: cmtItems,
+    };
+  };
   const sendData: SendData = {
     cmtCnt: (
       await Cmt.findAll({
@@ -160,75 +194,11 @@ export const getCmts = async (get: GetCmts) => {
         include: [{ model: UserInfo, as: "writer", where: writerCondition }],
       })
     ).length,
-    cmtList: cmts.map((item) => ({
-      boardId: item.boardId,
-      boardTitle: item.board.title,
-      category: item.board.category.name,
-      categoryPath: item.board.category.path,
-      content: item.content,
-      createdAt: item.createdAt,
-      id: item.id,
-      isDidReport: item.reports.find((item) => item.reporterId === get.userId)
-        ? true
-        : false,
-      isDoDislike: item.likeList?.find(
-        (item) => item.userId === get.userId && item.isDisLike
-      )
-        ? true
-        : false,
-      isDoLike: item.likeList?.find(
-        (item) => item.userId === get.userId && item.isLike
-      )
-        ? true
-        : false,
-      like: item.likeList?.filter((item) => item.isLike).length
-        ? item.likeList?.filter((item) => item.isLike).length
-        : 0,
-      dislike: item.likeList?.filter((item) => item.isDisLike).length
-        ? item.likeList?.filter((item) => item.isDisLike).length
-        : 0,
-      replyId: item.replyId,
-      replyUser: item?.replyCmtTo?.writer.nick,
-      replyUserId: item?.replyCmtTo?.writer.id,
-      writer: item.writer.nick,
-      writerId: item.writerId,
-      writerProfile: `${front}${item.writer.profileImg}`,
-      containCmt: item.replyCmtsFrom.map((item) => ({
-        boardId: item.boardId,
-        boardTitle: item.board.title,
-        category: item.board.category.name,
-        categoryPath: item.board.category.path,
-        content: item.content,
-        createdAt: item.createdAt,
-        id: item.id,
-        isDidReport: item.reports.find((item) => item.reporterId === get.userId)
-          ? true
-          : false,
-        isDoDislike: item.likeList?.find(
-          (item) => item.userId === get.userId && item.isDisLike
-        )
-          ? true
-          : false,
-        isDoLike: item.likeList?.find(
-          (item) => item.userId === get.userId && item.isLike
-        )
-          ? true
-          : false,
-        like: item.likeList?.filter((item) => item.isLike).length
-          ? item.likeList?.filter((item) => item.isLike).length
-          : 0,
-        dislike: item.likeList?.filter((item) => item.isDisLike).length
-          ? item.likeList?.filter((item) => item.isDisLike).length
-          : 0,
-        replyId: item.replyId,
-        replyUser: item?.replyCmtTo?.writer.nick,
-        replyUserId: item?.replyCmtTo?.writer.id,
-        writer: item.writer.nick,
-        writerId: item.writerId,
-        writerProfile: `${front}${item.writer.profileImg}`,
-      })),
-    })),
+    cmtList: [],
   };
+  for (let item of cmts) {
+    sendData["cmtList"].push(await getCmt(item));
+  }
   return sendData;
 };
 
