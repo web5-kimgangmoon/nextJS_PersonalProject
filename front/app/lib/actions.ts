@@ -66,7 +66,7 @@ export const useCmtReport = () => {
   });
   return { mutate, mutateAsync, data };
 };
-export const useAddCmt = () => {
+export const useAddCmt = (refetch: () => void) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt"],
     mutationFn: async ({
@@ -85,10 +85,13 @@ export const useAddCmt = () => {
         params: { boardId: boardId, replyId: replyId },
       });
     },
+    onSettled: () => {
+      refetch();
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useUpdateCmt = () => {
+export const useUpdateCmt = (refetch: () => void) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["patch", "cmt"],
     mutationFn: async ({
@@ -103,6 +106,9 @@ export const useUpdateCmt = () => {
           "Content-Type": "mutipart/form-data",
         },
       });
+    },
+    onSettled: () => {
+      refetch();
     },
   });
   return { mutate, mutateAsync, data };

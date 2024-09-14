@@ -42,8 +42,12 @@ export const WriteCmt = ({
   const imgBtnId = `cmtWrite${
     replyId ? `Reply${replyId}` : cmtId ? cmtId : "Plain"
   }`;
-  const updateCmt = useUpdateCmt();
-  const addCmt = useAddCmt();
+  const updateCmt = useUpdateCmt(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  );
+  const addCmt = useAddCmt(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  );
   const request = useCallback(
     async (formData: FormData) => {
       isUpdate && cmtId
@@ -51,7 +55,6 @@ export const WriteCmt = ({
         : boardId
         ? await addCmt.mutate({ formData, boardId })
         : await addCmt.mutate({ formData, replyId });
-      queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     },
     [boardId, cmtId, isUpdate, replyId, addCmt, queryClient, updateCmt]
   );
