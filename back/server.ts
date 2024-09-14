@@ -13,6 +13,7 @@ export const front = `/api/img?name=`;
 
 // import sequelize from "./models/index";
 import test from "./placeholderData/testcase";
+import path from "path";
 
 test();
 
@@ -56,7 +57,7 @@ app.use(
     name: "user",
     store: new FileStore({
       reapInterval: 1800,
-      path: "./sessions",
+      path: path.join(__dirname, "./sessions"),
     }),
     cookie: {
       signed: true,

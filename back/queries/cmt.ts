@@ -263,7 +263,7 @@ export const updateCmt = async (
       target.content,
       "(*수정됨)",
       content ? content : "",
-      reImg
+      `${front}${reImg}`
     );
   } else {
     result = isDeleteImg
