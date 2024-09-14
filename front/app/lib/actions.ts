@@ -62,7 +62,6 @@ export const useCmtReport = (refetch: () => void) => {
       cmtId: number;
       reasonId: number;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      console.log(reasonId);
       return await serverAxios.post(`/cmt/report/${cmtId}`, {
         reportReasonId: reasonId,
       });
