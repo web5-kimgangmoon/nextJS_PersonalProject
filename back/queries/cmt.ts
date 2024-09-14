@@ -302,9 +302,9 @@ export const likeCmt = async (
     });
   }
   if (isDisLike) {
-    target.update("isDisLike", !target.isDisLike);
+    await target.update("isDisLike", !target.isDisLike);
   } else {
-    target.update("isLike", !target.isLike);
+    await target.update("isLike", !target.isLike);
   }
   return true;
 };
