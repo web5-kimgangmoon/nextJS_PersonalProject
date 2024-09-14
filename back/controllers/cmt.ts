@@ -13,31 +13,31 @@ import { upload } from "../services/upload";
 
 const router = Router();
 
-router.post("/", upload("img"), async (req: Request, res: Response) => {
-  const replyId = intCheck.safeParse(req.query.replyId).success
-    ? Number(req.query.replyId)
-    : undefined;
+router.post("/like/:cmtId", async (req: Request, res: Response) => {
   const userId = req?.session?.userId ? req?.session?.userId : undefined;
-  const boardId = intCheck.safeParse(req.query.boardId).success
-    ? Number(req.query.boardId)
+  const cmtId = intCheck.safeParse(req.params.cmtId).success
+    ? Number(req.params.cmtId)
     : undefined;
-  if (
-    !userId ||
-    (!boardId && !replyId) ||
-    !stringCheck.safeParse(req.body.content).success ||
-    (!req.body.content && !req.file?.filename)
-  ) {
-    res.status(403).send();
-    return;
-  }
-  res.send(
-    await addCmt(
-      { boardId: boardId, replyId, userId: req.session.userId as number },
-      req.body.content,
-
-      req.file?.filename
-    )
-  );
+  const isDisLike = booleanCheck.safeParse(req.body.isDisLike).success
+    ? req.body.isDisLike === "true"
+      ? true
+      : false
+    : false;
+  (await likeCmt(userId, cmtId, isDisLike))
+    ? res.status(204).send()
+    : res.status(400).send();
+});
+router.post("/report/:cmtId", async (req: Request, res: Response) => {
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const cmtId = intCheck.safeParse(req.params.cmtId).success
+    ? Number(req.params.cmtId)
+    : undefined;
+  const reportReasonId = intCheck.safeParse(req.body.reportReasonId).success
+    ? Number(req.body.reportReasonId)
+    : undefined;
+  (await reportCmt(userId, cmtId, reportReasonId))
+    ? res.status(204).send()
+    : res.status(400).send();
 });
 
 router.get("/cmtList", async (req: Request, res: Response) => {
@@ -85,33 +85,6 @@ router.get("/cmtList", async (req: Request, res: Response) => {
   );
 });
 
-router.post("/like/:cmtId", async (req: Request, res: Response) => {
-  const userId = req?.session?.userId ? req?.session?.userId : undefined;
-  const cmtId = intCheck.safeParse(req.params.cmtId).success
-    ? Number(req.params.cmtId)
-    : undefined;
-  const isDisLike = booleanCheck.safeParse(req.body.isDisLike).success
-    ? req.body.isDisLike === "true"
-      ? true
-      : false
-    : false;
-  (await likeCmt(userId, cmtId, isDisLike))
-    ? res.status(204).send()
-    : res.status(400).send();
-});
-router.post("/report/:cmtId", async (req: Request, res: Response) => {
-  const userId = req?.session?.userId ? req?.session?.userId : undefined;
-  const cmtId = intCheck.safeParse(req.params.cmtId).success
-    ? Number(req.params.cmtId)
-    : undefined;
-  const reportReasonId = intCheck.safeParse(req.body.reportReasonId).success
-    ? Number(req.body.reportReasonId)
-    : undefined;
-  (await reportCmt(userId, cmtId, reportReasonId))
-    ? res.status(204).send()
-    : res.status(400).send();
-});
-
 router.delete("/:cmtId", async (req: Request, res: Response) => {
   const userId = req?.session?.userId ? req?.session?.userId : undefined;
   const cmtId = intCheck.safeParse(req.params.cmtId).success
@@ -149,6 +122,33 @@ router.patch("/:cmtId", upload("img"), async (req: Request, res: Response) => {
   ))
     ? res.status(204).send()
     : res.status(400).send();
+});
+
+router.post("/", upload("img"), async (req: Request, res: Response) => {
+  const replyId = intCheck.safeParse(req.query.replyId).success
+    ? Number(req.query.replyId)
+    : undefined;
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  const boardId = intCheck.safeParse(req.query.boardId).success
+    ? Number(req.query.boardId)
+    : undefined;
+  if (
+    !userId ||
+    (!boardId && !replyId) ||
+    !stringCheck.safeParse(req.body.content).success ||
+    (!req.body.content && !req.file?.filename)
+  ) {
+    res.status(403).send();
+    return;
+  }
+  res.send(
+    await addCmt(
+      { boardId: boardId, replyId, userId: req.session.userId as number },
+      req.body.content,
+
+      req.file?.filename
+    )
+  );
 });
 
 export default router;

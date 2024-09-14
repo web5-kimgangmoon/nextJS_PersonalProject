@@ -253,19 +253,30 @@ export const updateCmt = async (
     where: { writerId: userId, id: cmtId, deletedAt: null },
   });
   if ((!content || content.length === 0) && !reImg) return false;
-  if (target) {
-    const result = isDeleteImg
-      ? cmtRemake(target.content, "(*수정됨)", content, reImg)
+  if (!target) return false;
+  const pre = cmtRemake(target.content);
+  if (!pre) return false;
+
+  let result;
+  if (reImg) {
+    result = cmtRemake(
+      target.content,
+      "(*수정됨)",
+      content ? content : "",
+      reImg
+    );
+  } else {
+    result = isDeleteImg
+      ? cmtMake(content ? content : "", "(*수정됨)")
       : cmtRemake(target.content, "(*수정됨)", content);
-    if (result) {
-      await target.update({ updatedAt: new Date() });
-      await target.update({
-        content: result.cmt,
-      });
-      return true;
-    }
   }
-  return false;
+  if (result) {
+    await target.update({ updatedAt: new Date() });
+    await target.update({
+      content: result.cmt,
+    });
+    return true;
+  }
 };
 
 export const likeCmt = async (

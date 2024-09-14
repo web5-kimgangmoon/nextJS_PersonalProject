@@ -4,12 +4,6 @@ import { booleanCheck, useTypeCheck_zod } from "../services/zod";
 
 const router = Router();
 
-router.get("/", async (req: Request, res: Response) => {
-  req.session.userId
-    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
-    : res.send({ userInfo: undefined });
-});
-
 router.post("/login", async (req: Request, res: Response) => {
   const id = req.body.id ? (req.body.id as string) : null;
   const pwd = req.body.pwd ? (req.body.pwd as string) : null;
@@ -26,6 +20,7 @@ router.post("/login", async (req: Request, res: Response) => {
     res.status(204).send();
   } else res.status(400).send();
 });
+
 router.post("/logout", async (req: Request, res: Response) => {
   if (req.session.userId) {
     req.session.destroy((err) => console.log(err));
@@ -50,6 +45,12 @@ router.post("/regist", async (req: Request, res: Response) => {
   ))
     ? res.status(204).send()
     : res.status(400).send();
+});
+
+router.get("/", async (req: Request, res: Response) => {
+  req.session.userId
+    ? res.send({ userInfo: await getUserInfo(req.session.userId) })
+    : res.send({ userInfo: undefined });
 });
 
 export default router;
