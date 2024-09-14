@@ -27,17 +27,18 @@ export const ReportBox = ({
   const selectReason = useCallback((str: string) => {
     setReason(str);
   }, []);
-  const boardReport = useBoardReport();
-  const cmtReport = useCmtReport();
+  const boardReport = useBoardReport(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "board"] })
+  );
+  const cmtReport = useCmtReport(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  );
   const reportRequest = useCallback(() => {
     if (reason)
       isBoard
         ? boardReport.mutate({ boardId: id, reasonId: +reason })
         : cmtReport.mutate({ cmtId: id, reasonId: +reason });
     modalClose();
-    isBoard
-      ? queryClient.refetchQueries({ queryKey: ["get", "board"] })
-      : queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
   }, [
     reason,
     id,
