@@ -223,7 +223,7 @@ export const addCmt = async (
     ? await Cmt.findOne({ where: { id: replyId } })
     : undefined;
   if (!board && !cmt) return false;
-  const result = cmtMake(content, "", img);
+  const result = cmtMake(content, "", `${front}${img}`);
 
   return cmt
     ? await Cmt.create({

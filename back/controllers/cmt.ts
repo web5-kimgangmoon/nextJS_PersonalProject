@@ -100,13 +100,14 @@ router.post("/like/:cmtId", async (req: Request, res: Response) => {
     : res.status(400).send();
 });
 router.post("/report/:cmtId", async (req: Request, res: Response) => {
-  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+  // const userId = req?.session?.userId ? req?.session?.userId : undefined;
   const cmtId = intCheck.safeParse(req.params.cmtId).success
     ? Number(req.params.cmtId)
     : undefined;
   const reportReasonId = intCheck.safeParse(req.body.reportReasonId).success
     ? Number(req.body.reportReasonId)
     : undefined;
+  const userId = 1;
   (await reportCmt(userId, cmtId, reportReasonId))
     ? res.status(204).send()
     : res.status(400).send();

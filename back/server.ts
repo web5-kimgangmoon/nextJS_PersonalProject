@@ -5,9 +5,10 @@ import cors from "cors";
 import router from "./controllers/index";
 
 config();
-export const front = `${process.env.IMG_PATH}`;
+// export const front = `http://localhost:3080/api/img?name=`;
+export const front = `api/img?name=`;
 
-import sequelize from "./models/index";
+// import sequelize from "./models/index";
 import test from "./placeholderData/testcase";
 
 test();
@@ -25,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: [/http:\/\/localhost:*/, /http:\/\/127.0.0.1:*/],
+    origin: [/http:\/\/localhost:*/, /http:\/\/127.0.0.1:*/, "/"],
     credentials: true,
   })
 );
