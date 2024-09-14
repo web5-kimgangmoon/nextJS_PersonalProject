@@ -23,7 +23,7 @@ router.post("/", upload("img"), async (req: Request, res: Response) => {
     : undefined;
   if (
     !userId ||
-    !boardId ||
+    (!boardId && !replyId) ||
     !stringCheck.safeParse(req.body.content).success ||
     (!req.body.content && !req.file)
   ) {
@@ -32,10 +32,9 @@ router.post("/", upload("img"), async (req: Request, res: Response) => {
   }
   res.send(
     await addCmt(
-      req.session.userId as number,
-      boardId,
+      { boardId: boardId, replyId, userId: req.session.userId as number },
       req.body.content,
-      replyId,
+
       req.file?.filename
     )
   );

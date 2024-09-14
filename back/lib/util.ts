@@ -59,11 +59,15 @@ export const cmtRemake = (
   };
 };
 
-export const cmtMake = (content: string, img?: string) => {
+export const cmtMake = (content: string, state?: string, img?: string) => {
   return {
     cmt: !img
-      ? `<div><div><span style="color: #042552;font-size: 0.75rem;"></span><span class="cmtTextContent">${content}</span></div></div>`
-      : `<div><div style="width: 10rem; height: 10rem;"><img src="${img}" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;"></span><span class="cmtTextContent">${content}</span></div></div>`,
+      ? `<div><div><span style="color: #042552;font-size: 0.75rem;">${
+          state ? state : ""
+        }</span><span class="cmtTextContent">${content}</span></div></div>`
+      : `<div><div style="width: 10rem; height: 10rem;"><img src="${img}" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">${
+          state ? state : ""
+        }</span><span class="cmtTextContent">${content}</span></div></div>`,
     content: content,
     img: img,
   };

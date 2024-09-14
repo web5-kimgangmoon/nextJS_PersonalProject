@@ -50,7 +50,7 @@ export const getCmts = async (get: GetCmts) => {
   let writerCondition: any = {};
   let order: any = [];
   let limitOption: any = { limit: get.limit };
-  if (!get.isDeleted) condition["deletedAt"] = null;
+  // if (!get.isDeleted) condition["deletedAt"] = null;
   if (get.onlyDeleted) condition["deletedAt"] = { [Op.not]: null };
   if (get.search && get.searchType) {
     switch (get.searchType) {
@@ -84,21 +84,8 @@ export const getCmts = async (get: GetCmts) => {
   if (!(get.sort === "old") && !(get.sort === "recently")) {
     cmts = await Cmt.findAll({
       include: [
-        // {
-        //   model: Board,
-        //   as: "board",
-        //   include: [{ model: Category, as: "category" }],
-        // },
         { model: UserInfo, as: "writer", where: writerCondition },
         { model: Like, as: "likeList", required: false },
-        // { model: Report, as: "reports", required: false },
-        // {
-        //   model: Cmt,
-        //   as: "replyCmtTo",
-        //   required: false,
-        //   include: [{ model: UserInfo, as: "writer", where: writerCondition }],
-        // },
-        // { model: Cmt, as: "replyCmtsFrom", required: false },
       ],
       where: condition,
       order: order,
@@ -112,29 +99,13 @@ export const getCmts = async (get: GetCmts) => {
       .slice(0, get.limit);
   } else {
     cmts = await Cmt.findAll({
-      include: [
-        // {
-        //   model: Board,
-        //   as: "board",
-        //   include: [{ model: Category, as: "category" }],
-        // },
-        { model: UserInfo, as: "writer", where: writerCondition },
-        // { model: Like, as: "likeList", required: false },
-        // { model: Report, as: "reports", required: false },
-        // {
-        //   model: Cmt,
-        //   as: "replyCmtTo",
-        //   required: false,
-        //   include: [{ model: UserInfo, as: "writer" }],
-        // },
-        // { model: Cmt, as: "replyCmtsFrom", required: false },
-      ],
+      include: [{ model: UserInfo, as: "writer", where: writerCondition }],
       where: condition,
       order: order,
       ...limitOption,
     });
   }
-  const getCmt = async (cmt: Cmt): Promise<CmtItem> => {
+  const getCmt = async (cmt: Cmt): Promise<CmtItem | null> => {
     const board = await cmt.$get("board");
     const category = await board?.$get("category");
     const reports = await cmt.$get("reports");
@@ -146,46 +117,62 @@ export const getCmts = async (get: GetCmts) => {
     const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
     const like = likeList?.filter((item) => item.isLike).length;
     const dislike = likeList?.filter((item) => item.isDisLike).length;
-
+    const deleteReason = await cmt.$get("deleteReason");
     const cmtItems: CmtItem[] = [];
     if (replyCmtsFrom) {
       for (let item of replyCmtsFrom) {
-        cmtItems.push(await getCmt(item));
+        const temp = await getCmt(item);
+        temp && cmtItems.push(temp);
       }
     }
-    return {
-      boardId: cmt.boardId,
-      boardTitle: board!.title,
-      category: category!.name,
-      categoryPath: category!.path,
-      content: cmt.content,
-      createdAt: cmt.createdAt,
-      id: cmt.id,
-      isDidReport: reports?.find((item) => item.reporterId === get.userId)
-        ? true
-        : false,
-      isDoDislike: likeList?.find(
-        (item) => item.userId === get.userId && item.isDisLike
-      )
-        ? true
-        : false,
-      isDoLike: likeList?.find(
-        (item) => item.userId === get.userId && item.isLike
-      )
-        ? true
-        : false,
-      like: like ? like : 0,
-      dislike: dislike ? dislike : 0,
-      replyId: cmt.replyId,
-      replyUser: replyCmtToWriter?.nick,
-      replyUserId: replyCmtToWriter?.id,
-      writer: writer!.nick,
-      writerId: cmt.writerId,
-      writerProfile: `${front}${
-        writer?.profileImg ? writer?.profileImg : `baseUserImg.png`
-      }`,
-      containCmt: cmtItems,
-    };
+
+    return cmt.deletedAt && cmtItems.length === 0 && !get.isDeleted
+      ? null
+      : {
+          boardId: cmt.boardId,
+          boardTitle: board!.title,
+          category: category!.name,
+          categoryPath: category!.path,
+          content: !cmt.deletedAt
+            ? cmt.content
+            : cmtMake(
+                `${
+                  deleteReason
+                    ? "'" +
+                      deleteReason.title +
+                      "'" +
+                      " 사유에 의해 삭제된 댓글입니다)"
+                    : ""
+                }`,
+                "(*삭제된 댓글입니다)"
+              ).cmt,
+          createdAt: cmt.createdAt,
+          id: cmt.id,
+          isDidReport: reports?.find((item) => item.reporterId === get.userId)
+            ? true
+            : false,
+          isDoDislike: likeList?.find(
+            (item) => item.userId === get.userId && item.isDisLike
+          )
+            ? true
+            : false,
+          isDoLike: likeList?.find(
+            (item) => item.userId === get.userId && item.isLike
+          )
+            ? true
+            : false,
+          like: like ? like : 0,
+          dislike: dislike ? dislike : 0,
+          replyId: cmt.replyId,
+          replyUser: replyCmtToWriter?.nick,
+          replyUserId: replyCmtToWriter?.id,
+          writer: writer!.nick,
+          writerId: cmt.writerId,
+          writerProfile: `${front}${
+            writer?.profileImg ? writer?.profileImg : `baseUserImg.png`
+          }`,
+          containCmt: cmtItems,
+        };
   };
   const sendData: SendData = {
     cmtCnt: (
@@ -197,7 +184,8 @@ export const getCmts = async (get: GetCmts) => {
     cmtList: [],
   };
   for (let item of cmts) {
-    sendData["cmtList"].push(await getCmt(item));
+    const temp = await getCmt(item);
+    temp && sendData["cmtList"].push(temp);
   }
   return sendData;
 };
@@ -220,23 +208,35 @@ export const deleteCmt = async (userId?: number, cmtId?: number) => {
   return false;
 };
 export const addCmt = async (
-  userId: number,
-  boardId: number,
-
+  {
+    userId,
+    boardId,
+    replyId,
+  }: { boardId?: number; replyId?: number; userId: number },
   content: string,
-  replyId?: number,
   img?: string
 ) => {
-  const board = await Board.findOne({ where: { id: boardId } });
-  if (!board) return false;
-  const reply = replyId ? { replyId: replyId } : {};
-  const result = cmtMake(content, img);
-  return await Cmt.create({
-    boardId: boardId,
-    writerId: userId,
-    content: result.cmt,
-    ...reply,
-  });
+  const board = boardId
+    ? await Board.findOne({ where: { id: boardId } })
+    : undefined;
+  const cmt = replyId
+    ? await Cmt.findOne({ where: { id: replyId } })
+    : undefined;
+  if (!board && !cmt) return false;
+  const result = cmtMake(content, "", img);
+
+  return cmt
+    ? await Cmt.create({
+        boardId: cmt.boardId,
+        writerId: userId,
+        content: result.cmt,
+        replyId,
+      })
+    : await Cmt.create({
+        boardId: boardId,
+        writerId: userId,
+        content: result.cmt,
+      });
 };
 
 export const updateCmt = async (
@@ -310,7 +310,6 @@ export const reportCmt = async (
     }))
   )
     return false;
-
   const target = await Report.findOne({
     where: { reporterId: userId, cmtId: cmtId, deletedAt: null },
   });

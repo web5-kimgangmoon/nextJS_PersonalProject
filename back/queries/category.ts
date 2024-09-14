@@ -43,7 +43,12 @@ export const getCategory = async (category: string | null) => {
               model: UserInfo,
               as: "writer",
             },
-            { model: Cmt, as: "cmts", required: false },
+            {
+              model: Cmt,
+              as: "cmts",
+              required: false,
+              where: { deletedAt: null },
+            },
           ],
         },
         {

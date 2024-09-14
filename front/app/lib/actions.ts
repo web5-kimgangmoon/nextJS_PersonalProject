@@ -32,7 +32,7 @@ export const useBoardGiveScore = (refetch: () => void) => {
   return { mutate, mutateAsync };
 };
 
-export const useBoardReport = () => {
+export const useBoardReport = (refetch: () => void) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "board", "report"],
     mutationFn: async ({
@@ -46,10 +46,13 @@ export const useBoardReport = () => {
         reportReasonId: reasonId,
       });
     },
+    onSuccess: () => {
+      refetch();
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useCmtReport = () => {
+export const useCmtReport = (refetch: () => void) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt", "report"],
     mutationFn: async ({
@@ -59,9 +62,13 @@ export const useCmtReport = () => {
       cmtId: number;
       reasonId: number;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      console.log(reasonId);
       return await serverAxios.post(`/cmt/report/${cmtId}`, {
         reportReasonId: reasonId,
       });
+    },
+    onSuccess: () => {
+      refetch();
     },
   });
   return { mutate, mutateAsync, data };
