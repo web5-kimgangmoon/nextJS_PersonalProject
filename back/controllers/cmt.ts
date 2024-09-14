@@ -90,8 +90,8 @@ router.post("/like/:cmtId", async (req: Request, res: Response) => {
   const cmtId = intCheck.safeParse(req.params.cmtId).success
     ? Number(req.params.cmtId)
     : undefined;
-  const isDisLike = booleanCheck.safeParse(req.query.isDisLike).success
-    ? req.query.isDisLike === "true"
+  const isDisLike = booleanCheck.safeParse(req.body.isDisLike).success
+    ? req.body.isDisLike === "true"
       ? true
       : false
     : false;

@@ -119,7 +119,7 @@ export const useUpdateCmt = (refetch: () => void) => {
   });
   return { mutate, mutateAsync, data };
 };
-export const useDeleteCmt = () => {
+export const useDeleteCmt = (refetch: () => void) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["delete", "cmt"],
     mutationFn: async ({
@@ -129,10 +129,13 @@ export const useDeleteCmt = () => {
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
       return await serverAxios.delete(`/cmt/${cmtId}`);
     },
+    onSuccess: async () => {
+      refetch();
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useLikeCmt = () => {
+export const useLikeCmt = (refetch: () => void) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt", "like"],
     mutationFn: async ({
@@ -142,11 +145,10 @@ export const useLikeCmt = () => {
       cmtId: number;
       isDisLike: string;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.post(
-        `/cmt/like/${cmtId}`,
-        {},
-        { params: { isDisLike } }
-      );
+      return await serverAxios.post(`/cmt/like/${cmtId}`, { isDisLike });
+    },
+    onSuccess: () => {
+      refetch();
     },
   });
   return { mutate, mutateAsync, data };

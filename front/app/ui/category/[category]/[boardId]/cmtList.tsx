@@ -195,18 +195,20 @@ export const CmtBox = ({
   const deleteBox = useToggle(false);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const likeCmt = useLikeCmt();
-  const deleteCmt = useDeleteCmt();
+  const likeCmt = useLikeCmt(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  );
+  const deleteCmt = useDeleteCmt(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  );
   const requestLike = useCallback(
     (isDisLike: boolean) => {
       likeCmt.mutate({ cmtId, isDisLike: isDisLike ? "true" : "false" });
-      queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     },
     [cmtId, router, likeCmt, queryClient]
   );
   const requestDelete = useCallback(() => {
     deleteCmt.mutate({ cmtId });
-    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
   }, [cmtId, router, deleteCmt, queryClient]);
   return (
     <div>
