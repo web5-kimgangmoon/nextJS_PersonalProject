@@ -1,4 +1,4 @@
-import { front } from "../lib/imgPath";
+import { front } from "../server";
 import Board from "../models/boards";
 import Category from "../models/categories";
 import CategoryRule from "../models/categoryRuleList";

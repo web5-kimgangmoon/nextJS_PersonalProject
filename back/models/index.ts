@@ -1,4 +1,3 @@
-import { config } from "dotenv";
 import { Sequelize } from "sequelize-typescript";
 import UserInfo from "./userInfoList";
 import Like from "./likeList";
@@ -11,7 +10,6 @@ import Cmt from "./cmts";
 import Reason from "./reasons";
 import Score from "./scoreList";
 import Report from "./reportHistory";
-config();
 
 const sequelize = new Sequelize({
   dialect: "mysql",

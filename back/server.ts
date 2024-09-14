@@ -3,10 +3,13 @@ import { config } from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
 import router from "./controllers/index";
+
+config();
+export const front = `${process.env.IMG_PATH}`;
+
 import sequelize from "./models/index";
 import test from "./placeholderData/testcase";
 
-config();
 test();
 
 // (async () => {

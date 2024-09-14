@@ -96,7 +96,7 @@ jobs:
 
       - name: add .env
         working-directory: ./front
-        run: echo NEXT_PUBLIC_SERVER_PATH=${{ secrets.NEXT_PUBLIC_SERVER_PATH }} >> .env
+        run: echo NEXT_PUBLIC_SERVER_PATH=${{ secrets.NEXT_PUBLIC_SERVER_PATH }} > .env
 
       - name: Build Front
         working-directory: ./front
@@ -185,7 +185,7 @@ jobs:
           }
           cd  /var/www/back
           npm i --production
-          echo PORT=3080 >> .env
+          echo PORT=3080 > .env
           echo EC2_MYSQL_USER=${{ secrets.EC2_MYSQL_USER }} >> .env
           echo EC2_MYSQL_PASSWORD=${{ secrets.EC2_MYSQL_PASSWORD }} >> .env
           echo EC2_MYSQL_DATABASE=${{ secrets.EC2_MYSQL_DATABASE }} >> .env

@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { front } from "../lib/imgPath";
+import { front } from "../server";
 import Board from "../models/boards";
 import Category from "../models/categories";
 import Cmt from "../models/cmts";
