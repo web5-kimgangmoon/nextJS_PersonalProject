@@ -92,7 +92,7 @@ export const getCategory = async (category: string | null) => {
     }
   }
 
-  const allBoard = await Board.findAll({ where: { deletedAt: false } });
+  const allBoard = await Board.findAll({ where: { deletedAt: null } });
   const defaultCategory = await Category.findOne({
     where: { id: 1 },
     include: [
