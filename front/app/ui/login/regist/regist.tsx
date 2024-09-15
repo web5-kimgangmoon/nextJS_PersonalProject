@@ -8,7 +8,13 @@ import { useTypeCheck_zod } from "@/app/lib/utils";
 import { useRegist } from "@/app/lib/actions";
 import { useRouter } from "next/navigation";
 import { Modal_little } from "@/app/ui/modal";
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect } from "react";
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { userInfoData } from "@/app/lib/placeholder-data";
 import { useQuery_getUserInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../../loadingSpin";
@@ -20,6 +26,8 @@ export function Regist() {
     email: useSimpleText(""),
     password: useSimpleText(""),
   };
+  const [modalMessage, modalMessageSet] =
+    useState<string>("회원가입에 실패했습니다");
   const { nickIsOK, passwordIsOK, emailIsOK, registIsFail } = {
     nickIsOK: useToggle(false),
     passwordIsOK: useToggle(false),
@@ -28,7 +36,11 @@ export function Regist() {
   };
   const { nickCheck, passwordCheck, emailCheck } = useTypeCheck_zod();
   const userData = useQuery_getUserInfo();
-  const regist = useRegist(registIsFail.close, () => router.replace("/login"));
+  const regist = useRegist(
+    registIsFail.close,
+    () => router.replace("/login"),
+    modalMessageSet
+  );
 
   const submit = useCallback(() => {
     nickIsOK.is && passwordIsOK.is && emailIsOK.is
@@ -116,7 +128,7 @@ export function Regist() {
         closeModalCtl={registIsFail.open}
         modalCtl={!registIsFail.is}
       >
-        <div>회원가입에 실패했습니다</div>
+        <div>{modalMessage}</div>
       </Modal_little>
     </div>
   );

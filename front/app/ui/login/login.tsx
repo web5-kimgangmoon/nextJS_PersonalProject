@@ -8,10 +8,9 @@ import { useTypeCheck_zod } from "@/app/lib/utils";
 import { useLogin } from "@/app/lib/actions";
 import { useRouter } from "next/navigation";
 import { Modal_little } from "@/app/ui/modal";
-import { KeyboardEvent, useCallback, useEffect } from "react";
+import { KeyboardEvent, useCallback, useEffect, useState } from "react";
 import { useQuery_getUserInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../loadingSpin";
-import serverAxios from "@/app/lib/serverActionAxios";
 
 export function Login() {
   const router = useRouter();
@@ -20,16 +19,22 @@ export function Login() {
     nick: useSimpleText(""),
     password: useSimpleText(""),
   };
+  const [modalMessage, modalMessageSet] =
+    useState<string>("회원가입에 실패했습니다");
   const { nickIsOK, passwordIsOK, loginIsFail } = {
     nickIsOK: useToggle(false),
     passwordIsOK: useToggle(false),
     loginIsFail: useToggle(true),
   };
   const { stringCheck, passwordCheck } = useTypeCheck_zod();
-  const login = useLogin(loginIsFail.close, () => {
-    userInfoData.refetch();
-    router.replace("/category");
-  });
+  const login = useLogin(
+    loginIsFail.close,
+    () => {
+      userInfoData.refetch();
+      router.replace("/category");
+    },
+    modalMessageSet
+  );
   const pressEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.code === "Enter" || e.key === "Enter")
@@ -91,7 +96,7 @@ export function Login() {
         </Button>
       </div>
       <Modal_little closeModalCtl={loginIsFail.open} modalCtl={!loginIsFail.is}>
-        <div>로그인에 실패했습니다</div>
+        <div>{modalMessage}</div>
       </Modal_little>
     </div>
   );

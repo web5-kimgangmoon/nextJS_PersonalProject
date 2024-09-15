@@ -14,6 +14,7 @@ export function Modal({
   curtainColor = "black",
   isSmallX = false,
   children,
+  isShutDown = false,
 }: {
   curtainColor?: string;
   modalCtl: boolean;
@@ -21,6 +22,7 @@ export function Modal({
   isTranslucent?: boolean;
   isSmallX?: boolean;
   children: ReactNode;
+  isShutDown?: boolean;
 }) {
   return (
     <>
@@ -32,13 +34,16 @@ export function Modal({
             "bg-white": !isTranslucent,
           },
           {
-            "translate-y-[-100%]": !modalCtl,
+            "translate-y-[-100%]": !isShutDown && !modalCtl,
             "": modalCtl,
           }
         )}
       >
-        <div className="max-h-screen overflow-y-scroll">
-          <div className="flex justify-end">
+        <div
+          className={"max-h-screen overflow-y-scroll transition"}
+          hidden={isShutDown && !modalCtl}
+        >
+          <div className={clsx("flex justify-end", isSmallX && "p-4")}>
             {isSmallX ? (
               <XMarkIcon
                 className="w-8 h-8 text-XMarkGray"
@@ -131,8 +136,8 @@ export const ModalRequest = ({
     <div className="flex justify-center">
       <div className={clsx("w-max", isBorder && "border-t border-borderGray")}>
         <Button
-          onClick={() => {
-            request();
+          onClick={async () => {
+            await request();
             closeModal();
           }}
           color="none"

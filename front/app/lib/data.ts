@@ -100,7 +100,6 @@ export const useQuery_getBoardList = (get: GetBoardList) => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["get", "board", "list", get.offset],
     queryFn: async () => {
-      const writerIdObj = get.writerId ? { writerId: get.writerId } : {};
       return await serverAxios.get("/board/list", {
         params: {
           category: get.category,
@@ -110,18 +109,18 @@ export const useQuery_getBoardList = (get: GetBoardList) => {
           isDeleted: get.isDeleted,
           search: get.search,
           searchType: get.searchType,
-          ...writerIdObj,
+          writerId: get.writerId,
         },
       });
     },
   });
   return { isLoading, data, refetch };
 };
-export const useQuery_getUserInfo = () => {
+export const useQuery_getUserInfo = (userId?: number) => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["get", "userInfo"],
     queryFn: async () => {
-      return await serverAxios.get("/user");
+      return await serverAxios.get("/user", { params: { userId: userId } });
     },
   });
   return { isLoading, data, refetch };

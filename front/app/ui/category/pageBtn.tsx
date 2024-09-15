@@ -8,7 +8,7 @@ import {
   useParams,
   useRouter,
 } from "next/navigation";
-import { ReactNode, useCallback } from "react";
+import { ReactNode, useCallback, useEffect } from "react";
 import { LeftArrow } from "@/public/left-arrow";
 import { RightArrow } from "@/public/right-arrow";
 import clsx from "clsx";
@@ -30,7 +30,7 @@ export const Pages = () => {
   path += query.get("searchType")
     ? `searchType=${query.get("searchType")}&`
     : "";
-  const { isLoading, data } = useQuery_getBoardList({
+  const { isLoading, data, refetch } = useQuery_getBoardList({
     category: params["category"] ? (params["category"] as string) : "all",
     isDeleted: "false",
     isOwn: "false",
@@ -39,6 +39,9 @@ export const Pages = () => {
     search: query.get("search"),
     searchType: query.get("searchType"),
   });
+  useEffect(() => {
+    refetch();
+  }, [page, query.get("search"), query.get("searchType"), refetch]);
   if (isLoading) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   const info = pageGetter({
     count: data?.data.boardCnt,

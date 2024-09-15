@@ -51,19 +51,9 @@ const getCmt = async (
   isDeleted: boolean = false,
   isFlat: boolean = false
 ): Promise<CmtItem | null> => {
-  const board = await cmt.$get("board");
-  const category = await board?.$get("category");
-  const reports = await cmt.$get("reports");
-  const likeList = await cmt.$get("likeList");
-  const writer = await cmt.$get("writer");
-  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
   const replyCmtsFrom = await cmt.$get("replyCmtsFrom", {
     order: [["createdAt", "DESC"]],
   });
-  const like = likeList?.filter((item) => item.isLike).length;
-  const dislike = likeList?.filter((item) => item.isDislike).length;
-  const deleteReason = await cmt.$get("deleteReason");
-  const userLike = likeList?.find((item) => item.userId === userId);
   const cmtItems: CmtItem[] = [];
   if (replyCmtsFrom && !isFlat) {
     for (let item of replyCmtsFrom) {
@@ -71,8 +61,25 @@ const getCmt = async (
       temp && cmtItems.push(temp);
     }
   }
-  if (!isDeleted && cmt.deletedAt !== null && cmtItems.length === 0)
+  if (
+    !isDeleted &&
+    cmt.deletedAt !== null &&
+    cmtItems.length === 0 &&
+    cmt.deleteReasonId !== null
+  )
     return null;
+
+  const board = await cmt.$get("board");
+  const category = await board?.$get("category");
+  const reports = await cmt.$get("reports");
+  const likeList = await cmt.$get("likeList");
+  const writer = await cmt.$get("writer");
+  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
+  const like = likeList?.filter((item) => item.isLike).length;
+  const dislike = likeList?.filter((item) => item.isDislike).length;
+  const deleteReason = await cmt.$get("deleteReason");
+  const userLike = likeList?.find((item) => item.userId === userId);
+
   const item: CmtItem = {
     boardId: cmt.boardId,
     boardTitle: board!.title,
@@ -130,7 +137,10 @@ export const getCmts = async (get: GetCmts) => {
   let order: any = [];
   let limitOption: any = { limit: get.limit };
   if (!get.isFlat) condition["replyId"] = null;
-  if (get.onlyDeleted) condition["deletedAt"] = { [Op.not]: null };
+  if (get.onlyDeleted) {
+    condition["deletedAt"] = { [Op.not]: null };
+    condition["deleteReasonId"] = { [Op.not]: null };
+  }
   if (get.search && get.searchType) {
     switch (get.searchType) {
       case "content":
@@ -205,7 +215,12 @@ export const getCmts = async (get: GetCmts) => {
 export const deleteCmt = async (userId?: number, cmtId?: number) => {
   if (!userId || !cmtId) return false;
   const target = await Cmt.findOne({
-    where: { writerId: userId, id: cmtId, deletedAt: null },
+    where: {
+      writerId: userId,
+      id: cmtId,
+      deletedAt: null,
+      deleteReasonId: null,
+    },
   });
   if (target) {
     const result = cmtRemake(target.content, "(*삭제됨)");
@@ -262,7 +277,12 @@ export const updateCmt = async (
   reImg?: string
 ) => {
   const target = await Cmt.findOne({
-    where: { writerId: userId, id: cmtId, deletedAt: null },
+    where: {
+      writerId: userId,
+      id: cmtId,
+      deletedAt: null,
+      deleteReasonId: null,
+    },
   });
   if ((!content || content.length === 0) && !reImg) return false;
   if (!target) return false;
@@ -298,7 +318,11 @@ export const likeCmt = async (
 ) => {
   let target;
   if (!userId || !cmtId) return false;
-  if (!(await Cmt.findOne({ where: { deletedAt: null, id: cmtId } })))
+  if (
+    !(await Cmt.findOne({
+      where: { deletedAt: null, id: cmtId, deleteReasonId: null },
+    }))
+  )
     return false;
   if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
     return false;
@@ -327,7 +351,11 @@ export const reportCmt = async (
   reasonId?: number
 ) => {
   if (!userId || !cmtId || !reasonId) return false;
-  if (!(await Cmt.findOne({ where: { deletedAt: null, id: cmtId } })))
+  if (
+    !(await Cmt.findOne({
+      where: { deletedAt: null, id: cmtId, deleteReasonId: null },
+    }))
+  )
     return false;
   if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
     return false;

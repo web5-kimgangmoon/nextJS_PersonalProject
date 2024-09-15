@@ -191,7 +191,7 @@ export interface GetBoardList {
   writerId?: string;
   isDeleted: string | null;
   search: string | null;
-  searchType: string | "content" | "title" | "contentTitle" | null;
+  searchType: string | "content" | "title" | "contentTitle" | "writer" | null;
 }
 export interface GetUserInfo {}
 export interface GetCategoryList {}

@@ -36,7 +36,7 @@ export const getBoardList = async (
     boardCnt: number;
   }
   let condition: any = {};
-
+  let writerCondition: any = {};
   const category = await Category.findOne({ where: { path } });
   if (search) {
     switch (searchType) {
@@ -45,6 +45,9 @@ export const getBoardList = async (
         break;
       case "title":
         condition = { title: { [Op.like]: `%${search}%` } };
+        break;
+      case "writer":
+        writerCondition = { nick: { [Op.like]: `%${search}%` } };
         break;
       case "contentTitle":
         condition = {
@@ -58,7 +61,10 @@ export const getBoardList = async (
     }
   }
   if (category) condition["categoryId"] = category.id;
-  if (!isDeleted) condition["deletedAt"] = null;
+  if (!isDeleted) {
+    condition["deletedAt"] = null;
+    condition["deleteReasonId"] = null;
+  }
   if (writerId) condition["writerId"] = writerId;
   const targetList = await Board.findAll({
     where: condition,
@@ -66,7 +72,7 @@ export const getBoardList = async (
       { model: Category, as: "category" },
       { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
       { model: Score, as: "scores", required: false },
-      { model: UserInfo, as: "writer" },
+      { model: UserInfo, as: "writer", where: writerCondition },
     ],
     order: [["createdAt", "DESC"]],
   });
@@ -117,10 +123,15 @@ export const getBoard = async (boardId?: number, userId?: number) => {
   }
   if (boardId) {
     const board = await Board.findOne({
-      where: { id: boardId, deletedAt: null },
+      where: { id: boardId, deletedAt: null, deleteReasonId: null },
       include: [
-        { model: UserInfo, as: "writer" },
-        { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
+        { model: UserInfo, as: "writer", where: { deletedAt: null } },
+        {
+          model: Cmt,
+          as: "cmts",
+          required: false,
+          where: { deletedAt: null, deleteReasonId: null },
+        },
         { model: Category, as: "category" },
         { model: Score, as: "scores", required: false },
         {
@@ -170,9 +181,17 @@ export const giveScore = async (
 ) => {
   let target;
   if (!userId || !boardId || !score) return false;
-  if (!(await Board.findOne({ where: { deletedAt: null, id: boardId } })))
+  if (
+    !(await Board.findOne({
+      where: { deletedAt: null, id: boardId, deleteReasonId: null },
+    }))
+  )
     return false;
-  if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
+  if (
+    !(await UserInfo.findOne({
+      where: { deletedAt: null, id: userId, deleteReasonId: null },
+    }))
+  )
     return false;
   target = await Score.findOne({
     where: { userId: userId, boardId: boardId, deletedAt: null },
@@ -194,7 +213,11 @@ export const reportBoard = async (
   reasonId?: number
 ) => {
   if (!userId || !boardId || !reasonId) return false;
-  if (!(await Board.findOne({ where: { deletedAt: null, id: boardId } })))
+  if (
+    !(await Board.findOne({
+      where: { deletedAt: null, id: boardId, deleteReasonId: null },
+    }))
+  )
     return false;
   if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
     return false;

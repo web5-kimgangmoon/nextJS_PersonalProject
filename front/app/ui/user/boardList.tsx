@@ -16,6 +16,7 @@ export function BoardList() {
   return (
     <div className="">
       <MyBoard />
+      <MyBoard />
       {myBoardList.boardCnt > limit && (
         <Button color="blankBlue" radius="medium" onClick={stretchLimit}>
           게시글들 더보기
@@ -39,10 +40,10 @@ export function MyBoard() {
             layout={"responsive"}
           ></Image>
         </div>
-        <div className="w-full p-2 h-32 flex flex-col gap-1 p-1">
-          <div className="flex w-full items-center justify-between">
-            <div className="text-sm">공지</div>
-            <div className="flex">
+        <div className="w-full p-2 h-32 flex flex-col gap-1">
+          <div className="flex w-full items-center justify-between flex-wrap">
+            <div className="text-sm font-bold text-mainBlue">공지</div>
+            <div className="flex flex-wrap">
               <div>
                 <ImgButton
                   color="none"
@@ -77,11 +78,9 @@ export function MyBoard() {
               </div>
             </div>
           </div>
-          <div>ddd</div>
-          <div className="text-sm relative">
-            <div className="absolute top-0 left-0 w-full h-full text-ellipsis">
-              ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇddd
-            </div>
+          <div className="text-sm text-textStrongGray font-bold">나는야</div>
+          <div className="text-xs w-full break-all pre-wrap overflow-y-hidden text-fakeBlack">
+            content
           </div>
         </div>
       </div>

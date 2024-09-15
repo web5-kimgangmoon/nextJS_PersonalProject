@@ -33,7 +33,11 @@ export const CategorySlideBar = () => {
     <CategorySlideBarController
       list={[
         {
-          path: "/category/all",
+          path: `/category/all${
+            search && searchType
+              ? `?search=${search}&searchType=${searchType}`
+              : ""
+          }`,
           title: "전체",
           selected:
             list.filter(

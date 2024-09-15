@@ -137,7 +137,8 @@ jobs:
           }
           npm install -g pm2
           pm2 stop front
-          pm2 remove front
+          pm2 delete front
+          cd  /var/www/front
           pm2 start npm --name "front" -- run start'
 
   deploy_back:

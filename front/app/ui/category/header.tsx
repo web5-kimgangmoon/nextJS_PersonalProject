@@ -27,17 +27,12 @@ export function Header() {
     !userInfoData.data
   )
     return <LoadingSpin bgColorClass="bg-categoryGray" />;
-  const categoryList = categoryListData.data.data.categories.map(
-    (item: {
-      path: string;
-      name: string;
-      img: string;
-      description: string;
-    }) => ({
+  const categoryList = [{ name: "전체", href: "/category/all" }];
+  for (let item of categoryListData.data.data.categories)
+    categoryList.push({
       name: item.name,
       href: `/category/${item.path}`,
-    })
-  );
+    });
   return (
     <div className="flex justify-between items-center py-2 px-2">
       <div>
@@ -210,11 +205,10 @@ export const MenuModalContent = ({
       />
       {isLogin && (
         <ModalRequest
-          closeModal={closeModal}
           request={() => {
             logout.mutate();
-            queryClient.refetchQueries({ queryKey: ["get", "userInfo"] });
           }}
+          closeModal={closeModal}
           isBorder={true}
         >
           로그아웃
@@ -240,10 +234,10 @@ export const ProfileModalContent = ({
 }: {
   closeModal: () => void;
 }) => {
+  const queryClient = useQueryClient();
   const logout = useLogout(() =>
     queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
   );
-  const queryClient = useQueryClient();
   return (
     <div className="py-2">
       <ModalLink href="/user">프로필 확인</ModalLink>

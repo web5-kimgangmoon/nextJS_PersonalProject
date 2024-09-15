@@ -93,7 +93,7 @@ export const WriteCmtComp = ({
 }) => {
   const router = useRouter();
   const { uploadImg, formData, setFormData, onChangeText, text, setText } =
-    useFormDataImg(baseText ? baseText : "", "isDeleteImg");
+    useFormDataImg(baseText ? baseText : "", 72, "isDeleteImg");
 
   const { preview, setPreview } = usePreview(formData);
   const deleteImg = useDeleteImg(
@@ -127,7 +127,7 @@ export const WriteCmtComp = ({
     [submit]
   );
   return (
-    <div hidden={!isOpen} className="w-full h-full">
+    <div hidden={!isOpen} className="w-full h-full pb-4">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
         {preview && (
           <div className="w-40 h-40 relative">

@@ -1,10 +1,14 @@
 import { ChangeEvent, useCallback, useState } from "react";
 import { useOnChangeResizeH } from "./callback/onChangeResizeH";
 import { newCopyFormData } from "@/app/lib/utils";
-export const useFormDataImg = (defaultText: string, ...keys: string[]) => {
+export const useFormDataImg = (
+  defaultText: string,
+  resizeHeight: number,
+  ...keys: string[]
+) => {
   const [formData, setFormData] = useState<FormData>(new FormData());
   const [text, setText] = useState<string>(defaultText);
-  const resize = useOnChangeResizeH();
+  const resize = useOnChangeResizeH(resizeHeight);
   const uploadImg = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const file = e.currentTarget.files?.item(0);

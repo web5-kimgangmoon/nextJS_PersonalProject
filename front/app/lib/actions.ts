@@ -158,7 +158,11 @@ export const useLogout = (refetch: () => void) => {
   });
   return { mutate, mutateAsync };
 };
-export const useLogin = (set: () => void, router: () => void) => {
+export const useLogin = (
+  set: () => void,
+  router: () => void,
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["user", "login", "post"],
     mutationFn: async ({
@@ -176,15 +180,23 @@ export const useLogin = (set: () => void, router: () => void) => {
         { params: { isAdminLogin: isAdminLogin } }
       );
     },
-    onSettled: (item, error: any) => {
-      error?.status === 400 && set();
+    onSuccess: (item) => {
       item?.status === 204 && router();
     },
-    throwOnError: true,
+    onError: (err: any) => {
+      if (err.status === 400) {
+        modalTextSet(err.response.data);
+        set();
+      }
+    },
   });
   return { mutate, mutateAsync };
 };
-export const useRegist = (set: () => void, router: () => void) => {
+export const useRegist = (
+  set: () => void,
+  router: () => void,
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["user", "regist", "post"],
     mutationFn: async ({
@@ -198,11 +210,15 @@ export const useRegist = (set: () => void, router: () => void) => {
     }) => {
       return await serverAxios.post(`/user/regist`, { nick, email, pwd });
     },
-    onSettled: (data, error: any) => {
-      error?.status === 400 && set();
+    onSuccess: (data) => {
       data?.status === 204 && router();
     },
-    throwOnError: true,
+    onError: (err: any) => {
+      if (err.status === 400) {
+        modalTextSet(err.response.data);
+        set();
+      }
+    },
   });
   return { mutate, mutateAsync };
 };

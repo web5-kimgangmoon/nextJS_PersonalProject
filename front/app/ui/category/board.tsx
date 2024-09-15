@@ -140,7 +140,9 @@ export const BoardItem = ({
           isTop ? "flex-col" : "flex-col-reverse"
         )}
       >
-        <div className="">{description}</div>
+        <div className="text-ellipsis whitespace-pre-wrap break-all overflow-y-hidden">
+          {description}
+        </div>
         <div className="text-sm flex items-center flex-wrap">
           <div className="text-textBlue">{getTimeString(createdAt)}</div>
           <div className="py-1 px-2">

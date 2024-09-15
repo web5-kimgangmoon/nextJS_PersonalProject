@@ -47,14 +47,14 @@ export const getCategory = async (category: string | null) => {
               model: Cmt,
               as: "cmts",
               required: false,
-              where: { deletedAt: null },
+              where: { deletedAt: null, deleteReasonId: null },
             },
           ],
         },
         {
           model: Board,
           as: "boards",
-          where: { deletedAt: null },
+          where: { deletedAt: null, deleteReasonId: null },
           required: false,
         },
         {
@@ -92,14 +92,16 @@ export const getCategory = async (category: string | null) => {
     }
   }
 
-  const allBoard = await Board.findAll({ where: { deletedAt: null } });
+  const allBoard = await Board.findAll({
+    where: { deletedAt: null, deleteReasonId: null },
+  });
   const defaultCategory = await Category.findOne({
     where: { id: 1 },
     include: [
       {
         model: Board,
         as: "informBoard",
-        where: { deletedAt: null },
+        where: { deletedAt: null, deleteReasonId: null },
         include: [
           {
             model: UserInfo,
@@ -109,7 +111,7 @@ export const getCategory = async (category: string | null) => {
             model: Cmt,
             as: "cmts",
             required: false,
-            where: { deletedAt: null },
+            where: { deletedAt: null, deleteReasonId: null },
           },
         ],
         required: true,

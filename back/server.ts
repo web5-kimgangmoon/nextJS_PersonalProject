@@ -8,8 +8,8 @@ import store from "session-file-store";
 const FileStore = store(session);
 
 config();
-// export const front = `http://localhost:3080/api/img?name=`;
-export const front = `/api/img?name=`;
+export const front = `http://localhost:3080/api/img?name=`;
+// export const front = `/api/img?name=`;
 
 // import sequelize from "./models/index";
 import test from "./placeholderData/testcase";

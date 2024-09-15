@@ -27,10 +27,10 @@ export const getUserInfo = async (id: number) => {
         nick: target.nick,
         email: target.email,
         cmtCnt: await target.$count("writtenCmts", {
-          where: { deletedAt: null },
+          where: { deletedAt: null, deleteReasonId: null },
         }),
         boardsCnt: await target.$count("writtenBoards", {
-          where: { deletedAt: null },
+          where: { deletedAt: null, deleteReasonId: null },
         }),
         like: await target.$count("doLikeActs", {
           where: { isLike: true, deletedAt: null },
@@ -49,24 +49,44 @@ export const login = async (
   pwd: string | null,
   isAdminLogin: boolean
 ) => {
-  const option = isAdminLogin ? { authority: { [Op.not]: 0 } } : {};
-  if (id && pwd) {
-    return await UserInfo.findOne({
-      where: {
-        [Op.or]: [{ nick: id }, { email: id }],
-        password: mkHash("sha256", pwd),
-        deletedAt: null,
-        ...option,
-      },
-    });
-  }
+  if (!id || !pwd) return "제대로 입력해주세요";
+  let target = await UserInfo.findOne({
+    where: {
+      deletedAt: null,
+      [Op.or]: [{ nick: id }, { email: id }],
+    },
+  });
+  if (!target) return "사용자가 존재하지 않습니다";
+  if (target.password !== mkHash("sha256", pwd)) return "패스워드가 틀렸습니다";
+  if (isAdminLogin && target.authority === 0) return "운영자 권한이 없습니다.";
+
+  if (target.connectId)
+    target = await UserInfo.findOne({ where: { id: target.connectId } });
+  if (!target || target.deletedAt) return "사용자가 존재하지 않습니다.";
+
+  const banList = await target.$get("banList", {
+    limit: 1,
+    order: [["createdAt", "DESC"]],
+  });
+  if (
+    banList[0] &&
+    banList[0].willBanEndAt.getTime() > Date.now() &&
+    banList[0].banCnt > 0
+  )
+    return `해당 사용자는 밴이 되었습니다. 밴 종료까지 앞으로 약 ${Math.ceil(
+      banList[0].willBanEndAt.getTime() / 86400000
+    )}일 남았습니다.`;
+  return target;
 };
 
 export const regist = async (nick: string, email: string, pwd: string) => {
   const target = await UserInfo.findOne({
     where: { [Op.or]: [{ nick: nick }, { email: email }] },
   });
-  if (target) return false;
+  if (target && target.nick === nick)
+    return "다른 유저가 해당 닉네임을 사용하고 있습니다.";
+  if (target && target.email === email)
+    return "다른 유저가 해당 이메일을 사용하고 있습니다.";
 
   await UserInfo.create({
     nick,
