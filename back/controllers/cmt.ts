@@ -44,12 +44,13 @@ router.get("/cmtList", async (req: Request, res: Response) => {
   const limit = intCheck.safeParse(req.query.limit).success
     ? Number(req.query.limit)
     : 10;
+  const userId = req?.session?.userId ? req?.session?.userId : undefined;
+
   const isOwn = booleanCheck.safeParse(req.query.isOwn).success
     ? req.query.isOwn === "true"
       ? true
       : false
     : false;
-  const userId = req?.session?.userId ? req?.session?.userId : undefined;
   const isDeleted = booleanCheck.safeParse(req.query.isDeleted).success
     ? req.query.isDeleted === "true"
     : false;
@@ -82,7 +83,7 @@ router.get("/cmtList", async (req: Request, res: Response) => {
       searchType: searchType,
       sort: sort,
       userId: userId,
-      isOwn: isOwn,
+      isOwn,
     })
   );
 });

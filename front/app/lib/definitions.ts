@@ -185,6 +185,7 @@ export interface GetBoardList {
   offset: string | null;
   limit: string | null;
   isOwn: string | null;
+  writerId?: string;
   isDeleted: string | null;
   search: string | null;
   searchType: string | "content" | "title" | "contentTitle" | null;

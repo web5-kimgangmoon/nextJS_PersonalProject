@@ -115,7 +115,9 @@ export const getCmts = async (get: GetCmts) => {
     const replyCmtToWriter = await (
       await cmt.$get("replyCmtTo")
     )?.$get("writer");
-    const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
+    const replyCmtsFrom = await cmt.$get("replyCmtsFrom", {
+      where: { deletedAt: null },
+    });
     const like = likeList?.filter((item) => item.isLike).length;
     const dislike = likeList?.filter((item) => item.isDisLike).length;
     const deleteReason = await cmt.$get("deleteReason");
@@ -297,9 +299,9 @@ export const likeCmt = async (
     });
   }
   if (isDisLike) {
-    await target.update("isDisLike", !target.isDisLike);
+    await target.update({ isDisLike: !target.isDisLike });
   } else {
-    await target.update("isLike", !target.isLike);
+    await target.update({ isLike: !target.isLike });
   }
   return true;
 };

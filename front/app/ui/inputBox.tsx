@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, KeyboardEvent } from "react";
 import { useZodCheckInput } from "@/app/hooks/zodCheckInput";
 import { ZodBigInt, ZodBoolean, ZodDate, ZodNumber, ZodString } from "zod";
 import { useToggle } from "../hooks/toggle";
@@ -13,6 +13,7 @@ export const InputBox = ({
   setIsOK,
   setIsNO,
   checkType,
+  onSubmit,
 }: {
   title: string;
   value: string;
@@ -22,6 +23,7 @@ export const InputBox = ({
   setIsNO: () => void;
   setIsOK: () => void;
   checkType: ZodString | ZodBoolean | ZodBigInt | ZodDate | ZodNumber;
+  onSubmit?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }) => {
   const { errors, onChangeInput } = useZodCheckInput(
     setIsNO,
@@ -39,6 +41,7 @@ export const InputBox = ({
         onChange={onChangeInput}
         placeholder={placeholder}
         className="border-2 border-borderGray p-3 rounded-xl focus:border-mainBlue outline-none transition-colors"
+        onKeyDown={onSubmit}
       />
       <div className="text-alert">
         <div className="flex items-center gap-2">

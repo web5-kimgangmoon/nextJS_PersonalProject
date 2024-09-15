@@ -37,5 +37,5 @@ export default class AdminAct extends Model {
   deletedAt!: Date;
 
   @BelongsTo(() => UserInfo, "userId")
-  user?: UserInfo;
+  user!: UserInfo;
 }

@@ -6,7 +6,7 @@ import { useFormDataImg } from "@/app/hooks/formDataImg";
 import { usePreview } from "@/app/hooks/preview";
 import { useDeleteImg } from "@/app/hooks/callback/deleteImg";
 import { newCopyFormData, pushedFormData } from "@/app/lib/utils";
-import { useCallback } from "react";
+import { KeyboardEvent, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAddCmt, useUpdateCmt } from "@/app/lib/actions";
 import Image from "next/image";
@@ -119,6 +119,9 @@ export const WriteCmtComp = ({
     router,
     setText,
   ]);
+  const pressEnter = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.code === "Enter") submit();
+  }, []);
   return (
     <div hidden={!isOpen} className="w-full h-full">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
@@ -167,6 +170,7 @@ export const WriteCmtComp = ({
           className="w-full h-full outline-none"
           onChange={onChangeText}
           value={text}
+          onKeyDown={pressEnter}
           // defaultValue={baseText}
         />
       </div>

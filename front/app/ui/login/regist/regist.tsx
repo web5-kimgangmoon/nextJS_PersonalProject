@@ -8,7 +8,7 @@ import { useTypeCheck_zod } from "@/app/lib/utils";
 import { useRegist } from "@/app/lib/actions";
 import { useRouter } from "next/navigation";
 import { Modal_little } from "@/app/ui/modal";
-import { useEffect } from "react";
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect } from "react";
 import { userInfoData } from "@/app/lib/placeholder-data";
 import { useQuery_getUserInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../../loadingSpin";
@@ -29,9 +29,23 @@ export function Regist() {
   const { nickCheck, passwordCheck, emailCheck } = useTypeCheck_zod();
   const userData = useQuery_getUserInfo();
   const regist = useRegist(registIsFail.close, () => router.replace("/login"));
+
+  const submit = useCallback(() => {
+    nickIsOK.is && passwordIsOK.is && emailIsOK.is
+      ? async (nick: string, email: string, password: string) => {
+          regist.mutate({
+            nick: nick,
+            email: email,
+            pwd: password,
+          });
+        }
+      : undefined;
+  }, [nickIsOK.is, passwordIsOK.is, emailIsOK.is]);
+  const pressEnter = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.code === "Enter") submit();
+  }, []);
   if (userData.isLoading)
     return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
-
   if (userData.data?.data.userInfo) router.replace("/category");
 
   return (
@@ -65,6 +79,7 @@ export function Regist() {
         value={password.text}
         type={"password"}
         checkType={passwordCheck}
+        onSubmit={pressEnter}
       />
       <div className="px-10">
         <Button

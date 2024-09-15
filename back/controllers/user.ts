@@ -7,11 +7,8 @@ const router = Router();
 router.post("/login", async (req: Request, res: Response) => {
   const id = req.body.id ? (req.body.id as string) : null;
   const pwd = req.body.pwd ? (req.body.pwd as string) : null;
-  const isAdminLogin = booleanCheck.safeParse(req.query.isAdminLogin).success
-    ? req.query.isAdminLogin === "true"
-      ? true
-      : false
-    : false;
+  const isAdminLogin = req.query.isAdminLogin === "true" ? true : false;
+
   const user = await login(id, pwd, isAdminLogin);
   if (user) {
     req.session.userId = user.id;

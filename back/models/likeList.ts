@@ -24,24 +24,24 @@ export default class Like extends Model {
 
   @ForeignKey(() => UserInfo)
   @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
-  userId?: number;
+  userId!: number;
 
   @ForeignKey(() => Cmt)
   @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: false })
-  cmtId?: number;
+  cmtId!: number;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
-  isDisLike?: boolean;
+  isDisLike!: boolean;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
-  isLike?: boolean;
+  isLike!: boolean;
 
   @Column({ type: DataType.DATE })
   deletedAt!: Date;
 
   @BelongsTo(() => UserInfo, "userId")
-  user?: UserInfo;
+  user!: UserInfo;
 
   @BelongsTo(() => Cmt, "cmtId")
-  cmt?: Cmt;
+  cmt!: Cmt;
 }

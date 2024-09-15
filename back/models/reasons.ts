@@ -40,5 +40,5 @@ export default class Reason extends Model {
   cmts!: Cmt[];
 
   @HasMany(() => BanItem, "reasonId")
-  banList?: BanItem[];
+  banList!: BanItem[];
 }

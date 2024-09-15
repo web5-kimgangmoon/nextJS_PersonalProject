@@ -64,7 +64,7 @@ export default class Cmt extends Model {
   deleteReason!: Reason;
 
   @HasMany(() => Like, "cmtId")
-  likeList?: Like[];
+  likeList!: Like[];
 
   @HasMany(() => Report, "cmtId")
   reports!: Report[];
