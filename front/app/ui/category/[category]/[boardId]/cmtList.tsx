@@ -38,7 +38,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export const CmtList = ({ boardId }: { boardId: number }) => {
   const cmtReportList = useQuery_getCmtReason();
   const userInfoData = useQuery_getUserInfo();
-  const { limit, stretchLimit } = useStretchBtn();
+  const { limit, stretchLimit } = useStretchBtn(5);
   const [sortState, setSortState] =
     useState<Partial<"like" | "recently" | "old">>("like");
   const cmtData = useQuery_getCmt({
@@ -121,6 +121,7 @@ export const CmtList = ({ boardId }: { boardId: number }) => {
               containCmt={item.containCmt}
               content={item.content}
               createdAt={item.createdAt}
+              isDeleted={item.isDeleted}
             />
           )
       )}
@@ -156,6 +157,7 @@ export const CmtBox = ({
   replyUserId,
   cmtReportList,
   isFirst,
+  isDeleted,
 }: {
   cmtId: number;
   writerId: number;
@@ -168,6 +170,7 @@ export const CmtBox = ({
   isDoLike: boolean;
   isDoDislike: boolean;
   isWriter: boolean;
+  isDeleted: boolean;
   userProfile?: string | null;
   isDidReport: boolean;
   userId?: number | null;
@@ -198,12 +201,13 @@ export const CmtBox = ({
   const likeCmt = useLikeCmt(() =>
     queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
   );
-  const deleteCmt = useDeleteCmt(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
-  );
+  const deleteCmt = useDeleteCmt(() => {
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
+    queryClient.refetchQueries({ queryKey: ["get", "board"] });
+  });
   const requestLike = useCallback(
-    async (isDisLike: boolean) => {
-      await likeCmt.mutate({ cmtId, isDisLike: isDisLike ? "true" : "false" });
+    async (isDislike: boolean) => {
+      await likeCmt.mutate({ cmtId, isDislike: isDislike ? "true" : "false" });
     },
     [cmtId, router, likeCmt, queryClient]
   );
@@ -234,6 +238,7 @@ export const CmtBox = ({
             isLogin={userId ? true : false}
             isDidReport={isDidReport}
             isWriter={isWriter}
+            isDeleted={isDeleted}
             toggle={cmt.toggle}
             remakeToggle={remake.toggle}
             replyUser={replyUser}
@@ -263,6 +268,7 @@ export const CmtBox = ({
               dislike={dislike}
               isLogin={userId ? true : false}
               replyToggle={reply.toggle}
+              isDeleted={isDeleted}
             />
           </div>
         </div>
@@ -321,6 +327,7 @@ export const CmtBox = ({
                   containCmt={item.containCmt}
                   content={item.content}
                   createdAt={item.createdAt}
+                  isDeleted={item.isDeleted}
                 />
               )
           )}
@@ -339,6 +346,7 @@ export const CmtBoxTop = ({
   isLogin,
   isDidReport,
   isWriter,
+  isDeleted,
   toggle,
   remakeToggle,
   deleteToggle,
@@ -353,6 +361,7 @@ export const CmtBoxTop = ({
   isOpenCmt: boolean;
   isDidReport: boolean;
   isWriter: boolean;
+  isDeleted: boolean;
   toggle: () => void;
   remakeToggle: () => void;
   deleteToggle: () => void;
@@ -401,7 +410,7 @@ export const CmtBoxTop = ({
             <PlusIcon strokeWidth={3} className="p-1" />
           )}
         </div>
-        {isLogin && (
+        {isLogin && !isDeleted && (
           <CmtBoxTopMenuList
             isDidReport={isDidReport}
             isLogin={isLogin}
@@ -424,6 +433,7 @@ const CmtBoxBottom = ({
   isDoLike,
   isDoDislike,
   isLogin,
+  isDeleted,
   replyToggle,
   requestLike,
 }: {
@@ -434,6 +444,7 @@ const CmtBoxBottom = ({
   isLogin: boolean;
   replyToggle: () => void;
   requestLike: (isDisLike: boolean) => void;
+  isDeleted: boolean;
 }) => {
   return (
     <div className="flex gap-2">
@@ -470,7 +481,7 @@ const CmtBoxBottom = ({
         </ImgButton>
       </div>
       <div>
-        {isLogin && (
+        {isLogin && !isDeleted && (
           <Button size="smallest" color="onlyTextBlue" onClick={replyToggle}>
             reply
           </Button>

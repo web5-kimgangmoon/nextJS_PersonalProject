@@ -6,8 +6,8 @@ import Cmt from "../models/cmts";
 import Like from "../models/likeList";
 import Report from "../models/reportHistory";
 import Board from "../models/boards";
-import Category from "../models/categories";
 import Reason from "../models/reasons";
+import Category from "../models/categories";
 
 interface GetCmts {
   limit: number;
@@ -19,39 +19,178 @@ interface GetCmts {
   searchType?: string | null;
   sort?: string | null;
   isOwn: boolean;
+  isFlat: boolean;
+  writerId?: number;
 }
-export const getCmts = async (get: GetCmts) => {
-  interface CmtItem {
-    id: number;
-    writer: string;
-    writerId: number;
-    writerProfile: string;
-    createdAt: Date;
-    content: string;
-    like: number;
-    dislike: number;
-    isDoLike: boolean;
-    isDoDisLike: boolean;
-    isDidReport: boolean;
-    boardId: number;
-    categoryPath: string;
-    category: string;
-    boardTitle: string;
-    replyId?: number;
-    replyUserId?: number;
-    replyUser?: string;
-    containCmt?: CmtItem[];
+interface CmtItem {
+  id: number;
+  writer: string;
+  writerId: number;
+  writerProfile: string;
+  createdAt: Date;
+  content: string;
+  like: number;
+  dislike: number;
+  isDoLike: boolean;
+  isDoDisLike: boolean;
+  isDidReport: boolean;
+  isDeleted: boolean;
+  boardId: number;
+  categoryPath: string;
+  category: string;
+  boardTitle: string;
+  replyId?: number;
+  replyUserId?: number;
+  replyUser?: string;
+  containCmt?: CmtItem[];
+}
+
+const mkCmtItem = (
+  cmt: Cmt,
+  userId: number | undefined,
+  board: Board | null,
+  category: Category | undefined | null,
+  like: number | undefined | null,
+  dislike: number | undefined | null,
+  replyCmtToWriter: UserInfo | undefined | null,
+  writer: UserInfo | undefined | null,
+  userLike: Like | undefined | null,
+  reports: Report[] | undefined | null,
+  cmtItems: CmtItem[] | undefined | null,
+  deleteReason: Reason | undefined | null,
+  isDeleted: boolean
+) => {
+  const item: CmtItem = {
+    boardId: cmt.boardId,
+    boardTitle: board!.title,
+    category: category!.name,
+    categoryPath: category!.path,
+    createdAt: cmt.createdAt,
+    id: cmt.id,
+    content: "",
+    like: like ? like : 0,
+    dislike: dislike ? dislike : 0,
+    replyId: cmt.replyId,
+    replyUser: replyCmtToWriter?.nick,
+    replyUserId: replyCmtToWriter?.id,
+    writer: writer!.nick,
+    writerId: cmt.writerId,
+    writerProfile: `${front}${
+      writer?.profileImg ? writer?.profileImg : `baseUserImg.png`
+    }`,
+    containCmt: cmtItems ? cmtItems : [],
+    isDoLike: userLike?.isLike ? true : false,
+    isDoDisLike: userLike?.isDisLike ? true : false,
+    isDidReport: reports?.find((item) => item.reporterId === userId)
+      ? true
+      : false,
+    isDeleted: cmt.deletedAt === null ? true : false,
+  };
+  if (!isDeleted) {
+    item.content = !cmt.deletedAt
+      ? cmt.content
+      : cmtMake(
+          `${
+            deleteReason
+              ? "'" +
+                deleteReason.title +
+                "'" +
+                " 사유에 의해 삭제된 댓글입니다)"
+              : ""
+          }`,
+          "(*삭제된 댓글입니다)"
+        ).cmt;
+    return item;
+  } else {
+    item.content = cmt.content;
+    return item;
   }
+};
+const getCmt = async (
+  cmt: Cmt,
+  userId?: number,
+  isDeleted: boolean = false
+): Promise<CmtItem | null> => {
+  const board = await cmt.$get("board");
+  const category = await board?.$get("category");
+  const reports = await cmt.$get("reports");
+  const likeList = await cmt.$get("likeList");
+  const writer = await cmt.$get("writer");
+  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
+  const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
+  const like = likeList?.filter((item) => item.isLike).length;
+  const dislike = likeList?.filter((item) => item.isDisLike).length;
+  const deleteReason = await cmt.$get("deleteReason");
+  const userLike = likeList?.find((item) => item.userId === userId);
+  const cmtItems: CmtItem[] = [];
+  if (replyCmtsFrom) {
+    for (let item of replyCmtsFrom) {
+      const temp = await getCmt(item, userId, isDeleted);
+      temp && cmtItems.push(temp);
+    }
+  }
+  if (isDeleted && cmt.deletedAt !== null && cmtItems.length === 0) return null;
+  return mkCmtItem(
+    cmt,
+    userId,
+    board,
+    category,
+    like,
+    dislike,
+    replyCmtToWriter,
+    writer,
+    userLike,
+    reports,
+    cmtItems,
+    deleteReason,
+    isDeleted
+  );
+};
+
+const getCmt_flat = async (
+  cmt: Cmt,
+  userId?: number,
+  isDeleted: boolean = false
+) => {
+  const board = await cmt.$get("board");
+  const category = await board?.$get("category");
+  const reports = await cmt.$get("reports");
+  const likeList = await cmt.$get("likeList");
+  const writer = await cmt.$get("writer");
+  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
+  const like = likeList?.filter((item) => item.isLike).length;
+  const dislike = likeList?.filter((item) => item.isDisLike).length;
+  const deleteReason = await cmt.$get("deleteReason");
+  const userLike = likeList?.find((item) => item.userId === userId);
+  const cmtItems: CmtItem[] = [];
+  return mkCmtItem(
+    cmt,
+    userId,
+    board,
+    category,
+    like,
+    dislike,
+    replyCmtToWriter,
+    writer,
+    userLike,
+    reports,
+    cmtItems,
+    deleteReason,
+    isDeleted
+  );
+};
+
+export const getCmts = async (get: GetCmts) => {
   interface SendData {
     cmtList: Array<CmtItem>;
     cmtCnt: number;
   }
   let cmts: Cmt[] = [];
-  let condition: any = { replyId: null };
+  let condition: any = {};
   let writerCondition: any = {};
   let order: any = [];
   let limitOption: any = { limit: get.limit };
-  // if (!get.isDeleted) condition["deletedAt"] = null;
+  if (!get.isFlat) condition["replyId"] = null;
   if (get.onlyDeleted) condition["deletedAt"] = { [Op.not]: null };
   if (get.search && get.searchType) {
     switch (get.searchType) {
@@ -68,7 +207,8 @@ export const getCmts = async (get: GetCmts) => {
       default:
     }
   }
-  if (get.isOwn && get.userId) condition["writerId"] = get.userId;
+  if (get.isOwn) condition["writerId"] = get.writerId;
+  if (get.writerId) condition["writerId"] = get.writerId;
   if (get.boardId) condition["boardId"] = get.boardId;
   switch (get.sort) {
     case "old":
@@ -106,82 +246,23 @@ export const getCmts = async (get: GetCmts) => {
       ...limitOption,
     });
   }
-  const getCmt = async (cmt: Cmt, userId?: number): Promise<CmtItem | null> => {
-    const board = await cmt.$get("board");
-    const category = await board?.$get("category");
-    const reports = await cmt.$get("reports");
-    const likeList = await cmt.$get("likeList");
-    const writer = await cmt.$get("writer");
-    const replyCmtToWriter = await (
-      await cmt.$get("replyCmtTo")
-    )?.$get("writer");
-    const replyCmtsFrom = await cmt.$get("replyCmtsFrom", {
-      where: { deletedAt: null },
-    });
-    const like = likeList?.filter((item) => item.isLike).length;
-    const dislike = likeList?.filter((item) => item.isDisLike).length;
-    const deleteReason = await cmt.$get("deleteReason");
-    const userLike = likeList?.find((item) => item.userId === userId);
-    const cmtItems: CmtItem[] = [];
-    if (replyCmtsFrom) {
-      for (let item of replyCmtsFrom) {
-        const temp = await getCmt(item);
-        temp && cmtItems.push(temp);
-      }
-    }
 
-    return cmt.deletedAt && cmtItems.length === 0 && !get.isDeleted
-      ? null
-      : {
-          boardId: cmt.boardId,
-          boardTitle: board!.title,
-          category: category!.name,
-          categoryPath: category!.path,
-          content: !cmt.deletedAt
-            ? cmt.content
-            : cmtMake(
-                `${
-                  deleteReason
-                    ? "'" +
-                      deleteReason.title +
-                      "'" +
-                      " 사유에 의해 삭제된 댓글입니다)"
-                    : ""
-                }`,
-                "(*삭제된 댓글입니다)"
-              ).cmt,
-          createdAt: cmt.createdAt,
-          id: cmt.id,
-
-          like: like ? like : 0,
-          dislike: dislike ? dislike : 0,
-          replyId: cmt.replyId,
-          replyUser: replyCmtToWriter?.nick,
-          replyUserId: replyCmtToWriter?.id,
-          writer: writer!.nick,
-          writerId: cmt.writerId,
-          writerProfile: `${front}${
-            writer?.profileImg ? writer?.profileImg : `baseUserImg.png`
-          }`,
-          containCmt: cmtItems,
-          isDoLike: userLike?.isLike ? true : false,
-          isDoDisLike: userLike?.isDisLike ? true : false,
-          isDidReport: reports?.find((item) => item.reporterId === get.userId)
-            ? true
-            : false,
-        };
-  };
   const sendData: SendData = {
     cmtCnt: (
       await Cmt.findAll({
-        where: condition,
-        include: [{ model: UserInfo, as: "writer", where: writerCondition }],
+        where: { ...condition },
+        include: [
+          { model: UserInfo, as: "writer", where: writerCondition },
+          { model: Cmt, as: "replyCmtsFrom", attributes: ["id"], where: [] },
+        ],
       })
     ).length,
     cmtList: [],
   };
   for (let item of cmts) {
-    const temp = await getCmt(item, get.userId);
+    const temp = get.isFlat
+      ? await getCmt(item, get.userId, get.isDeleted)
+      : await getCmt_flat(item, get.userId, get.isDeleted);
     temp && sendData["cmtList"].push(temp);
   }
   return sendData;

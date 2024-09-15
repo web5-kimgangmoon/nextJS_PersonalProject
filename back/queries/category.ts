@@ -66,9 +66,6 @@ export const getCategory = async (category: string | null) => {
       ],
     });
     if (target) {
-      await Board.findAll({
-        where: { categoryId: target?.id, deletedAt: null },
-      });
       const sendData: SendData = {
         path: target.path,
         name: target.name,
@@ -95,7 +92,7 @@ export const getCategory = async (category: string | null) => {
     }
   }
 
-  const allBoard = await Board.findAll();
+  const allBoard = await Board.findAll({ where: { deletedAt: false } });
   const defaultCategory = await Category.findOne({
     where: { id: 1 },
     include: [
@@ -108,7 +105,12 @@ export const getCategory = async (category: string | null) => {
             model: UserInfo,
             as: "writer",
           },
-          { model: Cmt, as: "cmts", required: false },
+          {
+            model: Cmt,
+            as: "cmts",
+            required: false,
+            where: { deletedAt: null },
+          },
         ],
         required: true,
       },

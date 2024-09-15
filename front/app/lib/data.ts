@@ -15,13 +15,15 @@ export const useQuery_getCmt = (get: GetCmt) => {
       return await serverAxios.get(`/cmt/cmtList`, {
         params: {
           limit: get.searh.limit,
-          onlyDeleted: get.searh.onlyDeleted,
-          isOwn: get.searh.isOwn,
-          isDeleted: get.searh.isDeleted,
+          onlyDeleted: get.searh.onlyDeleted ? "true" : "false",
+          isOwn: get.searh.isOwn ? "true" : "false",
+          isDeleted: get.searh.isDeleted ? "true" : "false",
           search: get.searh.search,
           boardId: get.searh.boardId,
           searchType: get.searh.searchType,
           sort: get.searh.sort,
+          isFlat: get.searh.isFlat ? "true" : "false",
+          writerId: get.searh.writerId,
         },
       });
     },

@@ -86,7 +86,7 @@ export const BoardDetailComp = ({
             boardId={id}
           />
         </div>
-        {isWriter && (
+        {isWriter && categoryPath !== "inform" && (
           <WriterRequestBtns boardId={id} modalToggle={deleteBox.toggle} />
         )}
         <div hidden={!deleteBox.is}>

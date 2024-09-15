@@ -204,6 +204,7 @@ export const cmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
       containCmt: [
         {
           id: 2,
@@ -225,6 +226,7 @@ export const cmtData: CmtListData = {
           replyId: 1,
           replyUserId: 3,
           replyUser: "나야나",
+          isDeleted: false,
           containCmt: [
             {
               id: 3,
@@ -246,6 +248,7 @@ export const cmtData: CmtListData = {
               replyId: 2,
               replyUserId: 4,
               replyUser: "샤아",
+              isDeleted: false,
             },
             {
               id: 5,
@@ -267,6 +270,7 @@ export const cmtData: CmtListData = {
               replyId: 2,
               replyUserId: 4,
               replyUser: "샤아",
+              isDeleted: false,
             },
             {
               id: 6,
@@ -288,6 +292,7 @@ export const cmtData: CmtListData = {
               replyId: 2,
               replyUserId: 4,
               replyUser: "샤아",
+              isDeleted: false,
             },
           ],
         },
@@ -311,6 +316,7 @@ export const cmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 7,
@@ -329,6 +335,7 @@ export const cmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 8,
@@ -347,6 +354,7 @@ export const cmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 9,
@@ -365,6 +373,7 @@ export const cmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 10,
@@ -383,6 +392,7 @@ export const cmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
   ],
   cmtCnt: 6,
@@ -407,6 +417,7 @@ export const mycmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
 
     {
@@ -426,6 +437,7 @@ export const mycmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 7,
@@ -444,6 +456,7 @@ export const mycmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 8,
@@ -462,6 +475,7 @@ export const mycmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 9,
@@ -480,6 +494,7 @@ export const mycmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 10,
@@ -498,6 +513,7 @@ export const mycmtData: CmtListData = {
       category: "유머",
       boardTitle: "이타치가 왜 강한줄 아나?",
       writerProfile: "/baseBoardImg.png",
+      isDeleted: false,
     },
     {
       id: 3,
@@ -519,6 +535,7 @@ export const mycmtData: CmtListData = {
       replyId: 2,
       replyUserId: 4,
       replyUser: "샤아",
+      isDeleted: false,
     },
     {
       id: 5,
@@ -540,6 +557,7 @@ export const mycmtData: CmtListData = {
       replyId: 2,
       replyUserId: 4,
       replyUser: "샤아",
+      isDeleted: false,
     },
     {
       id: 6,
@@ -561,6 +579,7 @@ export const mycmtData: CmtListData = {
       replyId: 2,
       replyUserId: 4,
       replyUser: "샤아",
+      isDeleted: false,
     },
     {
       id: 2,
@@ -582,6 +601,7 @@ export const mycmtData: CmtListData = {
       replyId: 1,
       replyUserId: 3,
       replyUser: "나야나",
+      isDeleted: false,
     },
   ],
   cmtCnt: 10,

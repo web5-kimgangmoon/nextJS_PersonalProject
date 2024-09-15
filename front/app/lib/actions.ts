@@ -140,12 +140,12 @@ export const useLikeCmt = (refetch: () => void) => {
     mutationKey: ["post", "cmt", "like"],
     mutationFn: async ({
       cmtId,
-      isDisLike,
+      isDislike,
     }: {
       cmtId: number;
-      isDisLike: string;
+      isDislike: string;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.post(`/cmt/like/${cmtId}`, { isDisLike });
+      return await serverAxios.post(`/cmt/like/${cmtId}`, { isDislike });
     },
     onSuccess: () => {
       refetch();

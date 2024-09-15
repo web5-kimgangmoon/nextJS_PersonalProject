@@ -26,7 +26,10 @@ export function Login() {
     loginIsFail: useToggle(true),
   };
   const { stringCheck, passwordCheck } = useTypeCheck_zod();
-  const login = useLogin(loginIsFail.close, () => router.replace("/category"));
+  const login = useLogin(loginIsFail.close, () => {
+    userInfoData.refetch();
+    router.replace("/category");
+  });
   if (userInfoData.isLoading)
     return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
   return (
@@ -67,7 +70,6 @@ export function Login() {
                     pwd: password.text,
                     isAdminLogin: "false",
                   });
-                  userInfoData.refetch();
                 }
               : undefined
           }

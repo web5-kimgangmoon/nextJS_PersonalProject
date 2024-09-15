@@ -45,9 +45,10 @@ export const WriteCmt = ({
   const updateCmt = useUpdateCmt(() =>
     queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
   );
-  const addCmt = useAddCmt(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
-  );
+  const addCmt = useAddCmt(() => {
+    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
+    queryClient.refetchQueries({ queryKey: ["get", "board"] });
+  });
   const request = useCallback(
     async (formData: FormData) => {
       isUpdate && cmtId

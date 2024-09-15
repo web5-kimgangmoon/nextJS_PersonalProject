@@ -11,7 +11,7 @@ import Link from "next/link";
 import parse from "html-react-parser";
 
 export function CmtList() {
-  const { limit, stretchLimit } = useStretchBtn();
+  const { limit, stretchLimit } = useStretchBtn(5);
   const mycmt = {
     cmtList: mycmtData.cmtList.slice(0, limit),
     cmtCnt: mycmtData.cmtCnt,

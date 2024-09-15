@@ -18,12 +18,12 @@ router.post("/like/:cmtId", async (req: Request, res: Response) => {
   const cmtId = intCheck.safeParse(req.params.cmtId).success
     ? Number(req.params.cmtId)
     : undefined;
-  const isDisLike = booleanCheck.safeParse(req.body.isDisLike).success
-    ? req.body.isDisLike === "true"
+  const isDislike = booleanCheck.safeParse(req.body.isDislike).success
+    ? req.body.isDislike === "true"
       ? true
       : false
     : false;
-  (await likeCmt(userId, cmtId, isDisLike))
+  (await likeCmt(userId, cmtId, isDislike))
     ? res.status(204).send()
     : res.status(400).send();
 });
@@ -56,6 +56,8 @@ router.get("/cmtList", async (req: Request, res: Response) => {
     : false;
   const onlyDeleted = booleanCheck.safeParse(req.query.onlyDeleted).success
     ? req.query.onlyDeleted === "true"
+      ? true
+      : false
     : false;
   const search = stringCheck.safeParse(req.query.search).success
     ? stringCheck.parse(req.query.search)
@@ -66,6 +68,14 @@ router.get("/cmtList", async (req: Request, res: Response) => {
   const boardId = intCheck.safeParse(req.query.boardId).success
     ? Number(req.query.boardId)
     : null;
+  const writerId = intCheck.safeParse(req.query.writerId).success
+    ? Number(req.query.writerId)
+    : undefined;
+  const isFlat = booleanCheck.safeParse(req.query.isFlat).success
+    ? req.query.isFlat === "true"
+      ? true
+      : false
+    : false;
   const sort = stringCheck.safeParse(req.query.sort).success
     ? stringCheck.parse(req.query.sort)
     : undefined;
@@ -84,6 +94,8 @@ router.get("/cmtList", async (req: Request, res: Response) => {
       sort: sort,
       userId: userId,
       isOwn,
+      writerId,
+      isFlat,
     })
   );
 });

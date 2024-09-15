@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
 
-export const useStretchBtn = () => {
-  const [limit, setLimit] = useState<number>(5);
+export const useStretchBtn = (init: number) => {
+  const [limit, setLimit] = useState<number>(init);
   const stretchLimit = useCallback(() => {
-    setLimit((value) => value + 5);
+    setLimit((value) => value + init);
   }, []);
   return { limit, stretchLimit };
 };
