@@ -41,12 +41,12 @@ export const cmtRemake = (
   return {
     cmt:
       !img && !reImg
-        ? `<div><div><span style="color: #042552;font-size: 0.75rem;">${
+        ? `<div style="white-space: pre-wrap;"><div><span style="color: #042552;font-size: 0.75rem;">${
             reState ? reState : state
           }</span><span class="cmtTextContent">${
             reContent ? reContent : content
           }</span></div></div>`
-        : `<div><div style="width: 10rem; height: 10rem;"><img src="${
+        : `<div style="white-space: pre-wrap;"><div style="width: 10rem; height: 10rem;"><img src="${
             reImg ? reImg : img
           }" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">${
             reState ? reState : state
@@ -62,10 +62,10 @@ export const cmtRemake = (
 export const cmtMake = (content: string, state?: string, img?: string) => {
   return {
     cmt: !img
-      ? `<div><div><span style="color: #042552;font-size: 0.75rem;">${
+      ? `<div style="white-space: pre-wrap;"><div><span style="color: #042552;font-size: 0.75rem;">${
           state ? state : ""
         }</span><span class="cmtTextContent">${content}</span></div></div>`
-      : `<div><div style="width: 10rem; height: 10rem;"><img src="${img}" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">${
+      : `<div style="white-space: pre-wrap;"><div style="width: 10rem; height: 10rem;"><img src="${img}" style="width: 100%; height: 100%;"></div><div><span style="color: #042552;font-size: 0.75rem;">${
           state ? state : ""
         }</span><span class="cmtTextContent">${content}</span></div></div>`,
     content: content,
