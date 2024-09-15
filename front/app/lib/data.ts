@@ -29,23 +29,42 @@ export const useQuery_getCmt = (get: GetCmt) => {
   return { isLoading, data, refetch };
 };
 
-export const useQuery_getReasonList = (
-  reasonType:
-    | "BAN"
-    | "CMT_REPORT"
-    | "CMT_DELETE"
-    | "BOARD_DELETE"
-    | "BOARD_REPORT"
-) => {
-  const { isLoading, data } = useQuery({
-    queryKey: ["get", "reason", "list", reasonType],
-    queryFn: async () => {
-      return await serverAxios.get(`/reason/list`, { params: { reasonType } });
-    },
-  });
-  return { isLoading, data };
-};
-
+export const useQuery_getBoardReason = () =>
+  // reasonType:
+  // | "BAN"
+  // | "CMT_REPORT"
+  // | "CMT_DELETE"
+  // | "BOARD_DELETE"
+  // | "BOARD_REPORT"
+  {
+    const { isLoading, data } = useQuery({
+      queryKey: ["get", "reason", "list", "BOARD_REPORT"],
+      queryFn: async () => {
+        return await serverAxios.get(`/reason/list`, {
+          params: { reasonType: "BOARD_REPORT" },
+        });
+      },
+    });
+    return { isLoading, data };
+  };
+export const useQuery_getCmtReason = () =>
+  // reasonType:
+  //   | "BAN"
+  //   | "CMT_REPORT"
+  //   | "CMT_DELETE"
+  //   | "BOARD_DELETE"
+  //   | "BOARD_REPORT"
+  {
+    const { isLoading, data } = useQuery({
+      queryKey: ["get", "reason", "list", "CMT_REPORT"],
+      queryFn: async () => {
+        return await serverAxios.get(`/reason/list`, {
+          params: { reasonType: "CMT_REPORT" },
+        });
+      },
+    });
+    return { isLoading, data };
+  };
 export const useQuery_getCategoryDetail = (get: GetCategoryDetail) => {
   const { isLoading, data } = useQuery({
     queryKey: ["get", "category"],

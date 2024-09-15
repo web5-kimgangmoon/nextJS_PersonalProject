@@ -29,14 +29,14 @@ import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
 import {
   useQuery_getCmt,
-  useQuery_getReasonList,
+  useQuery_getCmtReason,
   useQuery_getUserInfo,
 } from "@/app/lib/data";
 import { useStretchBtn } from "@/app/hooks/strechBtn";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const CmtList = ({ boardId }: { boardId: number }) => {
-  const cmtReportList = useQuery_getReasonList("CMT_REPORT");
+  const cmtReportList = useQuery_getCmtReason();
   const userInfoData = useQuery_getUserInfo();
   const { limit, stretchLimit } = useStretchBtn();
   const [sortState, setSortState] =
@@ -448,7 +448,7 @@ const CmtBoxBottom = ({
           size="smallest"
           className={"text-fakeBlack"}
           isLessGap={true}
-          onClick={isLogin ? () => requestLike(false) : undefined}
+          onClick={isLogin ? async () => await requestLike(false) : undefined}
         >
           {like}
         </ImgButton>
@@ -464,7 +464,7 @@ const CmtBoxBottom = ({
           size="smallest"
           className={"text-fakeBlack"}
           isLessGap={true}
-          onClick={isLogin ? () => requestLike(true) : undefined}
+          onClick={isLogin ? async () => await requestLike(true) : undefined}
         >
           {dislike}
         </ImgButton>

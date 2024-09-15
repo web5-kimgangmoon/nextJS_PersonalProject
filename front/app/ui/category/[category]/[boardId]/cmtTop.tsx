@@ -7,7 +7,7 @@ import { WriteCmt } from "./cmtWriteBox";
 import { useToggle } from "@/app/hooks/toggle";
 import {
   useQuery_getBoardDetail,
-  useQuery_getReasonList,
+  useQuery_getBoardReason,
   useQuery_getUserInfo,
 } from "@/app/lib/data";
 import { useParams } from "next/navigation";
@@ -15,7 +15,7 @@ import { LoadingSpin } from "@/app/ui/loadingSpin";
 
 export const CommentTop = () => {
   const params = useParams();
-  const boardReportList = useQuery_getReasonList("BOARD_REPORT");
+  const boardReportList = useQuery_getBoardReason();
   const currentBoard = useQuery_getBoardDetail(+params.boardId);
   const userInfoData = useQuery_getUserInfo();
   const box = useToggle(false);
