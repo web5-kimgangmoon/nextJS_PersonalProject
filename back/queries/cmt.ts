@@ -32,7 +32,7 @@ interface CmtItem {
   like: number;
   dislike: number;
   isDoLike: boolean;
-  isDoDisLike: boolean;
+  isDoDislike: boolean;
   isDidReport: boolean;
   isDeleted: boolean;
   boardId: number;
@@ -91,7 +91,7 @@ const getCmt = async (
     }`,
     containCmt: cmtItems ? cmtItems : [],
     isDoLike: userLike?.isLike ? true : false,
-    isDoDisLike: userLike?.isDislike ? true : false,
+    isDoDislike: userLike?.isDislike ? true : false,
     isDidReport: reports?.find((item) => item.reporterId === userId)
       ? true
       : false,
@@ -152,7 +152,7 @@ export const getCmts = async (get: GetCmts) => {
       order = [["createdAt", "ASC"]];
       break;
     case "recently":
-      order = ["createdAt", "DESC"];
+      order = [["createdAt", "DESC"]];
       break;
     case "like":
     default:
