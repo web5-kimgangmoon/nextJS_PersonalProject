@@ -43,7 +43,7 @@ export function Regist() {
   }, [nickIsOK.is, passwordIsOK.is, emailIsOK.is]);
   const pressEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.code === "Enter") submit();
+      if (e.code === "Enter" || e.key === "Enter") submit();
     },
     [submit]
   );

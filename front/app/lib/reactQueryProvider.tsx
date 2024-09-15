@@ -7,7 +7,12 @@ const ReactQueryProvider = ({ children }: { children: ReactNode }) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
-        defaultOptions: { queries: { refetchOnWindowFocus: false } },
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            refetchInterval: 30 * 60 * 1000,
+          },
+        },
       })
   );
   return (

@@ -32,7 +32,7 @@ export function Login() {
   });
   const pressEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.code === "Enter")
+      if (e.code === "Enter" || e.key === "Enter")
         login.mutate({
           id: nick.text,
           pwd: password.text,

@@ -57,7 +57,9 @@ const getCmt = async (
   const likeList = await cmt.$get("likeList");
   const writer = await cmt.$get("writer");
   const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
-  const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
+  const replyCmtsFrom = await cmt.$get("replyCmtsFrom", {
+    order: [["createdAt", "DESC"]],
+  });
   const like = likeList?.filter((item) => item.isLike).length;
   const dislike = likeList?.filter((item) => item.isDislike).length;
   const deleteReason = await cmt.$get("deleteReason");

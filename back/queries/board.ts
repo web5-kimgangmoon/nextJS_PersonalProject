@@ -68,6 +68,7 @@ export const getBoardList = async (
       { model: Score, as: "scores", required: false },
       { model: UserInfo, as: "writer" },
     ],
+    order: [["createdAt", "DESC"]],
   });
   const sendData: SendData = targetList
     ? {

@@ -1,11 +1,4 @@
-import {
-  MutationFunction,
-  useMutation,
-  UseMutationResult,
-  useQuery,
-} from "@tanstack/react-query";
-import { CmtListData, GetCmt } from "./definitions";
-import { cmtData } from "./placeholder-data";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import serverAxios from "./serverActionAxios";
 import { AxiosResponse } from "axios";
 
@@ -183,10 +176,11 @@ export const useLogin = (set: () => void, router: () => void) => {
         { params: { isAdminLogin: isAdminLogin } }
       );
     },
-    onSettled: (item) => {
-      item?.status === 400 && set();
+    onSettled: (item, error: any) => {
+      error?.status === 400 && set();
       item?.status === 204 && router();
     },
+    throwOnError: true,
   });
   return { mutate, mutateAsync };
 };
@@ -204,10 +198,11 @@ export const useRegist = (set: () => void, router: () => void) => {
     }) => {
       return await serverAxios.post(`/user/regist`, { nick, email, pwd });
     },
-    onSettled: (data) => {
-      data?.status === 400 && set();
+    onSettled: (data, error: any) => {
+      error?.status === 400 && set();
       data?.status === 204 && router();
     },
+    throwOnError: true,
   });
   return { mutate, mutateAsync };
 };
