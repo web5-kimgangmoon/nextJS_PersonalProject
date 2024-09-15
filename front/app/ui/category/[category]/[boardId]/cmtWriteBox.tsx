@@ -120,9 +120,12 @@ export const WriteCmtComp = ({
     router,
     setText,
   ]);
-  const pressEnter = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.code === "Enter") submit();
-  }, []);
+  const pressEnter = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.code === "Enter") submit();
+    },
+    [submit]
+  );
   return (
     <div hidden={!isOpen} className="w-full h-full">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
@@ -171,7 +174,13 @@ export const WriteCmtComp = ({
           className="w-full h-full outline-none"
           onChange={onChangeText}
           value={text}
-          onKeyDown={pressEnter}
+          onKeyDown={
+            formData.get("img") ||
+            text ||
+            (formData.get("isDeleteImg") !== "true" && img)
+              ? pressEnter
+              : undefined
+          }
           // defaultValue={baseText}
         />
       </div>

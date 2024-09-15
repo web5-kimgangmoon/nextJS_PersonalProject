@@ -8,7 +8,7 @@ import { useTypeCheck_zod } from "@/app/lib/utils";
 import { useLogin } from "@/app/lib/actions";
 import { useRouter } from "next/navigation";
 import { Modal_little } from "@/app/ui/modal";
-import { useEffect } from "react";
+import { KeyboardEvent, useCallback, useEffect } from "react";
 import { useQuery_getUserInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../loadingSpin";
 import serverAxios from "@/app/lib/serverActionAxios";
@@ -30,6 +30,17 @@ export function Login() {
     userInfoData.refetch();
     router.replace("/category");
   });
+  const pressEnter = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.code === "Enter")
+        login.mutate({
+          id: nick.text,
+          pwd: password.text,
+          isAdminLogin: "false",
+        });
+    },
+    [login]
+  );
   if (userInfoData.isLoading)
     return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
   return (
@@ -53,6 +64,7 @@ export function Login() {
         value={password.text}
         type={"password"}
         checkType={passwordCheck}
+        onSubmit={nickIsOK.is && passwordIsOK.is ? pressEnter : undefined}
       />
       <div className="px-10">
         <Button

@@ -84,7 +84,7 @@ const mkCmtItem = (
     isDidReport: reports?.find((item) => item.reporterId === userId)
       ? true
       : false,
-    isDeleted: cmt.deletedAt === null ? true : false,
+    isDeleted: cmt.deletedAt === null ? false : true,
   };
   if (!isDeleted) {
     item.content = !cmt.deletedAt
@@ -129,7 +129,8 @@ const getCmt = async (
       temp && cmtItems.push(temp);
     }
   }
-  if (isDeleted && cmt.deletedAt !== null && cmtItems.length === 0) return null;
+  if (!isDeleted && cmt.deletedAt !== null && cmtItems.length === 0)
+    return null;
   return mkCmtItem(
     cmt,
     userId,
@@ -251,10 +252,7 @@ export const getCmts = async (get: GetCmts) => {
     cmtCnt: (
       await Cmt.findAll({
         where: { ...condition },
-        include: [
-          { model: UserInfo, as: "writer", where: writerCondition },
-          { model: Cmt, as: "replyCmtsFrom", attributes: ["id"], where: [] },
-        ],
+        include: [{ model: UserInfo, as: "writer", where: writerCondition }],
       })
     ).length,
     cmtList: [],

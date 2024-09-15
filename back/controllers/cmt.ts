@@ -10,6 +10,7 @@ import {
   updateCmt,
 } from "../queries/cmt";
 import { upload } from "../services/upload";
+import z from "zod";
 
 const router = Router();
 
@@ -18,10 +19,8 @@ router.post("/like/:cmtId", async (req: Request, res: Response) => {
   const cmtId = intCheck.safeParse(req.params.cmtId).success
     ? Number(req.params.cmtId)
     : undefined;
-  const isDislike = booleanCheck.safeParse(req.body.isDislike).success
-    ? req.body.isDislike === "true"
-      ? true
-      : false
+  const isDislike = z.boolean().safeParse(req.body.isDislike).success
+    ? req.body.isDisLike
     : false;
   (await likeCmt(userId, cmtId, isDislike))
     ? res.status(204).send()

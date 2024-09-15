@@ -143,7 +143,7 @@ export const useLikeCmt = (refetch: () => void) => {
       isDislike,
     }: {
       cmtId: number;
-      isDislike: string;
+      isDislike: boolean;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
       return await serverAxios.post(`/cmt/like/${cmtId}`, { isDislike });
     },

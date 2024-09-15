@@ -41,9 +41,12 @@ export function Regist() {
         }
       : undefined;
   }, [nickIsOK.is, passwordIsOK.is, emailIsOK.is]);
-  const pressEnter = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.code === "Enter") submit();
-  }, []);
+  const pressEnter = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.code === "Enter") submit();
+    },
+    [submit]
+  );
   if (userData.isLoading)
     return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
   if (userData.data?.data.userInfo) router.replace("/category");
@@ -79,7 +82,11 @@ export function Regist() {
         value={password.text}
         type={"password"}
         checkType={passwordCheck}
-        onSubmit={pressEnter}
+        onSubmit={
+          nickIsOK.is && passwordIsOK.is && emailIsOK.is
+            ? pressEnter
+            : undefined
+        }
       />
       <div className="px-10">
         <Button

@@ -207,7 +207,7 @@ export const CmtBox = ({
   });
   const requestLike = useCallback(
     async (isDislike: boolean) => {
-      await likeCmt.mutate({ cmtId, isDislike: isDislike ? "true" : "false" });
+      await likeCmt.mutate({ cmtId, isDislike: isDislike });
     },
     [cmtId, router, likeCmt, queryClient]
   );
