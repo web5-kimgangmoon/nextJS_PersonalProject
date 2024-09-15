@@ -18,6 +18,7 @@ interface GetCmts {
   boardId: number | null;
   searchType?: string | null;
   sort?: string | null;
+  isOwn: boolean;
 }
 export const getCmts = async (get: GetCmts) => {
   interface CmtItem {
@@ -30,7 +31,7 @@ export const getCmts = async (get: GetCmts) => {
     like: number;
     dislike: number;
     isDoLike: boolean;
-    isDoDislike: boolean;
+    isDoDisLike: boolean;
     isDidReport: boolean;
     boardId: number;
     categoryPath: string;
@@ -67,7 +68,7 @@ export const getCmts = async (get: GetCmts) => {
       default:
     }
   }
-  if (get.userId) condition["writerId"] = get.userId;
+  if (get.isOwn && get.userId) condition["writerId"] = get.userId;
   if (get.boardId) condition["boardId"] = get.boardId;
   switch (get.sort) {
     case "old":
@@ -105,7 +106,7 @@ export const getCmts = async (get: GetCmts) => {
       ...limitOption,
     });
   }
-  const getCmt = async (cmt: Cmt): Promise<CmtItem | null> => {
+  const getCmt = async (cmt: Cmt, userId?: number): Promise<CmtItem | null> => {
     const board = await cmt.$get("board");
     const category = await board?.$get("category");
     const reports = await cmt.$get("reports");
@@ -118,6 +119,7 @@ export const getCmts = async (get: GetCmts) => {
     const like = likeList?.filter((item) => item.isLike).length;
     const dislike = likeList?.filter((item) => item.isDisLike).length;
     const deleteReason = await cmt.$get("deleteReason");
+    const userLike = likeList?.find((item) => item.userId === userId);
     const cmtItems: CmtItem[] = [];
     if (replyCmtsFrom) {
       for (let item of replyCmtsFrom) {
@@ -148,19 +150,7 @@ export const getCmts = async (get: GetCmts) => {
               ).cmt,
           createdAt: cmt.createdAt,
           id: cmt.id,
-          isDidReport: reports?.find((item) => item.reporterId === get.userId)
-            ? true
-            : false,
-          isDoDislike: likeList?.find(
-            (item) => item.userId === get.userId && item.isDisLike
-          )
-            ? true
-            : false,
-          isDoLike: likeList?.find(
-            (item) => item.userId === get.userId && item.isLike
-          )
-            ? true
-            : false,
+
           like: like ? like : 0,
           dislike: dislike ? dislike : 0,
           replyId: cmt.replyId,
@@ -172,6 +162,11 @@ export const getCmts = async (get: GetCmts) => {
             writer?.profileImg ? writer?.profileImg : `baseUserImg.png`
           }`,
           containCmt: cmtItems,
+          isDoLike: userLike?.isLike ? true : false,
+          isDoDisLike: userLike?.isDisLike ? true : false,
+          isDidReport: reports?.find((item) => item.reporterId === get.userId)
+            ? true
+            : false,
         };
   };
   const sendData: SendData = {
@@ -184,7 +179,7 @@ export const getCmts = async (get: GetCmts) => {
     cmtList: [],
   };
   for (let item of cmts) {
-    const temp = await getCmt(item);
+    const temp = await getCmt(item, get.userId);
     temp && sendData["cmtList"].push(temp);
   }
   return sendData;

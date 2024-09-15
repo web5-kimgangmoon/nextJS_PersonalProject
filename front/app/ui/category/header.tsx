@@ -163,8 +163,11 @@ export const MenuModalContent = ({
     user: false,
     category: false,
   });
-  const logout = useLogout();
+
   const queryClient = useQueryClient();
+  const logout = useLogout(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
+  );
   const toggleBox = useCallback(
     (key: "user" | "category") => {
       setOpenObj({ ...openObj, [key]: !openObj[key] });
@@ -237,7 +240,9 @@ export const ProfileModalContent = ({
 }: {
   closeModal: () => void;
 }) => {
-  const logout = useLogout();
+  const logout = useLogout(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
+  );
   const queryClient = useQueryClient();
   return (
     <div className="py-2">
@@ -245,7 +250,6 @@ export const ProfileModalContent = ({
       <ModalRequest
         request={() => {
           logout.mutate();
-          queryClient.refetchQueries({ queryKey: ["get", "userInfo"] });
         }}
         closeModal={closeModal}
         isBorder={true}

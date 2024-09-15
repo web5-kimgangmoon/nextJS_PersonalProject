@@ -202,8 +202,8 @@ export const CmtBox = ({
     queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
   );
   const requestLike = useCallback(
-    (isDisLike: boolean) => {
-      likeCmt.mutate({ cmtId, isDisLike: isDisLike ? "true" : "false" });
+    async (isDisLike: boolean) => {
+      await likeCmt.mutate({ cmtId, isDisLike: isDisLike ? "true" : "false" });
     },
     [cmtId, router, likeCmt, queryClient]
   );

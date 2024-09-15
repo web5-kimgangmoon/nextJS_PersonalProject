@@ -113,11 +113,20 @@ export const useQuery_getBoardList = (get: GetBoardList) => {
   });
   return { isLoading, data, refetch };
 };
-export const useQuery_getUserInfo = (userId?: number) => {
+export const useQuery_getUserInfo = () => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["get", "userInfo"],
     queryFn: async () => {
-      return await serverAxios.get(`/user${userId ? "/" + userId : ""}`);
+      return await serverAxios.get("/user");
+    },
+  });
+  return { isLoading, data, refetch };
+};
+export const useQuery_getUserInfoOthers = (userId: number) => {
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ["get", "userInfo", userId],
+    queryFn: async () => {
+      return await serverAxios.get(`/user?userId=${userId}`);
     },
   });
   return { isLoading, data, refetch };

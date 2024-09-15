@@ -153,11 +153,14 @@ export const useLikeCmt = (refetch: () => void) => {
   });
   return { mutate, mutateAsync, data };
 };
-export const useLogout = () => {
+export const useLogout = (refetch: () => void) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["user", "logout", "post"],
     mutationFn: async () => {
       return await serverAxios.post(`/user/logout`);
+    },
+    onSuccess: async () => {
+      await refetch();
     },
   });
   return { mutate, mutateAsync };

@@ -89,8 +89,10 @@ export function FooterBox({
 }
 
 export function OnLogin() {
-  const clientQuery = useQueryClient();
-  const logout = useLogout();
+  const queryClient = useQueryClient();
+  const logout = useLogout(() =>
+    queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
+  );
   return (
     <>
       <FooterBox
@@ -101,7 +103,6 @@ export function OnLogin() {
             title: "로그아웃",
             request: async () => {
               await logout.mutate();
-              clientQuery.refetchQueries({ queryKey: ["get", "userInfo"] });
             },
           },
         ]}
