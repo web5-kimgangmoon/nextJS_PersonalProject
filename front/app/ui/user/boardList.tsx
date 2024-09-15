@@ -7,7 +7,7 @@ import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { Star } from "@/public/star";
 
 export function BoardList() {
-  const { limit, stretchLimit } = useStretchBtn();
+  const { limit, stretchLimit } = useStretchBtn(5);
   const myBoardList = {
     boardList: myBoardListData.boardList.slice(0, limit),
     boardCnt: myBoardListData.boardCnt,
