@@ -443,7 +443,7 @@ const CmtBoxBottom = ({
   isDoDislike: boolean;
   isLogin: boolean;
   replyToggle: () => void;
-  requestLike: (isDisLike: boolean) => void;
+  requestLike: (isDislike: boolean) => void;
   isDeleted: boolean;
 }) => {
   return (

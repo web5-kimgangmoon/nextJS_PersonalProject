@@ -31,7 +31,7 @@ export default class Like extends Model {
   cmtId!: number;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
-  isDisLike!: boolean;
+  isDislike!: boolean;
 
   @Column({ type: DataType.BOOLEAN, allowNull: false })
   isLike!: boolean;

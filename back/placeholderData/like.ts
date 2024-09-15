@@ -5,7 +5,7 @@ export const createLike = async () => {
     cmtId: number;
     userId: number;
     isLike: boolean;
-    isDisLike: boolean;
+    isDislike: boolean;
   }[] = [];
   for (let i = 0; i < 10; i++) {
     // const random = Math.ceil(Math.random() * 6);
@@ -14,7 +14,7 @@ export const createLike = async () => {
         cmtId: i + 1,
         userId: j + 1,
         isLike: Math.round(Math.random()) === 1 ? true : false,
-        isDisLike: Math.round(Math.random()) === 1 ? true : false,
+        isDislike: Math.round(Math.random()) === 1 ? true : false,
       });
     }
   }

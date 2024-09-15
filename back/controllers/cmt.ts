@@ -20,7 +20,7 @@ router.post("/like/:cmtId", async (req: Request, res: Response) => {
     ? Number(req.params.cmtId)
     : undefined;
   const isDislike = z.boolean().safeParse(req.body.isDislike).success
-    ? req.body.isDisLike
+    ? req.body.isDislike
     : false;
   (await likeCmt(userId, cmtId, isDislike))
     ? res.status(204).send()

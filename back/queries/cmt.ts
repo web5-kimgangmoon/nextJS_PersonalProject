@@ -45,21 +45,32 @@ interface CmtItem {
   containCmt?: CmtItem[];
 }
 
-const mkCmtItem = (
+const getCmt = async (
   cmt: Cmt,
-  userId: number | undefined,
-  board: Board | null,
-  category: Category | undefined | null,
-  like: number | undefined | null,
-  dislike: number | undefined | null,
-  replyCmtToWriter: UserInfo | undefined | null,
-  writer: UserInfo | undefined | null,
-  userLike: Like | undefined | null,
-  reports: Report[] | undefined | null,
-  cmtItems: CmtItem[] | undefined | null,
-  deleteReason: Reason | undefined | null,
-  isDeleted: boolean
-) => {
+  userId?: number,
+  isDeleted: boolean = false,
+  isFlat: boolean = false
+): Promise<CmtItem | null> => {
+  const board = await cmt.$get("board");
+  const category = await board?.$get("category");
+  const reports = await cmt.$get("reports");
+  const likeList = await cmt.$get("likeList");
+  const writer = await cmt.$get("writer");
+  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
+  const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
+  const like = likeList?.filter((item) => item.isLike).length;
+  const dislike = likeList?.filter((item) => item.isDislike).length;
+  const deleteReason = await cmt.$get("deleteReason");
+  const userLike = likeList?.find((item) => item.userId === userId);
+  const cmtItems: CmtItem[] = [];
+  if (replyCmtsFrom && !isFlat) {
+    for (let item of replyCmtsFrom) {
+      const temp = await getCmt(item, userId, isDeleted);
+      temp && cmtItems.push(temp);
+    }
+  }
+  if (!isDeleted && cmt.deletedAt !== null && cmtItems.length === 0)
+    return null;
   const item: CmtItem = {
     boardId: cmt.boardId,
     boardTitle: board!.title,
@@ -80,7 +91,7 @@ const mkCmtItem = (
     }`,
     containCmt: cmtItems ? cmtItems : [],
     isDoLike: userLike?.isLike ? true : false,
-    isDoDisLike: userLike?.isDisLike ? true : false,
+    isDoDisLike: userLike?.isDislike ? true : false,
     isDidReport: reports?.find((item) => item.reporterId === userId)
       ? true
       : false,
@@ -100,85 +111,10 @@ const mkCmtItem = (
           }`,
           "(*삭제된 댓글입니다)"
         ).cmt;
-    return item;
   } else {
     item.content = cmt.content;
-    return item;
   }
-};
-const getCmt = async (
-  cmt: Cmt,
-  userId?: number,
-  isDeleted: boolean = false
-): Promise<CmtItem | null> => {
-  const board = await cmt.$get("board");
-  const category = await board?.$get("category");
-  const reports = await cmt.$get("reports");
-  const likeList = await cmt.$get("likeList");
-  const writer = await cmt.$get("writer");
-  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
-  const replyCmtsFrom = await cmt.$get("replyCmtsFrom");
-  const like = likeList?.filter((item) => item.isLike).length;
-  const dislike = likeList?.filter((item) => item.isDisLike).length;
-  const deleteReason = await cmt.$get("deleteReason");
-  const userLike = likeList?.find((item) => item.userId === userId);
-  const cmtItems: CmtItem[] = [];
-  if (replyCmtsFrom) {
-    for (let item of replyCmtsFrom) {
-      const temp = await getCmt(item, userId, isDeleted);
-      temp && cmtItems.push(temp);
-    }
-  }
-  if (!isDeleted && cmt.deletedAt !== null && cmtItems.length === 0)
-    return null;
-  return mkCmtItem(
-    cmt,
-    userId,
-    board,
-    category,
-    like,
-    dislike,
-    replyCmtToWriter,
-    writer,
-    userLike,
-    reports,
-    cmtItems,
-    deleteReason,
-    isDeleted
-  );
-};
-
-const getCmt_flat = async (
-  cmt: Cmt,
-  userId?: number,
-  isDeleted: boolean = false
-) => {
-  const board = await cmt.$get("board");
-  const category = await board?.$get("category");
-  const reports = await cmt.$get("reports");
-  const likeList = await cmt.$get("likeList");
-  const writer = await cmt.$get("writer");
-  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
-  const like = likeList?.filter((item) => item.isLike).length;
-  const dislike = likeList?.filter((item) => item.isDisLike).length;
-  const deleteReason = await cmt.$get("deleteReason");
-  const userLike = likeList?.find((item) => item.userId === userId);
-  const cmtItems: CmtItem[] = [];
-  return mkCmtItem(
-    cmt,
-    userId,
-    board,
-    category,
-    like,
-    dislike,
-    replyCmtToWriter,
-    writer,
-    userLike,
-    reports,
-    cmtItems,
-    deleteReason,
-    isDeleted
-  );
+  return item;
 };
 
 export const getCmts = async (get: GetCmts) => {
@@ -216,7 +152,7 @@ export const getCmts = async (get: GetCmts) => {
       order = [["createdAt", "ASC"]];
       break;
     case "recently":
-      order = ["createdAt"];
+      order = ["createdAt", "DESC"];
       break;
     case "like":
     default:
@@ -258,9 +194,7 @@ export const getCmts = async (get: GetCmts) => {
     cmtList: [],
   };
   for (let item of cmts) {
-    const temp = get.isFlat
-      ? await getCmt(item, get.userId, get.isDeleted)
-      : await getCmt_flat(item, get.userId, get.isDeleted);
+    const temp = await getCmt(item, get.userId, get.isDeleted, get.isFlat);
     temp && sendData["cmtList"].push(temp);
   }
   return sendData;
@@ -358,7 +292,7 @@ export const updateCmt = async (
 export const likeCmt = async (
   userId: number | undefined,
   cmtId: number | undefined,
-  isDisLike: boolean
+  isDislike: boolean
 ) => {
   let target;
   if (!userId || !cmtId) return false;
@@ -373,12 +307,12 @@ export const likeCmt = async (
     target = await Like.create({
       userId: userId,
       cmtId: cmtId,
-      isDisLike: false,
+      isDislike: false,
       isLike: false,
     });
   }
-  if (isDisLike) {
-    await target.update({ isDisLike: !target.isDisLike });
+  if (isDislike) {
+    await target.update({ isDislike: !target.isDislike });
   } else {
     await target.update({ isLike: !target.isLike });
   }
