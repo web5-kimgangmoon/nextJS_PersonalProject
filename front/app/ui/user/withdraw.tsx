@@ -8,13 +8,17 @@ import { Modal_little } from "../modal";
 export const Withdraw = () => {
   const queryClient = useQueryClient();
   const modalText = useModalText();
-  const withdraw = useWithdraw(() => {
-    queryClient.refetchQueries({ queryKey: ["get", "userInfo", "own"] });
+  const withdraw = useWithdraw(async () => {
+    await queryClient.refetchQueries({ queryKey: ["get", "userInfo", "own"] });
   }, modalText.openText);
   return (
     <div>
       <div className="flex gap-4 justify-center p-4">
-        <Button color="red" radius="medium" onClick={withdraw.mutate}>
+        <Button
+          color="red"
+          radius="medium"
+          onClick={async () => await withdraw.mutate}
+        >
           회원탈퇴
         </Button>
       </div>

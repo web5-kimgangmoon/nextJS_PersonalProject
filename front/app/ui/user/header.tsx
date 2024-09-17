@@ -107,18 +107,18 @@ export function Header() {
               }
             />
           </div>
-          {/* {isOwn && ( */}
-          <div>
-            <LinkButton
-              href="/write/user"
-              size="short"
-              color="blue"
-              className="px-6 py-4"
-            >
-              프로필 수정
-            </LinkButton>
-          </div>
-          {/* )} */}
+          {isOwn && (
+            <div>
+              <LinkButton
+                href="/write/user"
+                size="short"
+                color="blue"
+                className="px-6 py-4"
+              >
+                프로필 수정
+              </LinkButton>
+            </div>
+          )}
         </div>
       </div>
       <SlideUserInfo

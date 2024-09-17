@@ -36,7 +36,7 @@ export function CmtList() {
       writerId: userId,
       boardId: null,
       isFlat: true,
-      sort: null,
+      sort: "recently",
     },
   });
 
