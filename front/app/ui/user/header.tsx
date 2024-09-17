@@ -1,34 +1,35 @@
 "use client";
 
-import Link from "next/link";
-import { ImgButton, LinkButton } from "../buttons";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { LinkButton } from "../buttons";
+
 import Image from "next/image";
-import { userInfoData } from "@/app/lib/placeholder-data";
-import { useEffect, useMemo } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { SlideBar } from "../slideBar";
 import { useSlide } from "@/app/hooks/slide";
 import { UserInfoData } from "@/app/lib/definitions";
-import { useToggle } from "@/app/hooks/toggle";
-import { Modal } from "../modal";
 import { useTypeCheck_zod } from "@/app/lib/utils";
-import { useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getUserInfo, useQuery_getOwnInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../loadingSpin";
+import { HeaderTop } from "../headerTop";
 
 export function Header() {
-  const query = useSearchParams();
   const params = useParams();
   const { intCheck } = useTypeCheck_zod();
   const userId = intCheck.safeParse(params.userId) ? +params.userId : undefined;
 
+  const ownInfo = useQuery_getOwnInfo();
   const userInfo = useQuery_getUserInfo(userId);
-  const router = useRouter();
+
   const search = useSearchParams();
 
-  if (userInfo.isLoading) return <LoadingSpin bgColorClass="bg-userInfoGray" />;
-  const isOwn = !userId && !userInfo.data?.data?.userInfo?.id;
-  if (isOwn) router.replace("/category/all");
+  if (userInfo.isLoading || ownInfo.isLoading)
+    return <LoadingSpin bgColorClass="bg-userInfoGray" />;
+  const isOwn = ownInfo.data?.data.userInfo
+    ? ownInfo.data?.data.userInfo.id === userId
+      ? true
+      : false
+    : false;
 
   return (
     <div>
@@ -105,18 +106,18 @@ export function Header() {
               }
             />
           </div>
-          {isOwn && (
-            <div>
-              <LinkButton
-                href="/user/"
-                size="short"
-                color="blue"
-                className="px-6 py-4"
-              >
-                프로필 수정
-              </LinkButton>
-            </div>
-          )}
+          {/* {isOwn && ( */}
+          <div>
+            <LinkButton
+              href="/write/user"
+              size="short"
+              color="blue"
+              className="px-6 py-4"
+            >
+              프로필 수정
+            </LinkButton>
+          </div>
+          {/* )} */}
         </div>
       </div>
       <SlideUserInfo
@@ -124,64 +125,6 @@ export function Header() {
         userInfo={userInfo.data?.data}
         isOwn={isOwn}
       />
-    </div>
-  );
-}
-
-export function HeaderTop() {
-  const write = useToggle(false);
-  const menu = useToggle(false);
-  return (
-    <div className="flex justify-between items-center relative">
-      <div className="p-2">
-        <Link href={"/category"} className="text-white font-bold text-2xl">
-          The Board
-        </Link>
-      </div>
-      <div className="flex items-center">
-        <div>
-          <ImgButton
-            size="medium"
-            color="whiteBlue"
-            radius="a little"
-            icon={<PencilIcon strokeWidth={2} />}
-            isLessGap={true}
-            onClick={write.open}
-          >
-            글쓰기
-          </ImgButton>
-          <Modal
-            curtainColor="white"
-            closeModalCtl={write.close}
-            isSmallX={true}
-            isTranslucent={true}
-            modalCtl={write.is}
-            isShutDown={true}
-          >
-            <div>아아</div>
-          </Modal>
-        </div>
-        <div className="p-2">
-          <ImgButton
-            size="small"
-            color="none"
-            img="/menuBar_user.svg"
-            isImgBig={true}
-            isNoString={true}
-            onClick={menu.open}
-          />
-          <Modal
-            curtainColor="white"
-            closeModalCtl={menu.close}
-            isSmallX={true}
-            isTranslucent={true}
-            modalCtl={menu.is}
-            isShutDown={true}
-          >
-            <div></div>
-          </Modal>
-        </div>
-      </div>
     </div>
   );
 }
@@ -210,6 +153,7 @@ export function SlideUserInfo({
   selectedMenu?: string | null;
   isOwn: boolean;
 }) {
+  const params = useParams();
   const slideList = useMemo(() => {
     const list = [
       {
@@ -226,24 +170,31 @@ export function SlideUserInfo({
         title: "생성일",
         path: "createdAt",
       },
-
-      {
-        title: `소셜연동`,
-        path: "connectId",
-      },
     ].map((item) => ({
-      path: `/user?select=${item.path}`,
+      path: `/user${params.userId ? "/" + params.userId : ""}?select=${
+        item.path
+      }`,
       title: item.title,
       selected: item.path === selectedMenu,
     }));
     isOwn &&
       list.push({
-        path: `/user?select=${"withdraw"}`,
+        path: `/user${
+          params.userId ? "/" + params.userId : ""
+        }?select=${"connectId"}`,
+        title: "소셜연동",
+        selected: "connectId" === selectedMenu,
+      });
+    isOwn &&
+      list.push({
+        path: `/user${
+          params.userId ? "/" + params.userId : ""
+        }?select=${"withdraw"}`,
         title: "회원탈퇴",
         selected: "withdraw" === selectedMenu,
       });
     return list;
-  }, [selectedMenu, userInfo.userInfo]);
+  }, [selectedMenu, userInfo?.userInfo]);
   const { touchMove, touchStart, location } = useSlide();
   return (
     <div className="py-4">

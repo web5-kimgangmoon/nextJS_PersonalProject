@@ -70,7 +70,12 @@ export const getBoardList = async (
     where: condition,
     include: [
       { model: Category, as: "category" },
-      { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
+      {
+        model: Cmt,
+        as: "cmts",
+        required: false,
+        where: { deletedAt: null, deleteReasonId: null },
+      },
       { model: Score, as: "scores", required: false },
       { model: UserInfo, as: "writer", where: writerCondition },
     ],
@@ -88,9 +93,15 @@ export const getBoardList = async (
           img: `${front}${item.img}`,
           isUpdated: item.createdAt.getTime() !== item.updatedAt.getTime(),
           score:
-            item.scores.reduce((a, b) => {
-              return b.score + a;
-            }, 0) / item.scores.length,
+            item.scores.length > 0
+              ? Math.ceil(
+                  (item.scores.reduce((a, b) => {
+                    return b.score + a;
+                  }, 0) /
+                    item.scores.length) *
+                    10
+                ) / 10
+              : 0,
           scoreUserCnt: item.scores.length,
           title: item.title,
           writer: item.writer.nick,
@@ -161,7 +172,13 @@ export const getBoard = async (boardId?: number, userId?: number) => {
           : false,
         isUpdated: board.createdAt.getTime() !== board.updatedAt.getTime(),
         score:
-          board.scores.reduce((a, b) => b.score + a, 0) / board.scores.length,
+          board.scores.length > 0
+            ? Math.ceil(
+                (board.scores.reduce((a, b) => b.score + a, 0) /
+                  board.scores.length) *
+                  10
+              ) / 10
+            : 0,
         writer: board.writer.nick,
         writerId: board.writerId,
         title: board.title,

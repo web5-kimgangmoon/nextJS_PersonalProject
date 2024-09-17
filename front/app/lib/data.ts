@@ -10,7 +10,19 @@ import serverAxios from "./serverActionAxios";
 
 export const useQuery_getCmt = (get: GetCmt) => {
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ["get", "cmt", "list"],
+    queryKey: [
+      "get",
+      "cmt",
+      "list",
+      // `limit${get.searh.limit}`,
+      // `${get.searh.onlyDeleted ? "onlyDeleted" : "notOnlyDeleted"}`,
+      // `search ${get.searh.search}`,
+      // `boardId ${get.searh.boardId}`,
+      // `searchType ${get.searh.searchType}`,
+      // `sort ${get.searh.sort}`,
+      // `${get.searh.isFlat? "isFlat" : "notIsFlat"}`,
+      // `writerId ${get.searh.writerId}`
+    ],
     queryFn: async () => {
       return await serverAxios.get(`/cmt/cmtList`, {
         params: {
@@ -98,7 +110,7 @@ export const useQuery_getCategories = () => {
 };
 export const useQuery_getBoardList = (get: GetBoardList) => {
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ["get", "board", "list", get.offset],
+    queryKey: ["get", "board", "list"],
     queryFn: async () => {
       return await serverAxios.get("/board/list", {
         params: {
@@ -116,20 +128,20 @@ export const useQuery_getBoardList = (get: GetBoardList) => {
   });
   return { isLoading, data, refetch };
 };
+export const useQuery_getOwnInfo = () => {
+  const { isLoading, data, refetch } = useQuery({
+    queryKey: ["get", "userInfo", "own"],
+    queryFn: async () => {
+      return await serverAxios.get("/user");
+    },
+  });
+  return { isLoading, data, refetch };
+};
 export const useQuery_getUserInfo = (userId?: number) => {
   const { isLoading, data, refetch } = useQuery({
     queryKey: ["get", "userInfo"],
     queryFn: async () => {
       return await serverAxios.get("/user", { params: { userId: userId } });
-    },
-  });
-  return { isLoading, data, refetch };
-};
-export const useQuery_getUserInfoOthers = (userId: number) => {
-  const { isLoading, data, refetch } = useQuery({
-    queryKey: ["get", "userInfo", userId],
-    queryFn: async () => {
-      return await serverAxios.get(`/user?userId=${userId}`);
     },
   });
   return { isLoading, data, refetch };

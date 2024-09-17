@@ -16,7 +16,7 @@ import {
   useState,
 } from "react";
 import { userInfoData } from "@/app/lib/placeholder-data";
-import { useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getOwnInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../../loadingSpin";
 
 export function Regist() {
@@ -32,12 +32,12 @@ export function Regist() {
     nickIsOK: useToggle(false),
     passwordIsOK: useToggle(false),
     emailIsOK: useToggle(false),
-    registIsFail: useToggle(true),
+    registIsFail: useToggle(false),
   };
   const { nickCheck, passwordCheck, emailCheck } = useTypeCheck_zod();
-  const userData = useQuery_getUserInfo();
+  const userData = useQuery_getOwnInfo();
   const regist = useRegist(
-    registIsFail.close,
+    registIsFail.open,
     () => router.replace("/login"),
     modalMessageSet
   );
@@ -125,8 +125,8 @@ export function Regist() {
         </Button>
       </div>
       <Modal_little
-        closeModalCtl={registIsFail.open}
-        modalCtl={!registIsFail.is}
+        closeModalCtl={registIsFail.close}
+        modalCtl={registIsFail.is}
       >
         <div>{modalMessage}</div>
       </Modal_little>

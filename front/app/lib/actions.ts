@@ -5,8 +5,56 @@ import { AxiosResponse } from "axios";
 export const boardDelete = (boardId: number) => {
   return "";
 };
+export const useWithdraw = (
+  refetch: () => void,
+  modalTextSet: (text: string) => void
+) => {
+  const { mutate, mutateAsync } = useMutation({
+    mutationKey: ["user", "delete", "own"],
+    mutationFn: async (): Promise<
+      UseMutationResult<AxiosResponse<any, any>, any>
+    > => {
+      return await serverAxios.delete(`/user`);
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: () => {
+      modalTextSet("회원탈퇴에 실패했습니다.");
+    },
+  });
+  return { mutate, mutateAsync };
+};
+export const useProfileUpdate = (
+  refetch: () => void,
+  modalTextSet: (text: string) => void
+) => {
+  const { mutate, mutateAsync } = useMutation({
+    mutationKey: ["user", "patch", "own"],
+    mutationFn: async (
+      formData: FormData
+    ): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      return await serverAxios.patch(`/user`, formData, {
+        headers: {
+          "Content-Type": "mutipart/form-data",
+        },
+      });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (err: any) => {
+      modalTextSet(err.response.data);
+    },
+  });
+  return { mutate, mutateAsync };
+};
 
-export const useBoardGiveScore = (refetch: () => void) => {
+export const useBoardGiveScore = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["board", "eval", "post"],
     mutationFn: async ({
@@ -21,11 +69,18 @@ export const useBoardGiveScore = (refetch: () => void) => {
     onSuccess: () => {
       refetch();
     },
+    onError: () => {
+      modalTextSet("게시글 평가에 실패했습니다");
+    },
   });
   return { mutate, mutateAsync };
 };
 
-export const useBoardReport = (refetch: () => void) => {
+export const useBoardReport = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "board", "report"],
     mutationFn: async ({
@@ -42,10 +97,17 @@ export const useBoardReport = (refetch: () => void) => {
     onSuccess: () => {
       refetch();
     },
+    onError: () => {
+      modalTextSet("게시글 신고에 실패했습니다");
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useCmtReport = (refetch: () => void) => {
+export const useCmtReport = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt", "report"],
     mutationFn: async ({
@@ -62,10 +124,17 @@ export const useCmtReport = (refetch: () => void) => {
     onSuccess: () => {
       refetch();
     },
+    onError: () => {
+      modalTextSet("댓글 신고에 실패했습니다");
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useAddCmt = (refetch: () => void) => {
+export const useAddCmt = (
+  refetch: () => void,
+
+  modalTextSet: (test: string) => void
+) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt"],
     mutationFn: async ({
@@ -84,13 +153,20 @@ export const useAddCmt = (refetch: () => void) => {
         params: { boardId: boardId, replyId: replyId },
       });
     },
-    onSettled: () => {
+    onSuccess: () => {
       refetch();
+    },
+    onError: () => {
+      modalTextSet("댓글 작성에 실패했습니다");
     },
   });
   return { mutate, mutateAsync, data };
 };
-export const useUpdateCmt = (refetch: () => void) => {
+export const useUpdateCmt = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["patch", "cmt"],
     mutationFn: async ({
@@ -106,13 +182,20 @@ export const useUpdateCmt = (refetch: () => void) => {
         },
       });
     },
-    onSettled: () => {
+    onSuccess: () => {
       refetch();
+    },
+    onError: () => {
+      modalTextSet("댓글 수정에 실패했습니다.");
     },
   });
   return { mutate, mutateAsync, data };
 };
-export const useDeleteCmt = (refetch: () => void) => {
+export const useDeleteCmt = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["delete", "cmt"],
     mutationFn: async ({
@@ -125,10 +208,17 @@ export const useDeleteCmt = (refetch: () => void) => {
     onSuccess: async () => {
       refetch();
     },
+    onError: () => {
+      modalTextSet("댓글 삭제에 실패했습니다.");
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useLikeCmt = (refetch: () => void) => {
+export const useLikeCmt = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt", "like"],
     mutationFn: async ({
@@ -143,10 +233,17 @@ export const useLikeCmt = (refetch: () => void) => {
     onSuccess: () => {
       refetch();
     },
+    onError: () => {
+      modalTextSet("댓글 (비)추천에 실패했습니다.");
+    },
   });
   return { mutate, mutateAsync, data };
 };
-export const useLogout = (refetch: () => void) => {
+export const useLogout = (
+  refetch: () => void,
+
+  modalTextSet: (text: string) => void
+) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["user", "logout", "post"],
     mutationFn: async () => {
@@ -154,6 +251,9 @@ export const useLogout = (refetch: () => void) => {
     },
     onSuccess: async () => {
       await refetch();
+    },
+    onError: () => {
+      modalTextSet("로그아웃에 실패했습니다");
     },
   });
   return { mutate, mutateAsync };

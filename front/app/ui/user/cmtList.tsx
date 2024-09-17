@@ -1,7 +1,7 @@
 import { useStretchBtn } from "@/app/hooks/strechBtn";
 import { useLikeCmt } from "@/app/lib/actions";
 import { mycmtData } from "@/app/lib/placeholder-data";
-import { getTimeString } from "@/app/lib/utils";
+import { getTimeString, useTypeCheck_zod } from "@/app/lib/utils";
 import { Button, ImgButton } from "@/app/ui/buttons";
 import { useEffect, useState } from "react";
 import DOMPurify from "dompurify";
@@ -9,46 +9,105 @@ import Image from "next/image";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import parse from "html-react-parser";
+import {
+  useQuery_getCmt,
+  useQuery_getOwnInfo,
+  useQuery_getUserInfo,
+} from "@/app/lib/data";
+import { LoadingSpin } from "../loadingSpin";
+import { useParams } from "next/navigation";
+import { useModalText } from "@/app/hooks/modal";
+import { Modal_little } from "../modal";
 
 export function CmtList() {
   const { limit, stretchLimit } = useStretchBtn(5);
-  const mycmt = {
-    cmtList: mycmtData.cmtList.slice(0, limit),
-    cmtCnt: mycmtData.cmtCnt,
-  };
+  const { intCheck } = useTypeCheck_zod();
+  const params = useParams();
+  const userId = intCheck.safeParse(params.userId) ? +params.userId : undefined;
+  const ownInfo = useQuery_getOwnInfo();
+  const cmtData = useQuery_getCmt({
+    searh: {
+      isDeleted: false,
+      isOwn: !userId ? true : false,
+      limit: limit,
+      onlyDeleted: false,
+      search: "",
+      searchType: null,
+      writerId: userId,
+      boardId: null,
+      isFlat: true,
+      sort: null,
+    },
+  });
 
-  const refetch = () => {};
+  useEffect(() => {
+    cmtData.refetch();
+  }, [limit]);
+  const modalText = useModalText();
+  const likeRequest = useLikeCmt(cmtData.refetch, modalText.openText);
+  if (cmtData.isLoading || ownInfo.isLoading)
+    return <LoadingSpin bgColorClass="bg-white" />;
   return (
-    <div>
-      {mycmt.cmtList.map((item) => (
-        <MyCmt
-          key={item.id}
-          {...item}
-          createdAt={getTimeString(item.createdAt)}
-          requestLike={async () => {
-            // await likeCmt(item.id, false);
-            refetch();
-          }}
-          requestDislike={async () => {
-            // await likeCmt(item.id, true);
-            refetch();
-          }}
-          cmtCnt={mycmt.cmtCnt}
-        />
-      ))}
-      {mycmt.cmtCnt > limit && (
-        <Button color="blankBlue" radius="medium" onClick={stretchLimit}>
-          댓글들 더보기
-        </Button>
-      )}
-    </div>
+    <>
+      <Modal_little modalCtl={modalText.is} closeModalCtl={modalText.close}>
+        {modalText.text}
+      </Modal_little>
+      <div>
+        {cmtData.data?.data.cmtList.map(
+          (item: {
+            id: number;
+            category: string;
+            categoryPath: string;
+            boardTitle: string;
+            writerProfile: string;
+            writer: string;
+            createdAt: Date;
+            content: string;
+            isDoLike: boolean;
+            isDoDislike: boolean;
+            like: number;
+            dislike: number;
+            boardId: number;
+            boardCmtCnt: number;
+          }) => (
+            <MyCmt
+              key={item.id}
+              {...item}
+              createdAt={getTimeString(item.createdAt)}
+              requestLike={async () =>
+                await likeRequest.mutate({
+                  cmtId: item.id,
+                  isDislike: false,
+                })
+              }
+              requestDislike={async () =>
+                await likeRequest.mutate({
+                  cmtId: item.id,
+                  isDislike: true,
+                })
+              }
+              isLogin={ownInfo.data?.data.userInfo ? true : false}
+            />
+          )
+        )}
+        {cmtData.data?.data.cmtCnt > limit && (
+          <Button color="blankBlue" radius="medium" onClick={stretchLimit}>
+            댓글들 더보기
+          </Button>
+        )}
+        {!cmtData.data?.data.cmtCnt && (
+          <div className="flex justify-center items-center font-bold text-2xl">
+            댓글이 존재하지 않습니다
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
 export const MyCmt = ({
   category,
   categoryPath,
-  cmtCnt,
   boardTitle,
   writerProfile,
   writer,
@@ -61,10 +120,12 @@ export const MyCmt = ({
   requestLike,
   requestDislike,
   boardId,
+  isLogin,
+  boardCmtCnt,
 }: {
   category: string;
   categoryPath: string;
-  cmtCnt: number;
+  boardCmtCnt: number;
   boardTitle: string;
   writerProfile: string;
   writer: string;
@@ -74,6 +135,7 @@ export const MyCmt = ({
   isDoDislike: boolean;
   like: number;
   dislike: number;
+  isLogin: boolean;
   requestLike: () => void;
   requestDislike: () => void;
   boardId: number;
@@ -88,7 +150,7 @@ export const MyCmt = ({
       <div className="flex text-bgGray gap-4">
         <div className="text-textStrongGray font-bold">{category}</div>
         <div>•</div>
-        <div>{`댓글 ${cmtCnt}`}</div>
+        <div>{`댓글 ${boardCmtCnt}`}</div>
       </div>
       <div className="text-textStrongGray font-bold text-2xl">{boardTitle}</div>
       <div className="flex gap-2">
@@ -115,7 +177,7 @@ export const MyCmt = ({
                 color={isDoLike ? "onlyTextBlue" : "onlyTextInactive"}
                 isRight={true}
                 className="text-sm"
-                onClick={requestLike}
+                onClick={isLogin ? requestLike : undefined}
               >
                 {like}
               </ImgButton>
@@ -127,7 +189,7 @@ export const MyCmt = ({
                 color={isDoDislike ? "onlyTextRed" : "onlyTextInactive"}
                 isRight={true}
                 className="text-sm"
-                onClick={requestDislike}
+                onClick={isLogin ? requestDislike : undefined}
               >
                 {dislike}
               </ImgButton>

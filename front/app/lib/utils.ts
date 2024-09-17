@@ -1,11 +1,15 @@
 import { z } from "zod";
 import crypto from "crypto";
 
-export const getTimeString = (ta: Date, option?: "cmt") => {
+export const getTimeString = (ta: Date, option?: "cmt" | "userInfo") => {
   ta = new Date(ta);
   const now = new Date();
   const dif = now.getTime() - ta.getTime();
 
+  if (option === "userInfo")
+    return `${ta.getFullYear()}년 ${String(ta.getMonth() + 1)}월 ${String(
+      ta.getDate()
+    )}일에 생성됐습니다.`;
   if (dif > 604800000) {
     switch (option) {
       case undefined:
@@ -37,10 +41,9 @@ export const pageGetter = ({
   target: number | string;
   limit: number;
 }) => {
-  const current = typeof target === "string" ? +target : target;
+  let current = typeof target === "string" ? +target : target;
   const page = count === 0 ? 1 : Math.ceil(count / limit);
-  if (page < current || current < 0)
-    throw new Error("please enter correct parameter");
+  if (page < current || current < 0) current = page;
   if (page < 5) {
     if (page === 1)
       return {

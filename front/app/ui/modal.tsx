@@ -75,19 +75,21 @@ export function Modal_little({
   children: ReactNode | string;
 }) {
   return (
-    <div
-      className={clsx(
-        "fixed transition w-full h-screen top-0 left-0  flex justify-center items-center backdrop-blur bg-black/70",
-        {
-          "opacity-0 z-[-1]": !modalCtl,
-          "z-50": modalCtl,
-        }
-      )}
-      onClick={closeModalCtl}
-    >
-      <div className="bg-white p-2 rounded-xl bg-borderGray">
-        <div className="p-2 border-4 border-mainBlue bg-categoryGray rounded-xl font-bold text-mainBlue">
-          {children}
+    <div hidden={!modalCtl}>
+      <div
+        className={clsx(
+          "fixed transition w-full h-screen top-0 left-0  flex justify-center items-center backdrop-blur bg-black/70 p-4",
+          {
+            "opacity-0 z-[-1]": !modalCtl,
+            "z-50": modalCtl,
+          }
+        )}
+        onClick={closeModalCtl}
+      >
+        <div className="bg-white p-2 rounded-xl bg-borderGray">
+          <div className="p-2 border-4 border-alert bg-categoryGray rounded-xl font-bold text-alert select-none">
+            {children}
+          </div>
         </div>
       </div>
     </div>

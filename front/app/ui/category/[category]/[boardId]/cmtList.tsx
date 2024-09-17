@@ -21,8 +21,8 @@ import { Button, ImgButton } from "@/app/ui/buttons";
 import { useDeleteCmt, useLikeCmt } from "@/app/lib/actions";
 import { WriteCmt } from "./cmtWriteBox";
 import { useToggle } from "@/app/hooks/toggle";
-import { useRouter } from "next/navigation";
-import { getTimeString } from "@/app/lib/utils";
+import { useParams, useRouter } from "next/navigation";
+import { getTimeString, useTypeCheck_zod } from "@/app/lib/utils";
 import { CheckDelete, ReportBox } from "@/app/ui/reasonBox";
 import { CmtItem, Reason } from "@/app/lib/definitions";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
@@ -30,20 +30,24 @@ import { useSelectCallback } from "@/app/hooks/callback/selectCallback";
 import {
   useQuery_getCmt,
   useQuery_getCmtReason,
-  useQuery_getUserInfo,
+  useQuery_getOwnInfo,
 } from "@/app/lib/data";
 import { useStretchBtn } from "@/app/hooks/strechBtn";
 import { useQueryClient } from "@tanstack/react-query";
+import { useModalText } from "@/app/hooks/modal";
+import { Modal_little } from "@/app/ui/modal";
 
-export const CmtList = ({ boardId }: { boardId: number }) => {
+export const CmtList = () => {
   const cmtReportList = useQuery_getCmtReason();
-  const userInfoData = useQuery_getUserInfo();
+  const userInfoData = useQuery_getOwnInfo();
   const { limit, stretchLimit } = useStretchBtn(5);
   const [sortState, setSortState] =
     useState<Partial<"like" | "recently" | "old">>("like");
+  const { intCheck } = useTypeCheck_zod();
+  const params = useParams();
   const cmtData = useQuery_getCmt({
     searh: {
-      boardId: boardId,
+      boardId: intCheck.safeParse(params.boardId) ? +params.boardId : 1,
       isDeleted: false,
       isOwn: false,
       limit: limit,
@@ -198,13 +202,15 @@ export const CmtBox = ({
   const deleteBox = useToggle(false);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const likeCmt = useLikeCmt(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  const modalText = useModalText();
+  const likeCmt = useLikeCmt(
+    () => queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] }),
+    modalText.openText
   );
   const deleteCmt = useDeleteCmt(() => {
     queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     queryClient.refetchQueries({ queryKey: ["get", "board"] });
-  });
+  }, modalText.openText);
   const requestLike = useCallback(
     async (isDislike: boolean) => {
       await likeCmt.mutate({ cmtId, isDislike: isDislike });
@@ -215,124 +221,133 @@ export const CmtBox = ({
     deleteCmt.mutate({ cmtId });
   }, [cmtId, router, deleteCmt, queryClient]);
   return (
-    <div>
-      <div
-        className={clsx(
-          "flex w-full h-full pb-4",
-          cmt.is ? "items-start" : "items-center"
-        )}
-      >
-        <Image
-          src={writerProfile}
-          alt="no image"
-          className={`w-14 h-14 rounded-2xl`}
-          width={32}
-          height={32}
-        />
-        <div className="grow pl-2">
-          <CmtBoxTop
-            createdAt={createdAt}
-            writerId={writerId}
-            writer={writer}
-            isOpenCmt={cmt.is}
-            isLogin={userId ? true : false}
-            isDidReport={isDidReport}
-            isWriter={isWriter}
-            isDeleted={isDeleted}
-            toggle={cmt.toggle}
-            remakeToggle={remake.toggle}
-            replyUser={replyUser}
-            replyUserId={replyUserId}
-            deleteToggle={deleteBox.toggle}
-            reportToggle={report.toggle}
+    <>
+      <Modal_little modalCtl={modalText.is} closeModalCtl={modalText.close}>
+        {modalText.text}
+      </Modal_little>
+      <div>
+        <div
+          className={clsx(
+            "flex w-full h-full pb-4",
+            cmt.is ? "items-start" : "items-center"
+          )}
+        >
+          <Image
+            src={writerProfile}
+            alt="no image"
+            className={`w-14 h-14 rounded-2xl`}
+            width={32}
+            height={32}
           />
-          <div hidden={!cmt.is}>
-            <div className="text-black py-4" hidden={remake.is}>
-              {parse(cleanContent)}
-            </div>
-            <div className="py-4" hidden={!remake.is || !cmt.is}>
-              <WriteCmt
-                cmtId={cmtId}
-                isOpen={remake.is && cmt.is}
-                modalClose={remake.close}
-                img={imgPath}
-                baseText={contentText}
-                isUpdate={true}
+          <div className="grow pl-2">
+            <CmtBoxTop
+              createdAt={createdAt}
+              writerId={writerId}
+              writer={writer}
+              isOpenCmt={cmt.is}
+              isLogin={userId ? true : false}
+              isDidReport={isDidReport}
+              isWriter={isWriter}
+              isDeleted={isDeleted}
+              toggle={cmt.toggle}
+              remakeToggle={remake.toggle}
+              replyUser={replyUser}
+              replyUserId={replyUserId}
+              deleteToggle={deleteBox.toggle}
+              reportToggle={report.toggle}
+            />
+            <div hidden={!cmt.is}>
+              <div className="text-black py-4" hidden={remake.is}>
+                {parse(cleanContent)}
+              </div>
+              <div className="py-4" hidden={!remake.is || !cmt.is}>
+                <WriteCmt
+                  cmtId={cmtId}
+                  isOpen={remake.is && cmt.is}
+                  modalClose={remake.close}
+                  img={imgPath}
+                  baseText={contentText}
+                  isUpdate={true}
+                />
+              </div>
+              <CmtBoxBottom
+                requestLike={requestLike}
+                isDoDislike={isDoDislike}
+                isDoLike={isDoLike}
+                like={like}
+                dislike={dislike}
+                isLogin={userId ? true : false}
+                replyToggle={reply.toggle}
+                isDeleted={isDeleted}
               />
             </div>
-            <CmtBoxBottom
-              requestLike={requestLike}
-              isDoDislike={isDoDislike}
-              isDoLike={isDoLike}
-              like={like}
-              dislike={dislike}
-              isLogin={userId ? true : false}
-              replyToggle={reply.toggle}
-              isDeleted={isDeleted}
-            />
           </div>
         </div>
+        <div className="flex gap-2" hidden={!reply.is}>
+          <Image
+            hidden={!reply.is}
+            src={userProfile ? userProfile : "/placeholder-noavatar32.svg"}
+            alt="no image"
+            className="w-14 h-14 rounded-2xl"
+            width={0}
+            height={0}
+          />
+          <WriteCmt
+            replyId={cmtId}
+            isOpen={reply.is}
+            modalClose={reply.close}
+          />
+        </div>
+        <div className="flex pl-16" hidden={!deleteBox.is}>
+          <CheckDelete
+            isOpen={deleteBox.is}
+            modalClose={deleteBox.close}
+            targetName={"댓글"}
+            action={requestDelete}
+          />
+        </div>
+        <div className="flex pl-16" hidden={!report.is}>
+          <ReportBox
+            id={cmtId}
+            isOpen={report.is}
+            modalClose={report.close}
+            isBoard={false}
+            reasonList={cmtReportList}
+          />
+        </div>
+        <div className={clsx(isFirst && "pl-2")}>
+          {containCmt &&
+            containCmt.map(
+              (item) =>
+                item.replyId === cmtId && (
+                  <CmtBox
+                    isDidReport={item.isDidReport}
+                    isDoDislike={item.isDoDislike}
+                    isDoLike={item.isDoLike}
+                    isFirst={false}
+                    isWriter={item.writerId === userId}
+                    cmtId={item.id}
+                    userId={userId}
+                    writerId={item.writerId}
+                    replyUserId={item.replyUserId}
+                    userProfile={userProfile}
+                    replyUser={item.replyUser}
+                    writer={item.writer}
+                    writerProfile={item.writerProfile}
+                    cmtReportList={cmtReportList}
+                    dislike={item.dislike}
+                    key={item.id}
+                    like={item.like}
+                    containCmt={item.containCmt}
+                    content={item.content}
+                    createdAt={item.createdAt}
+                    isDeleted={item.isDeleted}
+                  />
+                )
+            )}
+        </div>
       </div>
-      <div className="flex gap-2" hidden={!reply.is}>
-        <Image
-          hidden={!reply.is}
-          src={userProfile ? userProfile : "/placeholder-noavatar32.svg"}
-          alt="no image"
-          className="w-14 h-14 rounded-2xl"
-          width={0}
-          height={0}
-        />
-        <WriteCmt replyId={cmtId} isOpen={reply.is} modalClose={reply.close} />
-      </div>
-      <div className="flex pl-16" hidden={!deleteBox.is}>
-        <CheckDelete
-          isOpen={deleteBox.is}
-          modalClose={deleteBox.close}
-          targetName={"댓글"}
-          action={requestDelete}
-        />
-      </div>
-      <div className="flex pl-16" hidden={!report.is}>
-        <ReportBox
-          id={cmtId}
-          isOpen={report.is}
-          modalClose={report.close}
-          isBoard={false}
-          reasonList={cmtReportList}
-        />
-      </div>
-      <div className={clsx(isFirst && "pl-2")}>
-        {containCmt &&
-          containCmt.map(
-            (item) =>
-              item.replyId === cmtId && (
-                <CmtBox
-                  isDidReport={item.isDidReport}
-                  isDoDislike={item.isDoDislike}
-                  isDoLike={item.isDoLike}
-                  isFirst={false}
-                  isWriter={item.writerId === userId}
-                  cmtId={item.id}
-                  userId={userId}
-                  writerId={item.writerId}
-                  replyUserId={item.replyUserId}
-                  userProfile={userProfile}
-                  replyUser={item.replyUser}
-                  writer={item.writer}
-                  writerProfile={item.writerProfile}
-                  cmtReportList={cmtReportList}
-                  dislike={item.dislike}
-                  key={item.id}
-                  like={item.like}
-                  containCmt={item.containCmt}
-                  content={item.content}
-                  createdAt={item.createdAt}
-                  isDeleted={item.isDeleted}
-                />
-              )
-          )}
-      </div>
-    </div>
+    </>
   );
 };
 
@@ -561,7 +576,7 @@ const CmtBoxTopMenuList = ({
           color={isDidReport ? "onlyTextInactive" : "onlyTextRed"}
           isRight={true}
           isNoString={true}
-          onClick={reportToggle}
+          onClick={isDidReport ? undefined : reportToggle}
         />
       )}
     </div>

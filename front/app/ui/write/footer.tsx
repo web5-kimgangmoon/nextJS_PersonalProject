@@ -1,6 +1,6 @@
-export function Footer() {
+export const Footer = () => {
   return (
-    <div className="px-8">
+    <div className="px-8 bg-blankStar">
       <div className="w-full flex flex-col gap-5 py-5 items-center">
         <div className="text-sm flex items-center flex-col gap-1 text-textBlue text-center break-keep">
           <div>@2024 kim</div>
@@ -11,4 +11,4 @@ export function Footer() {
       </div>
     </div>
   );
-}
+};

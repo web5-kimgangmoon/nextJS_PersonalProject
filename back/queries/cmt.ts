@@ -42,6 +42,7 @@ interface CmtItem {
   replyId?: number;
   replyUserId?: number;
   replyUser?: string;
+  boardCmtCnt: number;
   containCmt?: CmtItem[];
 }
 
@@ -63,9 +64,8 @@ const getCmt = async (
   }
   if (
     !isDeleted &&
-    cmt.deletedAt !== null &&
-    cmtItems.length === 0 &&
-    cmt.deleteReasonId !== null
+    (cmt.deletedAt !== null || cmt.deleteReasonId !== null) &&
+    cmtItems.length === 0
   )
     return null;
 
@@ -79,6 +79,9 @@ const getCmt = async (
   const dislike = likeList?.filter((item) => item.isDislike).length;
   const deleteReason = await cmt.$get("deleteReason");
   const userLike = likeList?.find((item) => item.userId === userId);
+  const boardCmtCnt = await board?.$count("cmts", {
+    where: { deletedAt: null, deleteReasonId: null },
+  });
 
   const item: CmtItem = {
     boardId: cmt.boardId,
@@ -105,6 +108,7 @@ const getCmt = async (
       ? true
       : false,
     isDeleted: cmt.deletedAt === null ? false : true,
+    boardCmtCnt: boardCmtCnt ? boardCmtCnt : 0,
   };
   if (!isDeleted) {
     item.content = !cmt.deletedAt
@@ -116,7 +120,7 @@ const getCmt = async (
                 deleteReason.title +
                 "'" +
                 " 사유에 의해 삭제된 댓글입니다)"
-              : ""
+              : "사용자에 의해 삭제된 댓급입니다"
           }`,
           "(*삭제된 댓글입니다)"
         ).cmt;
@@ -136,7 +140,12 @@ export const getCmts = async (get: GetCmts) => {
   let writerCondition: any = {};
   let order: any = [];
   let limitOption: any = { limit: get.limit };
-  if (!get.isFlat) condition["replyId"] = null;
+  if (!get.isFlat) {
+    condition["replyId"] = null;
+  } else {
+    condition["deletedAt"] = null;
+    condition["deleteReasonId"] = null;
+  }
   if (get.onlyDeleted) {
     condition["deletedAt"] = { [Op.not]: null };
     condition["deleteReasonId"] = { [Op.not]: null };
@@ -156,7 +165,7 @@ export const getCmts = async (get: GetCmts) => {
       default:
     }
   }
-  if (get.isOwn) condition["writerId"] = get.writerId;
+  if (get.isOwn && get.userId) condition["writerId"] = get.userId;
   if (get.writerId) condition["writerId"] = get.writerId;
   if (get.boardId) condition["boardId"] = get.boardId;
   switch (get.sort) {
@@ -244,10 +253,14 @@ export const addCmt = async (
   img?: string
 ) => {
   const board = boardId
-    ? await Board.findOne({ where: { id: boardId } })
+    ? await Board.findOne({
+        where: { id: boardId, deletedAt: null, deleteReasonId: null },
+      })
     : undefined;
   const cmt = replyId
-    ? await Cmt.findOne({ where: { id: replyId } })
+    ? await Cmt.findOne({
+        where: { id: replyId, deletedAt: null, deleteReasonId: null },
+      })
     : undefined;
   if (!board && !cmt) return false;
   if ((!content || content.length === 0) && !img) return false;

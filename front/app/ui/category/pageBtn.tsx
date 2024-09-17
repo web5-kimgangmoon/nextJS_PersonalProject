@@ -12,10 +12,7 @@ import { ReactNode, useCallback, useEffect } from "react";
 import { LeftArrow } from "@/public/left-arrow";
 import { RightArrow } from "@/public/right-arrow";
 import clsx from "clsx";
-import {
-  useQuery_getBoardList,
-  useQuery_getCategoryDetail,
-} from "@/app/lib/data";
+import { useQuery_getBoardList } from "@/app/lib/data";
 import { LoadingSpin } from "../loadingSpin";
 
 export const Pages = () => {

@@ -5,6 +5,7 @@ import { LinkButton, ImgButton } from "../buttons";
 import { useCallback, useState } from "react";
 import {
   Modal,
+  Modal_little,
   ModalA,
   ModalBox,
   ModalLink,
@@ -13,13 +14,14 @@ import {
 } from "@/app/ui/modal";
 import Image from "next/image";
 import { useLogout } from "@/app/lib/actions";
-import { useQuery_getCategories, useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getCategories, useQuery_getOwnInfo } from "@/app/lib/data";
 import { LoadingSpin } from "../loadingSpin";
 import { useQueryClient } from "@tanstack/react-query";
+import { useModalText } from "@/app/hooks/modal";
 
 export function Header() {
   const categoryListData = useQuery_getCategories();
-  const userInfoData = useQuery_getUserInfo();
+  const userInfoData = useQuery_getOwnInfo();
   if (
     categoryListData.isLoading ||
     userInfoData.isLoading ||
@@ -160,8 +162,10 @@ export const MenuModalContent = ({
   });
 
   const queryClient = useQueryClient();
-  const logout = useLogout(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
+  const modalText = useModalText();
+  const logout = useLogout(
+    () => queryClient.refetchQueries({ queryKey: ["get", "userInfo"] }),
+    modalText.openText
   );
   const toggleBox = useCallback(
     (key: "user" | "category") => {
@@ -170,51 +174,56 @@ export const MenuModalContent = ({
     [openObj]
   );
   return (
-    <div className="py-2">
-      <ModalBox
-        title="사용자"
-        isOpen={openObj["user"]}
-        setIsOpen={() => toggleBox("user")}
-        linkList={
-          isLogin
-            ? [
-                { title: "유저정보", href: "/user" },
-                { title: "글작성", href: "/write/board" },
-              ]
-            : [
-                { title: "로그인", href: "/login" },
-                { title: "회원가입", href: "/login/regist" },
+    <>
+      <Modal_little closeModalCtl={modalText.close} modalCtl={modalText.is}>
+        {modalText.text}
+      </Modal_little>
+      <div className="py-2">
+        <ModalBox
+          title="사용자"
+          isOpen={openObj["user"]}
+          setIsOpen={() => toggleBox("user")}
+          linkList={
+            isLogin
+              ? [
+                  { title: "유저정보", href: "/user" },
+                  { title: "글작성", href: "/write/board" },
+                ]
+              : [
+                  { title: "로그인", href: "/login" },
+                  { title: "회원가입", href: "/login/regist" },
 
-                {
-                  title: "운영자 페이지로",
-                  href: `${process.env.NEXT_PUBLIC_ADMIN}`,
-                  isA: true,
-                },
-              ]
-        }
-      />
-      <ModalRouterBox
-        title="카테고리"
-        isOpen={openObj["category"]}
-        setIsOpen={() => toggleBox("category")}
-        linkList={categoryList.map((item) => ({
-          title: item.name,
-          href: item.href,
-        }))}
-        closeModal={closeModal}
-      />
-      {isLogin && (
-        <ModalRequest
-          request={() => {
-            logout.mutate();
-          }}
+                  {
+                    title: "운영자 페이지로",
+                    href: `${process.env.NEXT_PUBLIC_ADMIN}`,
+                    isA: true,
+                  },
+                ]
+          }
+        />
+        <ModalRouterBox
+          title="카테고리"
+          isOpen={openObj["category"]}
+          setIsOpen={() => toggleBox("category")}
+          linkList={categoryList.map((item) => ({
+            title: item.name,
+            href: item.href,
+          }))}
           closeModal={closeModal}
-          isBorder={true}
-        >
-          로그아웃
-        </ModalRequest>
-      )}
-    </div>
+        />
+        {isLogin && (
+          <ModalRequest
+            request={() => {
+              logout.mutate();
+            }}
+            closeModal={closeModal}
+            isBorder={true}
+          >
+            로그아웃
+          </ModalRequest>
+        )}
+      </div>
+    </>
   );
 };
 
@@ -235,21 +244,28 @@ export const ProfileModalContent = ({
   closeModal: () => void;
 }) => {
   const queryClient = useQueryClient();
-  const logout = useLogout(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
+  const modalText = useModalText();
+  const logout = useLogout(
+    () => queryClient.refetchQueries({ queryKey: ["get", "userInfo"] }),
+    modalText.openText
   );
   return (
-    <div className="py-2">
-      <ModalLink href="/user">프로필 확인</ModalLink>
-      <ModalRequest
-        request={() => {
-          logout.mutate();
-        }}
-        closeModal={closeModal}
-        isBorder={true}
-      >
-        로그아웃
-      </ModalRequest>
-    </div>
+    <>
+      <Modal_little closeModalCtl={modalText.close} modalCtl={modalText.is}>
+        {modalText.text}
+      </Modal_little>
+      <div className="py-2">
+        <ModalLink href="/user">프로필 확인</ModalLink>
+        <ModalRequest
+          request={() => {
+            logout.mutate();
+          }}
+          closeModal={closeModal}
+          isBorder={true}
+        >
+          로그아웃
+        </ModalRequest>
+      </div>
+    </>
   );
 };
