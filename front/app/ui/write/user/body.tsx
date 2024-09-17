@@ -75,6 +75,7 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
       const noImgData = new FormData();
       noImgData.set("nick", text);
       request(noImgData);
+      return;
     }
     request(pushedFormData(formData, [{ name: "nick", value: text }]));
     setText(nick);

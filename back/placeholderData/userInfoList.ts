@@ -7,7 +7,7 @@ export const createUsers = async () => {
     authority: 2,
     profile: "baseUserImg.png",
     nick: "관리자",
-    password: mkHash("sha256", "rkdans12!"),
+    password: mkHash("sha256", "admin1!@#"),
   });
 
   const data = [

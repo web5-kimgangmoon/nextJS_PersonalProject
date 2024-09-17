@@ -97,7 +97,15 @@ router.delete("/", async (req: Request, res: Response) => {
   const userId = intCheck.safeParse(req.session.userId).success
     ? Number(req.session.userId)
     : undefined;
-  (await withdraw(userId)) ? res.status(204).send() : res.status(400).send();
+  const result = await withdraw(userId);
+
+  if (typeof result !== "string") {
+    req.session.destroy((err) => console.log(err));
+    res.clearCookie("user");
+    res.status(204).send();
+    return;
+  }
+  res.status(400).send(result);
 });
 
 export default router;

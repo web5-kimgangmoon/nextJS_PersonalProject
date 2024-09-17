@@ -19,8 +19,8 @@ export const useWithdraw = (
     onSuccess: () => {
       refetch();
     },
-    onError: () => {
-      modalTextSet("회원탈퇴에 실패했습니다.");
+    onError: (err: any) => {
+      modalTextSet(err.response.data);
     },
   });
   return { mutate, mutateAsync };

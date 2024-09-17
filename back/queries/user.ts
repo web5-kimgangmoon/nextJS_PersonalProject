@@ -148,9 +148,10 @@ export const profileUpdate = async (
 };
 
 export const withdraw = async (id?: number | null) => {
-  if (!id) return false;
+  if (id === 1) return "메인관리자는 회원탈퇴할 수 없습니다";
+  if (!id) return "비로그인 상태입니다";
   const target = await UserInfo.findOne({ where: { id, deletedAt: null } });
-  if (!target) return false;
+  if (!target) return "존재하지 않는 유저입니다";
   await target.update({ deletedAt: new Date() });
   return true;
 };
