@@ -33,14 +33,15 @@ router.get("/list", async (req: Request, res: Response) => {
   const limit = intCheck.safeParse(req.query.limit).success
     ? Number(req.query.limit)
     : 10;
-  let writerId = booleanCheck.safeParse(req.query.isOwn).success
+  const ownId = booleanCheck.safeParse(req.query.isOwn).success
     ? req.query.isOwn === "true"
       ? req?.session?.userId
       : undefined
     : undefined;
-  writerId = intCheck.safeParse(req.query.writerId).success
-    ? Number(writerId)
-    : undefined;
+
+  const writerId = intCheck.safeParse(req.query.writerId).success
+    ? Number(req.query.writerId)
+    : ownId;
 
   const isDeleted = booleanCheck.safeParse(req.query.isDeleted).success
     ? req.query.isDeleted === "true"

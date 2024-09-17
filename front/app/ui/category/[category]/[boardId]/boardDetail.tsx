@@ -11,14 +11,14 @@ import { useToggle } from "@/app/hooks/toggle";
 import { useCallback } from "react";
 import { boardDelete } from "@/app/lib/actions"; // 작성이 필요
 import { CheckDelete } from "@/app/ui/reasonBox";
-import { useQuery_getBoardDetail, useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getBoardDetail, useQuery_getOwnInfo } from "@/app/lib/data";
 import { useParams } from "next/navigation";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
 
 export const BoardDetail = () => {
   const params = useParams();
   const currentBoardData = useQuery_getBoardDetail(+params.boardId);
-  const userInfoData = useQuery_getUserInfo();
+  const userInfoData = useQuery_getOwnInfo();
   if (currentBoardData.isLoading || userInfoData.isLoading)
     <LoadingSpin bgColorClass="bg-categoryGray" />;
   if (!currentBoardData.data?.data)

@@ -15,10 +15,3 @@ export default async function Page() {
     </div>
   );
 }
-
-export async function generateStaticParams() {
-  const categories = categoryListData["categories"].map((item) => ({
-    category: item.path,
-  }));
-  return categories;
-}

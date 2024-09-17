@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input:placeholder-shown {
+  white-space: pre-wrap;
+  text-overflow: ellipsis;
+  overflow-y: hidden;
+}
+textarea:placeholder-shown {
+  white-space: pre-wrap;
+  text-overflow: ellipsis;
+  overflow-y: hidden;
+}

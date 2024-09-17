@@ -1,25 +1,35 @@
 "use client";
 
-import Link from "next/link";
-import { ImgButton, LinkButton } from "../buttons";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { LinkButton } from "../buttons";
+
 import Image from "next/image";
-import { userInfoData } from "@/app/lib/placeholder-data";
-import { useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { SlideBar } from "../slideBar";
 import { useSlide } from "@/app/hooks/slide";
 import { UserInfoData } from "@/app/lib/definitions";
+import { useTypeCheck_zod } from "@/app/lib/utils";
+import { useQuery_getUserInfo, useQuery_getOwnInfo } from "@/app/lib/data";
+import { LoadingSpin } from "../loadingSpin";
+import { HeaderTop } from "../headerTop";
 
 export function Header() {
-  const userInfo = userInfoData;
-  const { touchMove, touchStart, location } = useSlide();
-  const router = useRouter();
+  const params = useParams();
+  const { intCheck } = useTypeCheck_zod();
+  const userId = intCheck.safeParse(params.userId) ? +params.userId : undefined;
+
+  const ownInfo = useQuery_getOwnInfo();
+  const userInfo = useQuery_getUserInfo(userId);
+
   const search = useSearchParams();
 
-  useEffect(() => {
-    !userInfo && router.replace("/category");
-  }, [router, userInfo]);
+  if (userInfo.isLoading || ownInfo.isLoading)
+    return <LoadingSpin bgColorClass="bg-userInfoGray" />;
+  const isOwn = ownInfo.data?.data.userInfo
+    ? ownInfo.data?.data.userInfo.id === userId
+      ? true
+      : false
+    : false;
 
   return (
     <div>
@@ -39,8 +49,8 @@ export function Header() {
           <div className="w-40 h-40 rounded-full">
             <Image
               src={
-                userInfo.userInfo?.profileImg
-                  ? userInfo.userInfo.profileImg
+                userInfo.data?.data?.userInfo?.profileImg
+                  ? userInfo.data?.data?.userInfo?.profileImg
                   : "/bigBaseUserImg.svg"
               }
               width={30}
@@ -51,18 +61,55 @@ export function Header() {
             />
           </div>
           <div className="text-center text-textBlue">
-            <div className="text-2xl">{userInfo.userInfo?.nick}</div>
-            <div className="text-xl">{userInfo.userInfo?.email}</div>
+            <div className="text-2xl">
+              {userInfo.data?.data?.userInfo?.nick
+                ? userInfo.data?.data?.userInfo?.nick
+                : "not found"}
+            </div>
+            <div className="text-xl">
+              {userInfo.data?.data?.userInfo?.email
+                ? userInfo.data?.data?.userInfo?.email
+                : "not found"}
+            </div>
           </div>
           <div className="flex gap-3 text-center">
-            <ValueItem title="댓글수" value={userInfo.userInfo?.cmtCnt} />
-            <ValueItem title="게시글수" value={userInfo.userInfo?.boardsCnt} />
-            <ValueItem title="추천수" value={userInfo.userInfo?.like} />
-            <ValueItem title="비추천수" value={userInfo.userInfo?.dislike} />
+            <ValueItem
+              title="댓글수"
+              value={
+                userInfo.data?.data?.userInfo?.cmtCnt
+                  ? userInfo.data?.data?.userInfo?.cmtCnt
+                  : 0
+              }
+            />
+            <ValueItem
+              title="게시글수"
+              value={
+                userInfo.data?.data?.userInfo?.boardsCnt
+                  ? userInfo.data?.data?.userInfo?.boardsCnt
+                  : 0
+              }
+            />
+            <ValueItem
+              title="추천수"
+              value={
+                userInfo.data?.data?.userInfo?.like
+                  ? userInfo.data?.data?.userInfo?.like
+                  : 0
+              }
+            />
+            <ValueItem
+              title="비추천수"
+              value={
+                userInfo.data?.data?.userInfo?.dislike
+                  ? userInfo.data?.data?.userInfo?.dislike
+                  : 0
+              }
+            />
           </div>
+          {/* {isOwn && ( */}
           <div>
             <LinkButton
-              href="/user/"
+              href="/write/user"
               size="short"
               color="blue"
               className="px-6 py-4"
@@ -70,43 +117,14 @@ export function Header() {
               프로필 수정
             </LinkButton>
           </div>
+          {/* )} */}
         </div>
       </div>
-      <SlideUserInfo selectedMenu={search.get("select")} userInfo={userInfo} />
-    </div>
-  );
-}
-
-export function HeaderTop() {
-  return (
-    <div className="flex justify-between items-center relative">
-      <div className="p-2">
-        <Link href={"/category"} className="text-white font-bold text-2xl">
-          The Board
-        </Link>
-      </div>
-      <div className="flex items-center">
-        <div>
-          <ImgButton
-            size="medium"
-            color="whiteBlue"
-            radius="a little"
-            icon={<PencilIcon strokeWidth={2} />}
-            isLessGap={true}
-          >
-            글쓰기
-          </ImgButton>
-        </div>
-        <div className="p-2">
-          <ImgButton
-            size="small"
-            color="none"
-            img="/menuBar_user.svg"
-            isImgBig={true}
-            isNoString={true}
-          />
-        </div>
-      </div>
+      <SlideUserInfo
+        selectedMenu={search.get("select")}
+        userInfo={userInfo.data?.data}
+        isOwn={isOwn}
+      />
     </div>
   );
 }
@@ -129,46 +147,54 @@ export function ValueItem({
 export function SlideUserInfo({
   userInfo,
   selectedMenu,
+  isOwn,
 }: {
   userInfo: UserInfoData;
   selectedMenu?: string | null;
+  isOwn: boolean;
 }) {
-  const slideList = useMemo(
-    () =>
-      [
-        {
-          title: `댓글 ${userInfo.userInfo ? userInfo.userInfo.cmtCnt : 0}`,
-          path: "cmtList",
-        },
+  const params = useParams();
+  const slideList = useMemo(() => {
+    const list = [
+      {
+        title: `댓글 ${userInfo.userInfo ? userInfo.userInfo.cmtCnt : 0}`,
+        path: "cmtList",
+      },
 
-        {
-          title: `게시글 ${
-            userInfo.userInfo ? userInfo.userInfo.boardsCnt : 0
-          }`,
-          path: "boardList",
-        },
+      {
+        title: `게시글 ${userInfo.userInfo ? userInfo.userInfo.boardsCnt : 0}`,
+        path: "boardList",
+      },
 
-        {
-          title: "생성일",
-          path: "createdAt",
-        },
-
-        {
-          title: `소셜연동`,
-          path: "connectId",
-        },
-
-        {
-          title: `회원탈퇴`,
-          path: "withdraw",
-        },
-      ].map((item) => ({
-        path: `/user?select=${item.path}`,
-        title: item.title,
-        selected: item.path === selectedMenu,
-      })),
-    [selectedMenu, userInfo.userInfo]
-  );
+      {
+        title: "생성일",
+        path: "createdAt",
+      },
+    ].map((item) => ({
+      path: `/user${params.userId ? "/" + params.userId : ""}?select=${
+        item.path
+      }`,
+      title: item.title,
+      selected: item.path === selectedMenu,
+    }));
+    isOwn &&
+      list.push({
+        path: `/user${
+          params.userId ? "/" + params.userId : ""
+        }?select=${"connectId"}`,
+        title: "소셜연동",
+        selected: "connectId" === selectedMenu,
+      });
+    isOwn &&
+      list.push({
+        path: `/user${
+          params.userId ? "/" + params.userId : ""
+        }?select=${"withdraw"}`,
+        title: "회원탈퇴",
+        selected: "withdraw" === selectedMenu,
+      });
+    return list;
+  }, [selectedMenu, userInfo?.userInfo]);
   const { touchMove, touchStart, location } = useSlide();
   return (
     <div className="py-4">

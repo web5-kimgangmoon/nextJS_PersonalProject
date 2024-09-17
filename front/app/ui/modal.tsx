@@ -14,6 +14,7 @@ export function Modal({
   curtainColor = "black",
   isSmallX = false,
   children,
+  isShutDown = false,
 }: {
   curtainColor?: string;
   modalCtl: boolean;
@@ -21,6 +22,7 @@ export function Modal({
   isTranslucent?: boolean;
   isSmallX?: boolean;
   children: ReactNode;
+  isShutDown?: boolean;
 }) {
   return (
     <>
@@ -32,13 +34,16 @@ export function Modal({
             "bg-white": !isTranslucent,
           },
           {
-            "translate-y-[-100%]": !modalCtl,
+            "translate-y-[-100%]": !isShutDown && !modalCtl,
             "": modalCtl,
           }
         )}
       >
-        <div className="max-h-screen overflow-y-scroll">
-          <div className="flex justify-end">
+        <div
+          className={"max-h-screen overflow-y-scroll transition"}
+          hidden={isShutDown && !modalCtl}
+        >
+          <div className={clsx("flex justify-end", isSmallX && "p-4")}>
             {isSmallX ? (
               <XMarkIcon
                 className="w-8 h-8 text-XMarkGray"
@@ -70,19 +75,21 @@ export function Modal_little({
   children: ReactNode | string;
 }) {
   return (
-    <div
-      className={clsx(
-        "fixed transition w-full h-screen top-0 left-0  flex justify-center items-center backdrop-blur bg-black/70",
-        {
-          "opacity-0 z-[-1]": !modalCtl,
-          "z-50": modalCtl,
-        }
-      )}
-      onClick={closeModalCtl}
-    >
-      <div className="bg-white p-2 rounded-xl bg-borderGray">
-        <div className="p-2 border-4 border-mainBlue bg-categoryGray rounded-xl font-bold text-mainBlue">
-          {children}
+    <div hidden={!modalCtl}>
+      <div
+        className={clsx(
+          "fixed transition w-full h-screen top-0 left-0  flex justify-center items-center backdrop-blur bg-black/70 p-4",
+          {
+            "opacity-0 z-[-1]": !modalCtl,
+            "z-50": modalCtl,
+          }
+        )}
+        onClick={closeModalCtl}
+      >
+        <div className="bg-white p-2 rounded-xl bg-borderGray">
+          <div className="p-2 border-4 border-alert bg-categoryGray rounded-xl font-bold text-alert select-none">
+            {children}
+          </div>
         </div>
       </div>
     </div>
@@ -131,8 +138,8 @@ export const ModalRequest = ({
     <div className="flex justify-center">
       <div className={clsx("w-max", isBorder && "border-t border-borderGray")}>
         <Button
-          onClick={() => {
-            request();
+          onClick={async () => {
+            await request();
             closeModal();
           }}
           color="none"

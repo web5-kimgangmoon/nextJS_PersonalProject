@@ -1,13 +1,15 @@
 "use client";
 
 import { useLogout } from "@/app/lib/actions";
-import { useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getOwnInfo } from "@/app/lib/data";
 import Link from "next/link";
 import { LoadingSpin } from "../loadingSpin";
 import { useQueryClient } from "@tanstack/react-query";
+import { useModalText } from "@/app/hooks/modal";
+import { Modal_little } from "../modal";
 
 export function Footer() {
-  const userInfoData = useQuery_getUserInfo();
+  const userInfoData = useQuery_getOwnInfo();
   if (userInfoData.isLoading || !userInfoData.data)
     return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
@@ -90,11 +92,16 @@ export function FooterBox({
 
 export function OnLogin() {
   const queryClient = useQueryClient();
-  const logout = useLogout(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "userInfo"] })
+  const modalText = useModalText();
+  const logout = useLogout(
+    () => queryClient.refetchQueries({ queryKey: ["get", "userInfo"] }),
+    modalText.openText
   );
   return (
     <>
+      <Modal_little closeModalCtl={modalText.close} modalCtl={modalText.is}>
+        {modalText.text}
+      </Modal_little>
       <FooterBox
         title="사용자"
         elements={[

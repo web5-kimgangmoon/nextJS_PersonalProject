@@ -42,6 +42,7 @@ interface CmtItem {
   replyId?: number;
   replyUserId?: number;
   replyUser?: string;
+  boardCmtCnt: number;
   containCmt?: CmtItem[];
 }
 
@@ -51,19 +52,9 @@ const getCmt = async (
   isDeleted: boolean = false,
   isFlat: boolean = false
 ): Promise<CmtItem | null> => {
-  const board = await cmt.$get("board");
-  const category = await board?.$get("category");
-  const reports = await cmt.$get("reports");
-  const likeList = await cmt.$get("likeList");
-  const writer = await cmt.$get("writer");
-  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
   const replyCmtsFrom = await cmt.$get("replyCmtsFrom", {
     order: [["createdAt", "DESC"]],
   });
-  const like = likeList?.filter((item) => item.isLike).length;
-  const dislike = likeList?.filter((item) => item.isDislike).length;
-  const deleteReason = await cmt.$get("deleteReason");
-  const userLike = likeList?.find((item) => item.userId === userId);
   const cmtItems: CmtItem[] = [];
   if (replyCmtsFrom && !isFlat) {
     for (let item of replyCmtsFrom) {
@@ -71,8 +62,27 @@ const getCmt = async (
       temp && cmtItems.push(temp);
     }
   }
-  if (!isDeleted && cmt.deletedAt !== null && cmtItems.length === 0)
+  if (
+    !isDeleted &&
+    (cmt.deletedAt !== null || cmt.deleteReasonId !== null) &&
+    cmtItems.length === 0
+  )
     return null;
+
+  const board = await cmt.$get("board");
+  const category = await board?.$get("category");
+  const reports = await cmt.$get("reports");
+  const likeList = await cmt.$get("likeList");
+  const writer = await cmt.$get("writer");
+  const replyCmtToWriter = await (await cmt.$get("replyCmtTo"))?.$get("writer");
+  const like = likeList?.filter((item) => item.isLike).length;
+  const dislike = likeList?.filter((item) => item.isDislike).length;
+  const deleteReason = await cmt.$get("deleteReason");
+  const userLike = likeList?.find((item) => item.userId === userId);
+  const boardCmtCnt = await board?.$count("cmts", {
+    where: { deletedAt: null, deleteReasonId: null },
+  });
+
   const item: CmtItem = {
     boardId: cmt.boardId,
     boardTitle: board!.title,
@@ -98,6 +108,7 @@ const getCmt = async (
       ? true
       : false,
     isDeleted: cmt.deletedAt === null ? false : true,
+    boardCmtCnt: boardCmtCnt ? boardCmtCnt : 0,
   };
   if (!isDeleted) {
     item.content = !cmt.deletedAt
@@ -109,7 +120,7 @@ const getCmt = async (
                 deleteReason.title +
                 "'" +
                 " 사유에 의해 삭제된 댓글입니다)"
-              : ""
+              : "사용자에 의해 삭제된 댓급입니다"
           }`,
           "(*삭제된 댓글입니다)"
         ).cmt;
@@ -129,8 +140,16 @@ export const getCmts = async (get: GetCmts) => {
   let writerCondition: any = {};
   let order: any = [];
   let limitOption: any = { limit: get.limit };
-  if (!get.isFlat) condition["replyId"] = null;
-  if (get.onlyDeleted) condition["deletedAt"] = { [Op.not]: null };
+  if (!get.isFlat) {
+    condition["replyId"] = null;
+  } else {
+    condition["deletedAt"] = null;
+    condition["deleteReasonId"] = null;
+  }
+  if (get.onlyDeleted) {
+    condition["deletedAt"] = { [Op.not]: null };
+    condition["deleteReasonId"] = { [Op.not]: null };
+  }
   if (get.search && get.searchType) {
     switch (get.searchType) {
       case "content":
@@ -146,7 +165,7 @@ export const getCmts = async (get: GetCmts) => {
       default:
     }
   }
-  if (get.isOwn) condition["writerId"] = get.writerId;
+  if (get.isOwn && get.userId) condition["writerId"] = get.userId;
   if (get.writerId) condition["writerId"] = get.writerId;
   if (get.boardId) condition["boardId"] = get.boardId;
   switch (get.sort) {
@@ -205,7 +224,12 @@ export const getCmts = async (get: GetCmts) => {
 export const deleteCmt = async (userId?: number, cmtId?: number) => {
   if (!userId || !cmtId) return false;
   const target = await Cmt.findOne({
-    where: { writerId: userId, id: cmtId, deletedAt: null },
+    where: {
+      writerId: userId,
+      id: cmtId,
+      deletedAt: null,
+      deleteReasonId: null,
+    },
   });
   if (target) {
     const result = cmtRemake(target.content, "(*삭제됨)");
@@ -229,10 +253,14 @@ export const addCmt = async (
   img?: string
 ) => {
   const board = boardId
-    ? await Board.findOne({ where: { id: boardId } })
+    ? await Board.findOne({
+        where: { id: boardId, deletedAt: null, deleteReasonId: null },
+      })
     : undefined;
   const cmt = replyId
-    ? await Cmt.findOne({ where: { id: replyId } })
+    ? await Cmt.findOne({
+        where: { id: replyId, deletedAt: null, deleteReasonId: null },
+      })
     : undefined;
   if (!board && !cmt) return false;
   if ((!content || content.length === 0) && !img) return false;
@@ -262,7 +290,12 @@ export const updateCmt = async (
   reImg?: string
 ) => {
   const target = await Cmt.findOne({
-    where: { writerId: userId, id: cmtId, deletedAt: null },
+    where: {
+      writerId: userId,
+      id: cmtId,
+      deletedAt: null,
+      deleteReasonId: null,
+    },
   });
   if ((!content || content.length === 0) && !reImg) return false;
   if (!target) return false;
@@ -298,7 +331,11 @@ export const likeCmt = async (
 ) => {
   let target;
   if (!userId || !cmtId) return false;
-  if (!(await Cmt.findOne({ where: { deletedAt: null, id: cmtId } })))
+  if (
+    !(await Cmt.findOne({
+      where: { deletedAt: null, id: cmtId, deleteReasonId: null },
+    }))
+  )
     return false;
   if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
     return false;
@@ -327,7 +364,11 @@ export const reportCmt = async (
   reasonId?: number
 ) => {
   if (!userId || !cmtId || !reasonId) return false;
-  if (!(await Cmt.findOne({ where: { deletedAt: null, id: cmtId } })))
+  if (
+    !(await Cmt.findOne({
+      where: { deletedAt: null, id: cmtId, deleteReasonId: null },
+    }))
+  )
     return false;
   if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
     return false;

@@ -1,20 +1,56 @@
 "use client";
 
-import { ReactNode, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { CmtList } from "./cmtList";
 import { BoardList } from "./boardList";
+import { useRouter } from "next/navigation";
+import { CreatedAt } from "./createdAt";
+import { SocialConnect } from "./socialConnect";
+import { useQuery_getOwnInfo } from "@/app/lib/data";
+import { useTypeCheck_zod } from "@/app/lib/utils";
+import { LoadingSpin } from "../loadingSpin";
+import { Modal_little } from "../modal";
+import { Withdraw } from "./withdraw";
 
 export function Body() {
   const query = useSearchParams();
+  const params = useParams();
+  const { intCheck } = useTypeCheck_zod();
+  const userId = intCheck.safeParse(params.userId) ? +params.userId : undefined;
 
+  const userInfo = useQuery_getOwnInfo();
   const selectedMenu = query.get("select");
+
+  if (userInfo.isLoading) return <LoadingSpin bgColorClass="bg-userInfoGray" />;
+  if (!userInfo.data?.data.userInfo && !userId) return <Redirect />;
   if (selectedMenu === "boardList")
     return (
       <UserInfoBox>
         <Header>WRITTEN BOARDS</Header>
         <BoardList />
+      </UserInfoBox>
+    );
+  if (selectedMenu === "createdAt")
+    return (
+      <UserInfoBox>
+        <Header colorClass="text-textStrongGray" isNoBorder={true}>
+          CREATEAT
+        </Header>
+        <CreatedAt />
+      </UserInfoBox>
+    );
+  if (selectedMenu === "connectId")
+    return (
+      <UserInfoBox>
+        <SocialConnect />
+      </UserInfoBox>
+    );
+  if (selectedMenu === "withdraw" && !params.userId)
+    return (
+      <UserInfoBox>
+        <Withdraw />
       </UserInfoBox>
     );
   return (
@@ -23,6 +59,18 @@ export function Body() {
     </UserInfoBox>
   );
 }
+
+const Redirect = () => {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/category/all");
+  }, []);
+  return (
+    <Modal_little modalCtl={true} closeModalCtl={() => {}}>
+      유저정보가 존재하지 않습니다.
+    </Modal_little>
+  );
+};
 
 export function UserInfoBox({ children }: { children: ReactNode }) {
   return (

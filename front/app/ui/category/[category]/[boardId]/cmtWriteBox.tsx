@@ -13,6 +13,8 @@ import Image from "next/image";
 import { useQuery_getCategoryDetail } from "@/app/lib/data";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useQueryClient } from "@tanstack/react-query";
+import { useModalText } from "@/app/hooks/modal";
+import { Modal_little } from "@/app/ui/modal";
 // import { Blob } from "buffer";
 
 export const WriteCmt = ({
@@ -42,13 +44,15 @@ export const WriteCmt = ({
   const imgBtnId = `cmtWrite${
     replyId ? `Reply${replyId}` : cmtId ? cmtId : "Plain"
   }`;
-  const updateCmt = useUpdateCmt(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  const modalText = useModalText();
+  const updateCmt = useUpdateCmt(
+    () => queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] }),
+    modalText.openText
   );
   const addCmt = useAddCmt(() => {
     queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] });
     queryClient.refetchQueries({ queryKey: ["get", "board"] });
-  });
+  }, modalText.openText);
   const request = useCallback(
     async (formData: FormData) => {
       isUpdate && cmtId
@@ -62,15 +66,20 @@ export const WriteCmt = ({
   if (categoryInfo.isLoading)
     return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
-    <WriteCmtComp
-      isOpen={isOpen}
-      placeholder={categoryInfo.data?.data.cmtPlaceholder}
-      imgBtnId={imgBtnId}
-      request={request}
-      modalClose={modalClose}
-      baseText={baseText}
-      img={img}
-    />
+    <>
+      <Modal_little closeModalCtl={modalText.close} modalCtl={modalText.is}>
+        {modalText.text}
+      </Modal_little>
+      <WriteCmtComp
+        isOpen={isOpen}
+        placeholder={categoryInfo.data?.data.cmtPlaceholder}
+        imgBtnId={imgBtnId}
+        request={request}
+        modalClose={modalClose}
+        baseText={baseText}
+        img={img}
+      />
+    </>
   );
 };
 
@@ -91,9 +100,9 @@ export const WriteCmtComp = ({
   img?: string;
   modalClose?: () => void;
 }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const { uploadImg, formData, setFormData, onChangeText, text, setText } =
-    useFormDataImg(baseText ? baseText : "", "isDeleteImg");
+    useFormDataImg(baseText ? baseText : "", 72, "isDeleteImg");
 
   const { preview, setPreview } = usePreview(formData);
   const deleteImg = useDeleteImg(
@@ -108,7 +117,7 @@ export const WriteCmtComp = ({
     request(pushedFormData(formData, [{ name: "content", value: text }]));
     modalClose && modalClose();
     resetForm();
-    router.refresh();
+    // router.refresh();
     setText(baseText ? baseText : "");
   }, [
     formData,
@@ -117,7 +126,7 @@ export const WriteCmtComp = ({
     modalClose,
     request,
     resetForm,
-    router,
+    // router,
     setText,
   ]);
   const pressEnter = useCallback(
@@ -127,7 +136,7 @@ export const WriteCmtComp = ({
     [submit]
   );
   return (
-    <div hidden={!isOpen} className="w-full h-full">
+    <div hidden={!isOpen} className="w-full h-full pb-4">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
         {preview && (
           <div className="w-40 h-40 relative">
