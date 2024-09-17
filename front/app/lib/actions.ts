@@ -20,6 +20,7 @@ export const useWithdraw = (
       refetch();
     },
     onError: (err: any) => {
+      console.log(err);
       err.response.response.status === 400 && modalTextSet(err.response.data);
     },
   });
