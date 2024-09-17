@@ -55,9 +55,14 @@ export function Regist() {
   }, [nickIsOK.is, passwordIsOK.is, emailIsOK.is]);
   const pressEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.code === "Enter" || e.key === "Enter") submit();
+      if (e.code === "Enter" || e.key === "Enter")
+        regist.mutate({
+          nick: nick.text,
+          email: email.text,
+          pwd: password.text,
+        });
     },
-    [submit]
+    [regist, nick.text, email.text, password.text]
   );
   if (userData.isLoading)
     return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;

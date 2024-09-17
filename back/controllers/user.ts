@@ -39,10 +39,9 @@ router.post("/login", async (req: Request, res: Response) => {
   } else res.status(400).send(user);
 });
 router.post("/logout", async (req: Request, res: Response) => {
-  req.session.userId;
   if (req.session.userId) {
     req.session.destroy((err) => console.log(err));
-    res.clearCookie("user");
+
     res.status(204).send();
   } else res.status(400).send();
 });
@@ -101,7 +100,7 @@ router.delete("/", async (req: Request, res: Response) => {
 
   if (typeof result !== "string") {
     req.session.destroy((err) => console.log(err));
-    res.clearCookie("user");
+
     res.status(204).send();
     return;
   }

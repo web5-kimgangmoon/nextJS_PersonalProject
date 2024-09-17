@@ -44,7 +44,7 @@ export function Login() {
           isAdminLogin: "false",
         });
     },
-    [login]
+    [login, nick.text, password.text]
   );
   if (userInfoData.isLoading)
     return <LoadingSpin bgColorClass="bg-[url('/gradient-bg.png')]" />;
