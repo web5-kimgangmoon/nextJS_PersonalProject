@@ -20,7 +20,7 @@ export const useWithdraw = (
       refetch();
     },
     onError: (err: any) => {
-      modalTextSet(err.response.data);
+      err.response.response.status === 400 && modalTextSet(err.response.data);
     },
   });
   return { mutate, mutateAsync };

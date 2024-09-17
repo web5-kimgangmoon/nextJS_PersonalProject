@@ -133,10 +133,10 @@ export const getBoard = async (boardId?: number, userId?: number) => {
     isDidReport: boolean;
   }
   if (boardId) {
-    const board = await Board.findOne({
+    let board = await Board.findOne({
       where: { id: boardId, deletedAt: null, deleteReasonId: null },
       include: [
-        { model: UserInfo, as: "writer", where: { deletedAt: null } },
+        { model: UserInfo, as: "writer" },
         {
           model: Cmt,
           as: "cmts",

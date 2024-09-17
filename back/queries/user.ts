@@ -88,7 +88,7 @@ export const regist = async (nick: string, email: string, pwd: string) => {
     where: { [Op.or]: [{ nick: nick }, { email: email }] },
   });
   if (target) {
-    if (target.nick === nick)
+    if (target.nick === nick && target.email !== email)
       return "다른 유저가 해당 닉네임을 사용하고 있습니다.";
 
     if (!target.deletedAt && target.email === email)
