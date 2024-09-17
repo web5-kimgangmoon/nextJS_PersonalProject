@@ -206,7 +206,7 @@ export const giveScore = async (
     return false;
   if (
     !(await UserInfo.findOne({
-      where: { deletedAt: null, id: userId, deleteReasonId: null },
+      where: { deletedAt: null, id: userId },
     }))
   )
     return false;
