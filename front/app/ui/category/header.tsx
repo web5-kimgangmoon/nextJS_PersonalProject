@@ -99,13 +99,16 @@ export function OnLogin({ profile }: { profile?: null | string }) {
         <ProfileModalContent closeModal={ctlClose} />
       </Modal>
       <div className="pr-1">
-        <Image
-          src={profile ? profile : "/placeholder-noavatar32.svg"}
-          width={35}
-          height={35}
-          alt="no userImg"
-          onClick={() => setOpen(!open)}
-        />
+        <div className="w-12 h-12">
+          <Image
+            src={profile ? profile : "/placeholder-noavatar32.svg"}
+            width={35}
+            height={35}
+            alt="no userImg"
+            onClick={() => setOpen(!open)}
+            className="w-full h-full"
+          />
+        </div>
       </div>
     </>
   );

@@ -25,11 +25,12 @@ export function Header() {
 
   if (userInfo.isLoading || ownInfo.isLoading)
     return <LoadingSpin bgColorClass="bg-userInfoGray" />;
-  const isOwn = ownInfo.data?.data.userInfo
-    ? ownInfo.data?.data.userInfo.id === userId
-      ? true
-      : false
-    : false;
+  let isOwn = false;
+  if (userId) {
+    if (ownInfo.data?.data?.userInfo?.id === userId) isOwn = true;
+  } else {
+    if (ownInfo.data?.data?.userInfo?.id) isOwn = true;
+  }
 
   return (
     <div>

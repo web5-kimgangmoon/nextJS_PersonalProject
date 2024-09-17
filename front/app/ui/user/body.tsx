@@ -41,13 +41,19 @@ export function Body() {
         <CreatedAt />
       </UserInfoBox>
     );
-  if (selectedMenu === "connectId")
+  if (
+    selectedMenu === "connectId" &&
+    (!userId || userId === userInfo.data?.data?.userInfo?.id)
+  )
     return (
       <UserInfoBox>
         <SocialConnect />
       </UserInfoBox>
     );
-  if (selectedMenu === "withdraw" && !params.userId)
+  if (
+    selectedMenu === "withdraw" &&
+    (!userId || userId === userInfo.data?.data?.userInfo?.id)
+  )
     return (
       <UserInfoBox>
         <Withdraw />

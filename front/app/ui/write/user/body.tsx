@@ -21,7 +21,6 @@ import clsx from "clsx";
 
 export const Body = () => {
   const userInfo = useQuery_getUserInfo(1);
-  const modalText = useModalText();
   if (userInfo.isLoading) return <LoadingSpin bgColorClass="bg-white" />;
   return (
     <>
@@ -58,8 +57,10 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
     queryClient.refetchQueries({ queryKey: ["get", "userInfo", "own"] });
     router.replace("/user");
   }, modalText.openText);
-  const { uploadImg, formData, setFormData, onChangeText, text, setText } =
-    useFormDataImg(nick, 24);
+  const { uploadImg, formData, onChangeText, text, setText } = useFormDataImg(
+    nick,
+    24
+  );
 
   const request = useCallback(
     async (formData: FormData) => {
@@ -67,14 +68,17 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
     },
     [queryClient, updateOwn]
   );
+  const { preview } = usePreview(formData);
 
-  const { preview, setPreview } = usePreview(formData);
-  const deleteImg = useDeleteImg(setPreview, setFormData, imgBtnId);
   const submit = useCallback(() => {
-    if (imgChange !== "changeImg") deleteImg();
+    if (imgChange !== "changeImg") {
+      const noImgData = new FormData();
+      noImgData.set("nick", text);
+      request(noImgData);
+    }
     request(pushedFormData(formData, [{ name: "nick", value: text }]));
     setText(nick);
-  }, [formData, text, nick, request, deleteImg, router, setText, imgChange]);
+  }, [formData, text, nick, request, router, setText, imgChange]);
   const pressEnter = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.code === "Enter") submit();
@@ -96,7 +100,7 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
             onChange={(e) => {
               setImgChange(e.currentTarget.value);
             }}
-            className="w-full p-2 pr-6 outline-none border border-borderGray hover:border-border-mainBlue appearance-none"
+            className="w-full p-2 pr-6 outline-none border border-borderGray hover:border-border-mainBlue appearance-none bg-white"
           >
             <option value={"changeImg"}>이미지 교체</option>
             <option value={"originalImg"}>원 이미지</option>
