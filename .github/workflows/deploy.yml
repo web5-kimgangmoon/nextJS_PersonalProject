@@ -39,6 +39,8 @@ jobs:
           nvm use --lts
           node -v
           npm -v
+          cd ~/.nvm/versions/node/v20.17.0/lib/node_modules
+          sudo rm -rf pm2
           npm install -g pm2'
 
   test_mysql:
