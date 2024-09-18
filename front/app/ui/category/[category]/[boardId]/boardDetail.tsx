@@ -9,16 +9,19 @@ import { ImgButton, LinkButton } from "@/app/ui/buttons";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useToggle } from "@/app/hooks/toggle";
 import { useCallback } from "react";
-import { boardDelete } from "@/app/lib/actions"; // 작성이 필요
+import { useBoardDelete } from "@/app/lib/actions"; // 작성이 필요
 import { CheckDelete } from "@/app/ui/reasonBox";
-import { useQuery_getBoardDetail, useQuery_getUserInfo } from "@/app/lib/data";
-import { useParams } from "next/navigation";
+import { useQuery_getBoardDetail, useQuery_getOwnInfo } from "@/app/lib/data";
+import { useParams, useRouter } from "next/navigation";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
+import { useQueryClient } from "@tanstack/react-query";
+import { useModalText } from "@/app/hooks/modal";
+import { Modal_little } from "@/app/ui/modal";
 
 export const BoardDetail = () => {
   const params = useParams();
   const currentBoardData = useQuery_getBoardDetail(+params.boardId);
-  const userInfoData = useQuery_getUserInfo();
+  const userInfoData = useQuery_getOwnInfo();
   if (currentBoardData.isLoading || userInfoData.isLoading)
     <LoadingSpin bgColorClass="bg-categoryGray" />;
   if (!currentBoardData.data?.data)
@@ -64,9 +67,12 @@ export const BoardDetailComp = ({
   writerId: number;
 }) => {
   const deleteBox = useToggle(false);
-  const requestDelete = useCallback(() => {
-    boardDelete(id);
-  }, [id]);
+  const router = useRouter();
+  const modalText = useModalText();
+  const boardDelete = useBoardDelete(
+    () => router.replace("/category/all"),
+    modalText.openText
+  );
   return (
     <div className="flex flex-col gap-2 py-4">
       <div className="text-xl text-pink font-bold">{category}</div>
@@ -94,8 +100,7 @@ export const BoardDetailComp = ({
             isOpen={deleteBox.is}
             targetName="게시글"
             modalClose={deleteBox.close}
-            action={requestDelete}
-            destination="/category"
+            action={() => boardDelete.mutate(id)}
           />
         </div>
         <div className="drop-shadow-xl py-2 flex justify-center">
@@ -108,7 +113,10 @@ export const BoardDetailComp = ({
             priority={true}
           />
         </div>
-        <div className="">{content}</div>
+        <div className="pre-wrap">{content}</div>
+        <Modal_little modalCtl={modalText.is} closeModalCtl={modalText.close}>
+          {modalText.text}
+        </Modal_little>
       </div>
     </div>
   );
@@ -124,7 +132,7 @@ export const WriterRequestBtns = ({
   return (
     <div className="flex items-center gap-5">
       <LinkButton
-        href={`/write/board/${boardId}`}
+        href={`/write/${boardId}`}
         isRight={true}
         size="small"
         color="blankBlue"

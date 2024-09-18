@@ -7,6 +7,8 @@ import { useBoardReport, useCmtReport } from "../lib/actions";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { useQueryClient } from "@tanstack/react-query";
+import { Modal_little } from "./modal";
+import { useModalText } from "../hooks/modal";
 
 export const ReportBox = ({
   id,
@@ -27,11 +29,14 @@ export const ReportBox = ({
   const selectReason = useCallback((str: string) => {
     setReason(str);
   }, []);
-  const boardReport = useBoardReport(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "board"] })
+  const textModal = useModalText();
+  const boardReport = useBoardReport(
+    () => queryClient.refetchQueries({ queryKey: ["get", "board"] }),
+    textModal.openText
   );
-  const cmtReport = useCmtReport(() =>
-    queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] })
+  const cmtReport = useCmtReport(
+    () => queryClient.refetchQueries({ queryKey: ["get", "cmt", "list"] }),
+    textModal.openText
   );
   const reportRequest = useCallback(() => {
     if (reason)
@@ -51,16 +56,21 @@ export const ReportBox = ({
   ]);
 
   return (
-    <ReportBoxComp
-      reasonList={reasonList}
-      id={id}
-      setReason={selectReason}
-      reason={reason}
-      action={reportRequest}
-      modalClose={modalClose}
-      isOpen={isOpen}
-      isBoard={isBoard}
-    />
+    <>
+      <Modal_little closeModalCtl={textModal.close} modalCtl={textModal.is}>
+        <div>{textModal.text}</div>
+      </Modal_little>
+      <ReportBoxComp
+        reasonList={reasonList}
+        id={id}
+        setReason={selectReason}
+        reason={reason}
+        action={reportRequest}
+        modalClose={modalClose}
+        isOpen={isOpen}
+        isBoard={isBoard}
+      />
+    </>
   );
 };
 

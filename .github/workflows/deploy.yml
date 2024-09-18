@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
   test_node:
@@ -38,6 +39,8 @@ jobs:
           nvm use --lts
           node -v
           npm -v
+          cd ~/.nvm/versions/node/v20.17.0/lib/node_modules
+          sudo rm -rf pm2
           npm install -g pm2'
 
   test_mysql:
@@ -136,6 +139,8 @@ jobs:
           }
           npm install -g pm2
           pm2 stop front
+          pm2 delete front
+          cd  /var/www/front
           pm2 start npm --name "front" -- run start'
 
   deploy_back:

@@ -14,11 +14,15 @@
 import { Request, Response, Router } from "express";
 import { booleanCheck, intCheck, stringCheck } from "../services/zod";
 import {
+  addBoard,
+  deleteBoard,
   getBoard,
   getBoardList,
   giveScore,
   reportBoard,
+  updateBoard,
 } from "../queries/board";
+import { upload } from "../services/upload";
 
 const router = Router();
 
@@ -33,14 +37,15 @@ router.get("/list", async (req: Request, res: Response) => {
   const limit = intCheck.safeParse(req.query.limit).success
     ? Number(req.query.limit)
     : 10;
-  let writerId = booleanCheck.safeParse(req.query.isOwn).success
+  const ownId = booleanCheck.safeParse(req.query.isOwn).success
     ? req.query.isOwn === "true"
       ? req?.session?.userId
       : undefined
     : undefined;
-  writerId = intCheck.safeParse(req.query.writerId).success
-    ? Number(writerId)
-    : undefined;
+
+  const writerId = intCheck.safeParse(req.query.writerId).success
+    ? Number(req.query.writerId)
+    : ownId;
 
   const isDeleted = booleanCheck.safeParse(req.query.isDeleted).success
     ? req.query.isDeleted === "true"
@@ -99,4 +104,77 @@ router.get("/:boardId", async (req: Request, res: Response) => {
   board ? res.send(board) : res.status(404).send();
 });
 
+router.patch(
+  "/:boardId",
+  upload("img"),
+  async (req: Request, res: Response) => {
+    const userId = req?.session?.userId;
+    const boardId = intCheck.safeParse(req.params.boardId).success
+      ? Number(req.params.boardId)
+      : undefined;
+    if (!userId) {
+      res.status(403).send("비로그인 상태입니다");
+      return;
+    }
+    if (!req.body.content || !req.body.description || !req.body.title) {
+      res.status(400).send("정해진 형식을 지켜주세요");
+      return;
+    }
+    const result = await updateBoard(
+      userId,
+      boardId,
+      req.body.title,
+      req.body.content,
+      req.body.description,
+      req.file?.filename,
+      req.session.isAdminLogin
+    );
+    if (typeof result === "string") {
+      res.status(400).send(result);
+    } else res.status(204).send();
+  }
+);
+router.delete("/:boardId", async (req: Request, res: Response) => {
+  const userId = req?.session?.userId;
+  const boardId = intCheck.safeParse(req.params.boardId).success
+    ? Number(req.params.boardId)
+    : undefined;
+  if (!userId) {
+    res.status(403).send("비로그인 상태입니다");
+    return;
+  }
+
+  const result = await deleteBoard(userId, boardId, req.session.isAdminLogin);
+  if (typeof result === "string") {
+    res.status(400).send(result);
+  } else res.status(204).send();
+});
+router.post("/", upload("img"), async (req: Request, res: Response) => {
+  const userId = req?.session?.userId;
+  if (!userId) {
+    res.status(403).send("비로그인 상태입니다");
+    return;
+  }
+  if (
+    !req.body.content ||
+    !req.body.description ||
+    !req.body.title ||
+    !req.body.category
+  ) {
+    res.status(400).send("정해진 형식을 지켜주세요");
+    return;
+  }
+  const result = await addBoard(
+    userId,
+    req.body.title,
+    req.body.content,
+    req.body.description,
+    req.body.category,
+    req.file?.filename,
+    req.session.isAdminLogin
+  );
+  if (typeof result === "string") {
+    res.status(400).send(result);
+  } else res.status(204).send();
+});
 export default router;

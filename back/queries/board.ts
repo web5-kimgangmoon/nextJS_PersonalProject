@@ -36,7 +36,7 @@ export const getBoardList = async (
     boardCnt: number;
   }
   let condition: any = {};
-
+  let writerCondition: any = {};
   const category = await Category.findOne({ where: { path } });
   if (search) {
     switch (searchType) {
@@ -45,6 +45,9 @@ export const getBoardList = async (
         break;
       case "title":
         condition = { title: { [Op.like]: `%${search}%` } };
+        break;
+      case "writer":
+        writerCondition = { nick: { [Op.like]: `%${search}%` } };
         break;
       case "contentTitle":
         condition = {
@@ -58,15 +61,23 @@ export const getBoardList = async (
     }
   }
   if (category) condition["categoryId"] = category.id;
-  if (!isDeleted) condition["deletedAt"] = null;
+  if (!isDeleted) {
+    condition["deletedAt"] = null;
+    condition["deleteReasonId"] = null;
+  }
   if (writerId) condition["writerId"] = writerId;
   const targetList = await Board.findAll({
     where: condition,
     include: [
       { model: Category, as: "category" },
-      { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
+      {
+        model: Cmt,
+        as: "cmts",
+        required: false,
+        where: { deletedAt: null, deleteReasonId: null },
+      },
       { model: Score, as: "scores", required: false },
-      { model: UserInfo, as: "writer" },
+      { model: UserInfo, as: "writer", where: writerCondition },
     ],
     order: [["createdAt", "DESC"]],
   });
@@ -82,9 +93,15 @@ export const getBoardList = async (
           img: `${front}${item.img}`,
           isUpdated: item.createdAt.getTime() !== item.updatedAt.getTime(),
           score:
-            item.scores.reduce((a, b) => {
-              return b.score + a;
-            }, 0) / item.scores.length,
+            item.scores.length > 0
+              ? Math.ceil(
+                  (item.scores.reduce((a, b) => {
+                    return b.score + a;
+                  }, 0) /
+                    item.scores.length) *
+                    10
+                ) / 10
+              : 0,
           scoreUserCnt: item.scores.length,
           title: item.title,
           writer: item.writer.nick,
@@ -116,11 +133,16 @@ export const getBoard = async (boardId?: number, userId?: number) => {
     isDidReport: boolean;
   }
   if (boardId) {
-    const board = await Board.findOne({
-      where: { id: boardId, deletedAt: null },
+    let board = await Board.findOne({
+      where: { id: boardId, deletedAt: null, deleteReasonId: null },
       include: [
         { model: UserInfo, as: "writer" },
-        { model: Cmt, as: "cmts", required: false, where: { deletedAt: null } },
+        {
+          model: Cmt,
+          as: "cmts",
+          required: false,
+          where: { deletedAt: null, deleteReasonId: null },
+        },
         { model: Category, as: "category" },
         { model: Score, as: "scores", required: false },
         {
@@ -150,7 +172,13 @@ export const getBoard = async (boardId?: number, userId?: number) => {
           : false,
         isUpdated: board.createdAt.getTime() !== board.updatedAt.getTime(),
         score:
-          board.scores.reduce((a, b) => b.score + a, 0) / board.scores.length,
+          board.scores.length > 0
+            ? Math.ceil(
+                (board.scores.reduce((a, b) => b.score + a, 0) /
+                  board.scores.length) *
+                  10
+              ) / 10
+            : 0,
         writer: board.writer.nick,
         writerId: board.writerId,
         title: board.title,
@@ -170,9 +198,17 @@ export const giveScore = async (
 ) => {
   let target;
   if (!userId || !boardId || !score) return false;
-  if (!(await Board.findOne({ where: { deletedAt: null, id: boardId } })))
+  if (
+    !(await Board.findOne({
+      where: { deletedAt: null, id: boardId, deleteReasonId: null },
+    }))
+  )
     return false;
-  if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
+  if (
+    !(await UserInfo.findOne({
+      where: { deletedAt: null, id: userId },
+    }))
+  )
     return false;
   target = await Score.findOne({
     where: { userId: userId, boardId: boardId, deletedAt: null },
@@ -194,7 +230,11 @@ export const reportBoard = async (
   reasonId?: number
 ) => {
   if (!userId || !boardId || !reasonId) return false;
-  if (!(await Board.findOne({ where: { deletedAt: null, id: boardId } })))
+  if (
+    !(await Board.findOne({
+      where: { deletedAt: null, id: boardId, deleteReasonId: null },
+    }))
+  )
     return false;
   if (!(await UserInfo.findOne({ where: { deletedAt: null, id: userId } })))
     return false;
@@ -215,5 +255,88 @@ export const reportBoard = async (
     reasonId,
   });
 
+  return true;
+};
+
+export const deleteBoard = async (
+  userId: number,
+  boardId?: number | null,
+  isAdmin?: boolean
+) => {
+  if (!boardId) return "삭제할 대상 게시글을 지정해주세요";
+  if (boardId === 1) return "해당 게시글은 삭제할 수 없는 게시글입니다";
+  const target_user = await UserInfo.findOne({
+    where: { id: userId, deletedAt: null },
+  });
+  if (!target_user) return "존재하지 않는 유저입니다";
+  const target_board = await Board.findOne({
+    where: { deletedAt: null, id: boardId, deleteReasonId: null },
+  });
+  if (!target_board) return "존재하지 않는 게시글입니다";
+  if (target_board.categoryId === 1 && !isAdmin)
+    return "공지 게시글은 운영자 페이지에서만 삭제가능합니다. ";
+  if (target_board.writerId !== userId) return "작성자가 아닙니다";
+  await target_board.update({ deletedAt: new Date() });
+  return true;
+};
+
+export const updateBoard = async (
+  userId: number,
+  boardId?: number | null,
+  title?: string | null,
+  content?: string | null,
+  description?: string | null,
+  img?: string | null,
+  isAdmin?: boolean
+) => {
+  if (!boardId) return "수정할 대상 게시글을 지정해주세요";
+  const target_user = await UserInfo.findOne({
+    where: { id: userId, deletedAt: null },
+  });
+  if (!target_user) return "존재하지 않는 유저입니다";
+  const target_board = await Board.findOne({
+    where: { deletedAt: null, id: boardId, deleteReasonId: null },
+  });
+  if (!target_board) return "존재하지 않는 게시글입니다";
+  if (target_board.categoryId === 1 && !isAdmin)
+    return "공지 게시글은 운영자 페이지에서만 수정가능합니다. ";
+  if (target_board.writerId !== userId) return "작성자가 아닙니다";
+  await target_board.update({
+    title,
+    content,
+    description,
+    img: img ? img : target_board.img,
+  });
+  return true;
+};
+
+export const addBoard = async (
+  userId: number,
+  title?: string | null,
+  content?: string | null,
+  description?: string | null,
+  category?: string | null,
+  img?: string | null,
+  isAdmin?: boolean
+) => {
+  if (!category) return "게시글을 추가할 카테고리가 필요합니다";
+  const target_user = await UserInfo.findOne({
+    where: { id: userId, deletedAt: null },
+  });
+  if (!target_user) return "존재하지 않는 유저입니다";
+  const target_category = await Category.findOne({
+    where: { deletedAt: null, path: category },
+  });
+  if (!target_category) return "존재하지 않는 카테고리입니다";
+  if (target_category.id === 1 && !isAdmin)
+    return "공지 게시글은 운영자 페이지에서만 추가가능합니다. ";
+  await Board.create({
+    title,
+    content,
+    description,
+    img: img ? img : "baseBoardImg.png",
+    writerId: userId,
+    categoryId: target_category.id,
+  });
   return true;
 };

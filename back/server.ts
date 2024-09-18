@@ -39,6 +39,7 @@ declare module "express-session" {
     isMainAdmin: boolean;
   }
 }
+
 app.use(
   session({
     resave: true,

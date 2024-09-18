@@ -1,9 +1,11 @@
 "use client";
 
+import { useModalText } from "@/app/hooks/modal";
 import { useBoardGiveScore } from "@/app/lib/actions";
-import { useQuery_getBoardDetail, useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getBoardDetail, useQuery_getOwnInfo } from "@/app/lib/data";
 import { Button, ImgButton } from "@/app/ui/buttons";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
+import { Modal_little } from "@/app/ui/modal";
 import { Star } from "@/public/star";
 import clsx from "clsx";
 import { useParams, useRouter } from "next/navigation";
@@ -18,25 +20,34 @@ export const GiveScoreBox = () => {
   const giveScore = useCallback((score: number) => {
     setScore(score);
   }, []);
-  const boardGiveScore = useBoardGiveScore(() => currentBoard.refetch());
+  const modalText = useModalText();
+  const boardGiveScore = useBoardGiveScore(
+    () => currentBoard.refetch(),
+    modalText.openText
+  );
   const submit = useCallback(
     async (score: number) => {
       await boardGiveScore.mutate({ score, boardId: +params.boardId });
     },
     [router, boardGiveScore, currentBoard, params.boardId]
   );
-  const userInfoData = useQuery_getUserInfo();
+  const userInfoData = useQuery_getOwnInfo();
   if (userInfoData.isLoading || currentBoard.isLoading)
     return <LoadingSpin bgColorClass="bg-categoryGray" />;
   return (
-    <GiveScoreBoxComp
-      {...currentBoard.data?.data}
-      isLogin={userInfoData.data?.data.userInfo?.id ? true : false}
-      score={score}
-      giveScore={giveScore}
-      submit={submit}
-      defaultScore={currentBoard.data?.data.score}
-    />
+    <>
+      <Modal_little modalCtl={modalText.is} closeModalCtl={modalText.close}>
+        {modalText.text}
+      </Modal_little>
+      <GiveScoreBoxComp
+        {...currentBoard.data?.data}
+        isLogin={userInfoData.data?.data.userInfo?.id ? true : false}
+        score={score}
+        giveScore={giveScore}
+        submit={submit}
+        defaultScore={currentBoard.data?.data.score}
+      />
+    </>
   );
 };
 
@@ -59,7 +70,9 @@ export const GiveScoreBoxComp = ({
 }) => {
   return (
     <div className="border-t border-borderGray">
-      <div className="w-full py-2 text-center text-fakeBlack">{`${scoreUserCnt}명이 평가했습니다`}</div>
+      <div className="w-full py-2 text-center text-fakeBlack">{`${
+        scoreUserCnt ? scoreUserCnt : 0
+      }명이 평가했습니다`}</div>
       <div className="w-full flex justify-center">
         <StarBox
           score={score}
