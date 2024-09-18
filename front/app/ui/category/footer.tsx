@@ -117,7 +117,7 @@ export function OnLogin() {
 
       <FooterBox
         title="게시글"
-        elements={[{ title: "글작성", href: `/write/board` }]}
+        elements={[{ title: "글작성", href: `/write` }]}
       />
     </>
   );
@@ -138,7 +138,7 @@ export function OffLogin() {
 export function OnAdmin() {
   return (
     <>
-      <FooterBox
+      {/* <FooterBox
         title="운영자"
         isExternal={true}
         elements={[
@@ -147,7 +147,7 @@ export function OnAdmin() {
             href: `${process.env.NEXT_PUBLIC_ADMIN}`,
           },
         ]}
-      />
+      /> */}
     </>
   );
 }

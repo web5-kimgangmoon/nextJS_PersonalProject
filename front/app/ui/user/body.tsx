@@ -41,15 +41,15 @@ export function Body() {
         <CreatedAt />
       </UserInfoBox>
     );
-  if (
-    selectedMenu === "connectId" &&
-    (!userId || userId === userInfo.data?.data?.userInfo?.id)
-  )
-    return (
-      <UserInfoBox>
-        <SocialConnect />
-      </UserInfoBox>
-    );
+  // if (
+  //   selectedMenu === "connectId" &&
+  //   (!userId || userId === userInfo.data?.data?.userInfo?.id)
+  // )
+  //   return (
+  //     <UserInfoBox>
+  //       <SocialConnect />
+  //     </UserInfoBox>
+  //   );
   if (
     selectedMenu === "withdraw" &&
     (!userId || userId === userInfo.data?.data?.userInfo?.id)

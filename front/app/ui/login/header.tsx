@@ -21,7 +21,7 @@ export function Header() {
           </LinkButton>
         </div>
       </div>
-      <div className="flex justify-center break-keep text-center text-textBlue pb-">
+      {/* <div className="flex justify-center break-keep text-center text-textBlue">
         The board를 다른 소셜사이트의 계정으로 이용하세요!
       </div>
       <div className="flex gap-4 justify-center p-20">
@@ -47,13 +47,12 @@ export function Header() {
         >
           facebook
         </ImgButton>
-        {/* <Button></Button> */}
-      </div>
+      </div> */}
       <div className="flex items-center">
         <div className="grow px-4">
           <div className="w-full pt-1 border-t border-borderGray"></div>
         </div>
-        <div className="text-textGray">or</div>
+        <div className="text-textGray">ㅇㅇㅇ</div>
         <div className="grow px-4">
           <div className="w-full pt-1 border-t border-borderGray"></div>
         </div>

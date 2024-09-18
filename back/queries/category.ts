@@ -168,3 +168,20 @@ export const getCategoryList = async () => {
     })),
   };
 };
+
+export const getCategoryRules = async (category?: string | null) => {
+  if (!category) return false;
+
+  const targetCategory = await Category.findOne({
+    where: {
+      deletedAt: null,
+    },
+  });
+  if (!targetCategory) return false;
+  const rules = await CategoryRule.findAll({
+    where: { deletedAt: null, categoryId: targetCategory.id },
+  });
+  return {
+    rules: rules,
+  };
+};

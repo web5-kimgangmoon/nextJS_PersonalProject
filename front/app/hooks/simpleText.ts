@@ -10,5 +10,6 @@ export const useSimpleText = (defaultValue: string) => {
       },
       []
     ),
+    plainSet: setText,
   };
 };

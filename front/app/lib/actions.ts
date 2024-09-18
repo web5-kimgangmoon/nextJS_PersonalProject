@@ -2,8 +2,77 @@ import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import serverAxios from "./serverActionAxios";
 import { AxiosResponse } from "axios";
 
-export const boardDelete = (boardId: number) => {
-  return "";
+export const useBoardAdd = (
+  refetch: () => void,
+  modalTextSet: (text: string) => void
+) => {
+  const { mutate, mutateAsync } = useMutation({
+    mutationKey: ["board", "post"],
+    mutationFn: async (
+      formData: FormData
+    ): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      return await serverAxios.post(`/board`, formData, {
+        headers: {
+          "Content-Type": "mutipart/form-data",
+        },
+      });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (err: any) => {
+      modalTextSet(err.response.data);
+    },
+  });
+  return { mutate, mutateAsync };
+};
+export const useBoardRemake = (
+  refetch: () => void,
+  modalTextSet: (text: string) => void
+) => {
+  const { mutate, mutateAsync } = useMutation({
+    mutationKey: ["board", "patch"],
+    mutationFn: async ({
+      formData,
+      boardId,
+    }: {
+      formData: FormData;
+      boardId: number;
+    }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      return await serverAxios.patch(`/board/${boardId}`, formData, {
+        headers: {
+          "Content-Type": "mutipart/form-data",
+        },
+      });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (err: any) => {
+      modalTextSet(err.response.data);
+    },
+  });
+  return { mutate, mutateAsync };
+};
+export const useBoardDelete = (
+  refetch: () => void,
+  modalTextSet: (text: string) => void
+) => {
+  const { mutate, mutateAsync } = useMutation({
+    mutationKey: ["board", "delete"],
+    mutationFn: async (
+      boardId: number
+    ): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      return await serverAxios.delete(`/board/${boardId}`);
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (err: any) => {
+      modalTextSet(err.response.data);
+    },
+  });
+  return { mutate, mutateAsync };
 };
 export const useWithdraw = (
   refetch: () => void,

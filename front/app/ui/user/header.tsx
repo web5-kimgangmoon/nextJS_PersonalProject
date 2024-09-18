@@ -178,14 +178,14 @@ export function SlideUserInfo({
       title: item.title,
       selected: item.path === selectedMenu,
     }));
-    isOwn &&
-      list.push({
-        path: `/user${
-          params.userId ? "/" + params.userId : ""
-        }?select=${"connectId"}`,
-        title: "소셜연동",
-        selected: "connectId" === selectedMenu,
-      });
+    // isOwn &&
+    //   list.push({
+    //     path: `/user${
+    //       params.userId ? "/" + params.userId : ""
+    //     }?select=${"connectId"}`,
+    //     title: "소셜연동",
+    //     selected: "connectId" === selectedMenu,
+    //   });
     isOwn &&
       list.push({
         path: `/user${

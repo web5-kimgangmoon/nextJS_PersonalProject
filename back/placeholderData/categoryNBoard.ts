@@ -1,5 +1,6 @@
 import Board from "../models/boards";
 import Category from "../models/categories";
+import CategoryRule from "../models/categoryRuleList";
 
 export const createBoardNCategory = async () => {
   (
@@ -109,4 +110,12 @@ export const createBoardNCategory = async () => {
   for (let item of boarddata) {
     await Board.create(item);
   }
+  await CategoryRule.create({
+    categoryId: 2,
+    description: "자유 게시글에선 자유롭게 글을 써주세요.",
+  });
+  await CategoryRule.create({
+    categoryId: 2,
+    description: "분쟁을 조장하는 글은 전면 금지합니다.",
+  });
 };

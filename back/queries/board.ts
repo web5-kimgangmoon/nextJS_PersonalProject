@@ -257,3 +257,86 @@ export const reportBoard = async (
 
   return true;
 };
+
+export const deleteBoard = async (
+  userId: number,
+  boardId?: number | null,
+  isAdmin?: boolean
+) => {
+  if (!boardId) return "삭제할 대상 게시글을 지정해주세요";
+  if (boardId === 1) return "해당 게시글은 삭제할 수 없는 게시글입니다";
+  const target_user = await UserInfo.findOne({
+    where: { id: userId, deletedAt: null },
+  });
+  if (!target_user) return "존재하지 않는 유저입니다";
+  const target_board = await Board.findOne({
+    where: { deletedAt: null, id: boardId, deleteReasonId: null },
+  });
+  if (!target_board) return "존재하지 않는 게시글입니다";
+  if (target_board.categoryId === 1 && !isAdmin)
+    return "공지 게시글은 운영자 페이지에서만 삭제가능합니다. ";
+  if (target_board.writerId !== userId) return "작성자가 아닙니다";
+  await target_board.update({ deletedAt: new Date() });
+  return true;
+};
+
+export const updateBoard = async (
+  userId: number,
+  boardId?: number | null,
+  title?: string | null,
+  content?: string | null,
+  description?: string | null,
+  img?: string | null,
+  isAdmin?: boolean
+) => {
+  if (!boardId) return "수정할 대상 게시글을 지정해주세요";
+  const target_user = await UserInfo.findOne({
+    where: { id: userId, deletedAt: null },
+  });
+  if (!target_user) return "존재하지 않는 유저입니다";
+  const target_board = await Board.findOne({
+    where: { deletedAt: null, id: boardId, deleteReasonId: null },
+  });
+  if (!target_board) return "존재하지 않는 게시글입니다";
+  if (target_board.categoryId === 1 && !isAdmin)
+    return "공지 게시글은 운영자 페이지에서만 수정가능합니다. ";
+  if (target_board.writerId !== userId) return "작성자가 아닙니다";
+  await target_board.update({
+    title,
+    content,
+    description,
+    img: img ? img : target_board.img,
+  });
+  return true;
+};
+
+export const addBoard = async (
+  userId: number,
+  title?: string | null,
+  content?: string | null,
+  description?: string | null,
+  category?: string | null,
+  img?: string | null,
+  isAdmin?: boolean
+) => {
+  if (!category) return "게시글을 추가할 카테고리가 필요합니다";
+  const target_user = await UserInfo.findOne({
+    where: { id: userId, deletedAt: null },
+  });
+  if (!target_user) return "존재하지 않는 유저입니다";
+  const target_category = await Category.findOne({
+    where: { deletedAt: null, path: category },
+  });
+  if (!target_category) return "존재하지 않는 카테고리입니다";
+  if (target_category.id === 1 && !isAdmin)
+    return "공지 게시글은 운영자 페이지에서만 추가가능합니다. ";
+  await Board.create({
+    title,
+    content,
+    description,
+    img: img ? img : "baseBoardImg.png",
+    writerId: userId,
+    categoryId: target_category.id,
+  });
+  return true;
+};

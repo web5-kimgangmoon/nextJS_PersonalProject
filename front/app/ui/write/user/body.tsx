@@ -3,28 +3,33 @@
 import { pushedFormData, useTypeCheck_zod } from "@/app/lib/utils";
 import { Button } from "../../buttons";
 import { InputBox } from "../../inputBox";
-import { useQuery_getUserInfo } from "@/app/lib/data";
+import { useQuery_getOwnInfo, useQuery_getUserInfo } from "@/app/lib/data";
 import { Modal_little } from "../../modal";
 import { LoadingSpin } from "../../loadingSpin";
 import { useModalText } from "@/app/hooks/modal";
 import { useFormDataImg } from "@/app/hooks/formDataImg";
 import { usePreview } from "@/app/hooks/preview";
-import { useDeleteImg } from "@/app/hooks/callback/deleteImg";
-import { KeyboardEvent, useCallback, useMemo, useState } from "react";
+import {
+  KeyboardEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useProfileUpdate } from "@/app/lib/actions";
 import { useQueryClient } from "@tanstack/react-query";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useToggle } from "@/app/hooks/toggle";
 import clsx from "clsx";
 
 export const Body = () => {
-  const userInfo = useQuery_getUserInfo(1);
+  const userInfo = useQuery_getOwnInfo();
   if (userInfo.isLoading) return <LoadingSpin bgColorClass="bg-white" />;
+  if (!userInfo.data?.data?.userInfo?.id) return <Redirect />;
   return (
     <>
-      {userInfo.data?.data.userInfo?.id ? (
+      {userInfo.data?.data.userInfo?.id && (
         <div>
           <div className="p-4 border-b border-t border-borderGray text-sm  text-bgGray">
             유저 정보는 다른 사람과 공유할 수 없으며, 거래할 수도 없습니다. 이를
@@ -35,12 +40,19 @@ export const Body = () => {
             img={userInfo.data?.data.userInfo?.profileImg}
           />
         </div>
-      ) : (
-        <Modal_little closeModalCtl={() => {}} modalCtl={true}>
-          {"사용자 정보를 찾을 수 없습니다."}
-        </Modal_little>
       )}
     </>
+  );
+};
+const Redirect = () => {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/category/all");
+  }, []);
+  return (
+    <Modal_little modalCtl={true} closeModalCtl={() => {}}>
+      유저정보가 존재하지 않습니다.
+    </Modal_little>
   );
 };
 

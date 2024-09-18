@@ -190,17 +190,17 @@ export const MenuModalContent = ({
             isLogin
               ? [
                   { title: "유저정보", href: "/user" },
-                  { title: "글작성", href: "/write/board" },
+                  { title: "글작성", href: "/write" },
                 ]
               : [
                   { title: "로그인", href: "/login" },
                   { title: "회원가입", href: "/login/regist" },
 
-                  {
-                    title: "운영자 페이지로",
-                    href: `${process.env.NEXT_PUBLIC_ADMIN}`,
-                    isA: true,
-                  },
+                  // {
+                  //   title: "운영자 페이지로",
+                  //   href: `${process.env.NEXT_PUBLIC_ADMIN}`,
+                  //   isA: true,
+                  // },
                 ]
           }
         />
@@ -234,9 +234,9 @@ export const LoginModalContent = () => {
   return (
     <div className="py-2">
       <ModalLink href="/login">일반 로그인</ModalLink>
-      <ModalA href={process.env.NEXT_PUBLIC_ADMIN as string}>
+      {/* <ModalA href={process.env.NEXT_PUBLIC_ADMIN as string}>
         운영자 로그인
-      </ModalA>
+      </ModalA> */}
     </div>
   );
 };

@@ -125,6 +125,7 @@ export const profileUpdate = async (
   img?: string | null
 ) => {
   if (!id) return "로그인 중인 사용자가 아닙니다";
+  if (!nick) return "닉네임을 입력해주세요";
   if (nick) {
     const target = await UserInfo.findOne({
       where: { nick: nick, id: { [Op.not]: id } },
