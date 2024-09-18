@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { Body } from "../../ui/write/body";
 
 export default function Page() {
-  return <Body />;
+  return (
+    <Suspense>
+      <Body />
+    </Suspense>
+  );
 }
