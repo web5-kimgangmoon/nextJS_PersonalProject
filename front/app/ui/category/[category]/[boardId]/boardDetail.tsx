@@ -8,13 +8,11 @@ import Link from "next/link";
 import { ImgButton, LinkButton } from "@/app/ui/buttons";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useToggle } from "@/app/hooks/toggle";
-import { useCallback } from "react";
-import { useBoardDelete } from "@/app/lib/actions"; // 작성이 필요
+import { useBoardDelete } from "@/app/lib/actions";
 import { CheckDelete } from "@/app/ui/reasonBox";
 import { useQuery_getBoardDetail, useQuery_getOwnInfo } from "@/app/lib/data";
 import { useParams, useRouter } from "next/navigation";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
-import { useQueryClient } from "@tanstack/react-query";
 import { useModalText } from "@/app/hooks/modal";
 import { Modal_little } from "@/app/ui/modal";
 

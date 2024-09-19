@@ -1,9 +1,11 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { ImgButton, LinkButton } from "../buttons";
 import { usePopup } from "@/app/hooks/callback/popUp";
 
 export function Header() {
+  const pathname = usePathname();
   const google_popup = usePopup(
     process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH as string,
     "google"
@@ -52,7 +54,9 @@ export function Header() {
         <div className="grow px-4">
           <div className="w-full pt-1 border-t border-borderGray"></div>
         </div>
-        <div className="text-textGray">ㅇㅇㅇ</div>
+        <div className="text-textGray">
+          {pathname.split("/login")[1].length === 0 ? "login" : "regist"}
+        </div>
         <div className="grow px-4">
           <div className="w-full pt-1 border-t border-borderGray"></div>
         </div>

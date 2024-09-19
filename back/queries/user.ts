@@ -20,7 +20,6 @@ interface sendData {
 export const getUserInfo = async (id: number) => {
   const target = await UserInfo.findOne({
     where: { id, deletedAt: null },
-    // include: [{ model: Cmt,required:false}, { model: Board,as:"writtenCmts", required:false }, { model: Like, required:false }],
   });
   if (target) {
     const likeList = await Like.findAll({

@@ -99,7 +99,12 @@ jobs:
 
       - name: add .env
         working-directory: ./front
-        run: echo NEXT_PUBLIC_SERVER_PATH=${{ secrets.NEXT_PUBLIC_SERVER_PATH }} > .env
+        run: |
+          echo NEXT_PUBLIC_SERVER_PATH=${{ secrets.NEXT_PUBLIC_SERVER_PATH }} > .env
+          echo NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_GOOGLE_CLIENT_ID }} >> .env
+          echo NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH }} >> .env
+          echo NEXT_PUBLIC_FACEBOOK_CLIENT_ID=${{ secrets.NEXT_PUBLIC_FACEBOOK_CLIENT_ID }} >> .env
+          echo NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH }} >> .env
 
       - name: Build Front
         working-directory: ./front
@@ -194,7 +199,13 @@ jobs:
           echo PORT=3080 > .env
           echo EC2_MYSQL_USER=${{ secrets.EC2_MYSQL_USER }} >> .env
           echo EC2_MYSQL_PASSWORD=${{ secrets.EC2_MYSQL_PASSWORD }} >> .env
-          echo EC2_MYSQL_DATABASE=${{ secrets.EC2_MYSQL_DATABASE }} >> .env'
+          echo EC2_MYSQL_DATABASE=${{ secrets.EC2_MYSQL_DATABASE }} >> .env
+          echo GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} >> .env
+          echo GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }} >> .env
+          echo GOOGLE_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH }} >> .env
+          echo FACEBOOK_CLIENT_ID=${{ secrets.FACEBOOK_CLIENT_ID }} >> .env
+          echo FACEBOOK_SECRET=${{ secrets.FACEBOOK_SECRET }} >> .env
+          echo FACEBOOK_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH }} > .env'
 
       - name: Start Server
         run: |
