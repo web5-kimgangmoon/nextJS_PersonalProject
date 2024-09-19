@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - fix/component_key
 
 jobs:
   test_node:

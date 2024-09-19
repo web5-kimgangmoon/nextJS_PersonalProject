@@ -68,6 +68,7 @@ export interface CategoryInfo {
   name: string;
   img: string;
   description: string;
+  id: number;
 }
 
 export interface CategoryListData {
@@ -192,6 +193,7 @@ export interface GetBoardList {
   isDeleted: string | null;
   search: string | null;
   searchType: string | "content" | "title" | "contentTitle" | "writer" | null;
+  onlyDeleted?: boolean;
 }
 export interface GetUserInfo {}
 export interface GetCategoryList {}

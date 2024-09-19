@@ -67,7 +67,7 @@ export function HeaderTop({ isColorWhite }: { isColorWhite?: boolean }) {
             modalCtl={write.is}
             isShutDown={true}
           >
-            <CategoryList />
+            <CategoryList close={write.close} />
           </Modal>
         </div>
         <div className="p-2">
@@ -132,13 +132,15 @@ export function HeaderTop({ isColorWhite }: { isColorWhite?: boolean }) {
   );
 }
 
-export const CategoryList = () => {
+export const CategoryList = ({ close }: { close: () => void }) => {
   const categoryInfo = useQuery_getCategories();
   if (categoryInfo.isLoading) return <LoadingSpin bgColorClass={"bg-white"} />;
   let count = 0;
-  let temp: { path: string; img: string; description: string }[] = [];
-  const inputList: Array<{ path: string; img: string; description: string }[]> =
+  let temp: { path: string; img: string; description: string; id: number }[] =
     [];
+  const inputList: Array<
+    { path: string; img: string; description: string; id: number }[]
+  > = [];
   if (categoryInfo.data?.data?.categories) {
     const categories = categoryInfo.data?.data.categories.slice(1);
     for (let item of categories) {
@@ -147,6 +149,7 @@ export const CategoryList = () => {
         path: `/write?category=${item.path}`,
         description: item.description,
         img: item.img,
+        id: item.id,
       });
       if (count % 2 == 0) {
         inputList.push(temp);
@@ -165,8 +168,8 @@ export const CategoryList = () => {
           원하는 카테고리를 선택하시면 게시글 작성 페이지로 이동합니다!
         </div>
       </div>
-      {inputList.map((item, index) => (
-        <CategoryBox list={item} key={index} />
+      {inputList.map((item) => (
+        <CategoryBox list={item} key={item[0].id} close={close} />
       ))}
     </div>
   );
@@ -174,17 +177,19 @@ export const CategoryList = () => {
 
 export const CategoryBox = ({
   list,
+  close,
 }: {
   list: { path: string; img: string; description: string }[];
+  close: () => void;
 }) => {
   return (
     <div className="py-4">
       <div className="flex justify-between w-full px-4">
-        <Link href={list[0].path}>
+        <Link href={list[0].path} onClick={close}>
           <CategoryTop img={list[0].img} />
         </Link>
         {list[1]?.path ? (
-          <Link href={list[1].path}>
+          <Link href={list[1].path} onClick={close}>
             <CategoryTop img={list[1]?.img} />
           </Link>
         ) : (
@@ -192,11 +197,11 @@ export const CategoryBox = ({
         )}
       </div>
       <div className="flex justify-between w-full px-4">
-        <Link href={list[0].path}>
+        <Link href={list[0].path} onClick={close}>
           <CategoryBottom description={list[0].description} />
         </Link>
         {list[1]?.path ? (
-          <Link href={list[1].path}>
+          <Link href={list[1].path} onClick={close}>
             <CategoryBottom description={list[1].description} />
           </Link>
         ) : (

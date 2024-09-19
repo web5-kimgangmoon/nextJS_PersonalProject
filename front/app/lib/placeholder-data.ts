@@ -12,36 +12,42 @@ import {
 export const categoryListData: CategoryListData = {
   categories: [
     {
+      id: 1,
       name: "전체",
       path: "all",
       img: "/baseBoardImg.png",
       description: "아아",
     },
     {
+      id: 2,
       name: "공지",
       path: "inform",
       img: "/baseBoardImg.png",
       description: "나나",
     },
     {
+      id: 3,
       name: "잡담",
       path: "talk",
       img: "/baseBoardImg.png",
       description: "dkdk",
     },
     {
+      id: 4,
       name: "유머",
       path: "humor",
       img: "/baseBoardImg.png",
       description: "kdkd",
     },
     {
+      id: 5,
       name: "자랑",
       path: "goodItem",
       img: "/baseBoardImg.png",
       description: "카",
     },
     {
+      id: 6,
       name: "질문",
       path: "question",
       img: "/baseBoardImg.png",

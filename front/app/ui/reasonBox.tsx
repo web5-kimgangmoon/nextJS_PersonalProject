@@ -221,10 +221,10 @@ export const ReasonBox = ({
         {reasonList && reasonName && (
           <div className="p-1">
             <ol className="font-bold flex flex-col gap-4 p-2">
-              {reasonList.map((item, idx) => (
+              {reasonList.map((item) => (
                 <ReasonItem
-                  key={idx}
-                  idx={idx}
+                  key={item.id}
+                  idx={item.id}
                   reasonName={reasonName}
                   value={String(item.id)}
                   title={item.title}

@@ -1,6 +1,5 @@
 "use client";
 
-import { categoryListData as categoryListHolder } from "@/app/lib/placeholder-data";
 import clsx from "clsx";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -28,6 +27,7 @@ export const CategorySlideBar = () => {
       search && searchType ? `?search=${search}&searchType=${searchType}` : ""
     }`,
     selected: params.category === item.path ? true : false,
+    id: item.id,
   }));
   return (
     <CategorySlideBarController
@@ -56,7 +56,7 @@ export const CategorySlideBar = () => {
 export const CategorySlideBarController = ({
   list,
 }: {
-  list: { title: string; path: string; selected: boolean }[];
+  list: { title: string; path: string; selected: boolean; id: number }[];
 }) => {
   const { location, touchMove, touchStart } = useContext(SlideContext);
   return (
@@ -76,7 +76,7 @@ export const SlideBar = ({
   touchStart,
   isUserInfo = false,
 }: {
-  list: { title: string; path: string; selected: boolean }[];
+  list: { title: string; path: string; selected: boolean; id: number }[];
 
   location: ILocation;
   touchMove?: (e: TouchEvent<HTMLDivElement>) => void;
@@ -100,17 +100,17 @@ export const SlideBar = ({
         onTouchMove={touchMove}
         style={{ translate: `${location.translate}px` }}
       >
-        {list.map((item, idx) =>
+        {list.map((item) =>
           isUserInfo ? (
             <Item_userInfo
-              key={idx}
+              key={item.id}
               title={item.title}
               path={item.path}
               selected={item.selected}
             />
           ) : (
             <Item
-              key={idx}
+              key={item.id}
               title={item.title}
               path={item.path}
               selected={item.selected}
