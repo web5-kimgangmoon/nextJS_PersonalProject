@@ -1,16 +1,3 @@
-// category: string |
-//                "inform" |
-//                null,
-// offset: number,
-// limit: number,
-// isOwn: boolean,
-// isDeleted: boolean,
-// search: string |
-//              null,
-// searchType: "content" |
-//                      "title" |
-//                      "contentTitle" |
-//                      null
 import { Request, Response, Router } from "express";
 import { booleanCheck, intCheck, stringCheck } from "../services/zod";
 import {

@@ -8,6 +8,16 @@ export const mkHash = (
   return crypto.createHash(method).update(`${value}${salt}`).digest("hex");
 };
 
+export const ranHash = (
+  method: "sha256" | "sha512",
+  salt: string = "소금은 좋아하세요?"
+) => {
+  return crypto
+    .createHash(method)
+    .update(`${Math.floor(Math.random() * 100000)}${salt}`)
+    .digest("hex");
+};
+
 export const cmtRemake = (
   text: string,
   reState?: string,

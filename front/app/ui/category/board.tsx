@@ -55,7 +55,7 @@ export const BoardList = () => {
   });
   useEffect(() => {
     refetch();
-  }, [page, search, searchType, refetch]);
+  }, [page, search, searchType, refetch, data?.data?.boardList]);
   if (isLoading && !data) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   if (data?.data.boardList.length === 0) return <NoBoard />;
   return (
