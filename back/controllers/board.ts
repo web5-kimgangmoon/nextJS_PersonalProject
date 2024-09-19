@@ -95,36 +95,32 @@ router.get("/:boardId", async (req: Request, res: Response) => {
   board ? res.send(board) : res.status(404).send();
 });
 
-router.patch(
-  "/:boardId",
-  upload("img"),
-  async (req: Request, res: Response) => {
-    const userId = req?.session?.userId;
-    const boardId = intCheck.safeParse(req.params.boardId).success
-      ? Number(req.params.boardId)
-      : undefined;
-    if (!userId) {
-      res.status(403).send("비로그인 상태입니다");
-      return;
-    }
-    if (!req.body.content || !req.body.description || !req.body.title) {
-      res.status(400).send("정해진 형식을 지켜주세요");
-      return;
-    }
-    const result = await updateBoard(
-      userId,
-      boardId,
-      req.body.title,
-      req.body.content,
-      req.body.description,
-      req.file?.filename,
-      req.session.isAdminLogin
-    );
-    if (typeof result === "string") {
-      res.status(400).send(result);
-    } else res.status(204).send();
+router.patch("/:boardId", async (req: Request, res: Response) => {
+  const userId = req?.session?.userId;
+  const boardId = intCheck.safeParse(req.params.boardId).success
+    ? Number(req.params.boardId)
+    : undefined;
+  if (!userId) {
+    res.status(403).send("비로그인 상태입니다");
+    return;
   }
-);
+  if (!req.body.content || !req.body.description || !req.body.title) {
+    res.status(400).send("정해진 형식을 지켜주세요");
+    return;
+  }
+  const result = await updateBoard(
+    userId,
+    boardId,
+    req.body.title,
+    req.body.content,
+    req.body.description,
+    req.body?.img,
+    req.session.isAdminLogin
+  );
+  if (typeof result === "string") {
+    res.status(400).send(result);
+  } else res.status(204).send();
+});
 router.delete("/:boardId", async (req: Request, res: Response) => {
   const userId = req?.session?.userId;
   const boardId = intCheck.safeParse(req.params.boardId).success
@@ -140,7 +136,7 @@ router.delete("/:boardId", async (req: Request, res: Response) => {
     res.status(400).send(result);
   } else res.status(204).send();
 });
-router.post("/", upload("img"), async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   const userId = req?.session?.userId;
   if (!userId) {
     res.status(403).send("비로그인 상태입니다");
@@ -161,7 +157,7 @@ router.post("/", upload("img"), async (req: Request, res: Response) => {
     req.body.content,
     req.body.description,
     req.body.category,
-    req.file?.filename,
+    req.body?.img,
     req.session.isAdminLogin
   );
   if (typeof result === "string") {

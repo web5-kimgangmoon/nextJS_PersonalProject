@@ -240,9 +240,6 @@ export const useAddCmt = (
         `/cmt`,
         { content, img },
         {
-          headers: {
-            "Content-Type": "mutipart/form-data",
-          },
           params: { boardId: boardId, replyId: replyId },
         }
       );
@@ -431,13 +428,13 @@ export const uploadImgFile = async (
         "Content-Type": "mutipart/form-data",
       },
     });
-    // data?.status === 204 && setText("");
+    data?.status === 204 && setText("");
     return 204;
   } catch (err: any) {
     if (err.status === 400) {
       setText("요청이 실패했습니다");
       setTimeout(() => {
-        // closeModal();
+        closeModal();
       }, 2000);
     }
     return 400;
@@ -451,14 +448,14 @@ export const uploadRequest = async (
     close: () => void;
   }
 ) => {
-  const imgFile = formData.get("img") as File;
+  const imgFile = formData.get("img") as File | null;
   let data = 0;
   if (imgFile) {
     const chunkSize = 1024 * 5;
     const chunkCount = Math.ceil(imgFile.size / chunkSize);
     const sendForm = new FormData();
     sendForm.set("end", String(chunkCount));
-    // loadingAlram.open();
+    loadingAlram.open();
     for (let i = 0; i < chunkCount; i++) {
       const offset = i * chunkSize;
       sendForm.set(
@@ -476,7 +473,7 @@ export const uploadRequest = async (
     }
   } else return true;
   if (data === 204 || data === 200) {
-    // loadingAlram.close();
+    loadingAlram.close();
     return true;
   }
   if (data === 400) return false;
