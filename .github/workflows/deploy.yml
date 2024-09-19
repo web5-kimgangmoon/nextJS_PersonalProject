@@ -184,6 +184,7 @@ jobs:
             rm -rf /var/www/back
             mkdir /var/www/back
             mkdir /var/www/back/public
+            mkdir /var/www/back/public/temp
             mkdir /var/www/back/sessions'
           rsync -avz -e "ssh" ./back/build/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/back
           rsync -avz -e "ssh" ./back/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/back/package.json
