@@ -189,7 +189,7 @@ export const CategoryBox = ({
           <CategoryTop img={list[0].img} />
         </Link>
         {list[1]?.path ? (
-          <Link href={list[1].path}>
+          <Link href={list[1].path} onClick={close}>
             <CategoryTop img={list[1]?.img} />
           </Link>
         ) : (
@@ -201,7 +201,7 @@ export const CategoryBox = ({
           <CategoryBottom description={list[0].description} />
         </Link>
         {list[1]?.path ? (
-          <Link href={list[1].path}>
+          <Link href={list[1].path} onClick={close}>
             <CategoryBottom description={list[1].description} />
           </Link>
         ) : (
