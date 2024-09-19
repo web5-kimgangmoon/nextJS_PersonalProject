@@ -423,11 +423,7 @@ export const uploadImgFile = async (
   formData: FormData
 ) => {
   try {
-    const data = await serverAxios.post(`/imgUpload`, formData, {
-      headers: {
-        "Content-Type": "mutipart/form-data",
-      },
-    });
+    const data = await serverAxios.post(`/imgUpload`, formData);
     data?.status === 204 && setText("");
     return 204;
   } catch (err: any) {
