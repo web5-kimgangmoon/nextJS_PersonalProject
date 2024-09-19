@@ -66,7 +66,7 @@ export const getBoardList = async (
     condition["deletedAt"] = null;
     condition["deleteReasonId"] = null;
   }
-  if (!onlyDeleted) {
+  if (onlyDeleted) {
     condition["deletedAt"] = { [Op.not]: null };
     condition["deleteReasonId"] = { [Op.not]: null };
   }
