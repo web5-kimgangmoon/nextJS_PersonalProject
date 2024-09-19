@@ -27,11 +27,11 @@ app.use((req, res, next) => {
   if (process.env.NODE_ENV === "deploy") morgan("combined")(req, res, next);
   else morgan("dev")(req, res, next);
 });
-declare module "express" {
-  interface Request {
-    ban?: boolean;
-  }
-}
+// declare module "express" {
+//   interface Request {
+//     ban?: boolean;
+//   }
+// }
 declare module "express-session" {
   interface SessionData {
     userId: number;

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { ranHash } from "@/app/lib/utils";
 import axios from "axios";
+import serverAxios from "@/app/lib/serverActionAxios";
 
 export const AutoClose = ({}: {}) => {
   const router = useRouter();
@@ -23,36 +24,31 @@ export const AutoClose = ({}: {}) => {
       );
     }
     if (params.get("code")) {
-      axios
-        .get(
-          `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${
-            process.env.NEXT_PUBLIC_FACEBOOK_CLIENT_ID
-          }&redirect_uri=${
-            process.env.NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH
-          }&client_secret=${
-            process.env.NEXT_PUBLIC_FACEBOOK_SECRET
-          }&code=${params.get("code")}`
+      serverAxios
+        .post(
+          `/user/login/oauth`,
+          {},
+          {
+            params: {
+              code: params.get("code"),
+              oauth: "FACEBOOK",
+              isAdminLogin: false,
+            },
+          }
         )
         .then((value) => {
           window.opener &&
             window.opener.postMessage(
-              value.data.access_token,
+              { data: value.data, isSuccess: true },
               window.opener.location.href
             );
-          // axios
-          //   .get(
-          //     `https://graph.facebook.com/me?fields=${"id,name,email"}&access_token=${
-          //       value.data.access_token
-          //     }`
-          //   )
-          //   .then((value) => {
-          // console.log(value);
-          // window.opener &&
-          //   window.opener.postMessage(
-          //     { email: value.data.email, sub: value.data.id },
-          //     window.opener.location.href
-          //   );
-          // });
+        })
+        .catch((err) => {
+          window.opener &&
+            window.opener.postMessage(
+              { data: err.response.data, isSuccess: false },
+              window.opener.location.href
+            );
         });
     }
   }, [router]);

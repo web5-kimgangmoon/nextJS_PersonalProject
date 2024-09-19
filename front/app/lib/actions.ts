@@ -391,6 +391,3 @@ export const useRegist = (
   });
   return { mutate, mutateAsync };
 };
-export const oauthLogin = (token: string, oauth: "google" | "facebook") => {
-  console.log("token은 ", token);
-};

@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import {
   getUserInfo,
   login,
+  oauthLogin,
   profileUpdate,
   regist,
   withdraw,
@@ -11,6 +12,29 @@ import { loginSearch } from "../services/loginSearch";
 import { upload } from "../services/upload";
 
 const router = Router();
+
+router.post("/oauth/login", async (req: Request, res: Response) => {
+  if (req.session.userId) {
+    res.status(400).send("이미 로그인되어 있습니다!");
+    return;
+  }
+  const code = stringCheck.safeParse(req.query.code).success
+    ? (req.query.code as string)
+    : null;
+  const oauth = stringCheck.safeParse(req.query.oauth).success
+    ? (req.query.oauth as string)
+    : null;
+  const isAdminLogin = req.query.isAdminLogin === "true" ? true : false;
+  const result = await oauthLogin(code, oauth);
+  if (typeof result === "string") {
+    res.status(400).send(result);
+    return;
+  }
+  req.session.userId = result.id;
+  req.session.isAdminLogin = isAdminLogin;
+  req.session.isMainAdmin = result.authority === 2 ? true : false;
+  res.status(204).send();
+});
 
 router.post("/login", async (req: Request, res: Response) => {
   if (req.session.userId) {

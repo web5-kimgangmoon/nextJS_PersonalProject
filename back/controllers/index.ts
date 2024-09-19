@@ -13,8 +13,8 @@ import { getCategoryList } from "../queries/category";
 const router = Router();
 
 router.use(async (req: Request, res: Response, next) => {
-  req.ban = await banCheck(req.session.userId);
-  req.ban && req.session.destroy((err) => console.log(err));
+  const ban = await banCheck(req.session.userId);
+  ban && req.session.destroy((err) => console.log(err));
   next();
 });
 router.get("/img", (req, res) => {

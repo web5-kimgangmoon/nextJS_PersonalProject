@@ -28,7 +28,7 @@ export default class UserInfo extends Model {
   id!: number;
 
   @ForeignKey(() => UserInfo)
-  @Column(DataType.INTEGER.UNSIGNED)
+  @Column({ type: DataType.INTEGER.UNSIGNED, allowNull: true })
   connectId!: number;
 
   @Column({ type: DataType.STRING(50), allowNull: false, unique: true })
