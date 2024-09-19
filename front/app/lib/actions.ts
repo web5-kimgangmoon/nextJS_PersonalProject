@@ -427,7 +427,7 @@ export const uploadImgFile = async (
     data?.status === 204 && setText("");
     return 204;
   } catch (err: any) {
-    if (err.status === 400) {
+    if (err.status) {
       setText("요청이 실패했습니다");
       setTimeout(() => {
         closeModal();
