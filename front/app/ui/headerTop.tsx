@@ -136,9 +136,11 @@ export const CategoryList = () => {
   const categoryInfo = useQuery_getCategories();
   if (categoryInfo.isLoading) return <LoadingSpin bgColorClass={"bg-white"} />;
   let count = 0;
-  let temp: { path: string; img: string; description: string }[] = [];
-  const inputList: Array<{ path: string; img: string; description: string }[]> =
+  let temp: { path: string; img: string; description: string; id: number }[] =
     [];
+  const inputList: Array<
+    { path: string; img: string; description: string; id: number }[]
+  > = [];
   if (categoryInfo.data?.data?.categories) {
     const categories = categoryInfo.data?.data.categories.slice(1);
     for (let item of categories) {
@@ -147,6 +149,7 @@ export const CategoryList = () => {
         path: `/write?category=${item.path}`,
         description: item.description,
         img: item.img,
+        id: item.id,
       });
       if (count % 2 == 0) {
         inputList.push(temp);
@@ -165,8 +168,8 @@ export const CategoryList = () => {
           원하는 카테고리를 선택하시면 게시글 작성 페이지로 이동합니다!
         </div>
       </div>
-      {inputList.map((item, index) => (
-        <CategoryBox list={item} key={index} />
+      {inputList.map((item) => (
+        <CategoryBox list={item} key={item[0].id} />
       ))}
     </div>
   );

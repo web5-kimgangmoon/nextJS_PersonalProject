@@ -68,6 +68,7 @@ export interface CategoryInfo {
   name: string;
   img: string;
   description: string;
+  id: number;
 }
 
 export interface CategoryListData {

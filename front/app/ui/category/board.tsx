@@ -55,29 +55,26 @@ export const BoardList = () => {
   });
   useEffect(() => {
     refetch();
-  }, [page, search, searchType, refetch, data?.data?.boardList]);
+  }, [page, search, searchType, refetch]);
   if (isLoading && !data) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   if (data?.data.boardList.length === 0) return <NoBoard />;
   return (
     <div>
       {data?.data.boardList.map(
-        (
-          item: {
-            isTop?: boolean;
-            cmtCnt: number;
-            id: number;
-            categoryPath: string;
-            createdAt: Date;
-            img: string;
-            category: string;
-            description: string;
-            title: string;
-            writer: string;
-            writerId: number;
-          },
-          idx: number
-        ) => (
-          <BoardItem {...item} key={idx} />
+        (item: {
+          isTop?: boolean;
+          cmtCnt: number;
+          id: number;
+          categoryPath: string;
+          createdAt: Date;
+          img: string;
+          category: string;
+          description: string;
+          title: string;
+          writer: string;
+          writerId: number;
+        }) => (
+          <BoardItem {...item} key={item.id} />
         )
       )}
     </div>

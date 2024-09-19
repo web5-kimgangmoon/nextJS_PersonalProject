@@ -157,7 +157,7 @@ export const getCategoryList = async () => {
     where: {
       deletedAt: null,
     },
-    attributes: ["path", "name", "img", "description"],
+    attributes: ["path", "name", "img", "description", "id"],
   });
   return {
     categories: categoryList.map((item) => ({
