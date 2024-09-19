@@ -192,6 +192,7 @@ export interface GetBoardList {
   isDeleted: string | null;
   search: string | null;
   searchType: string | "content" | "title" | "contentTitle" | "writer" | null;
+  onlyDeleted?: boolean;
 }
 export interface GetUserInfo {}
 export interface GetCategoryList {}

@@ -16,6 +16,7 @@ import { useFormDataImg } from "@/app/hooks/formDataImg";
 import { usePreview } from "@/app/hooks/preview";
 import { useCallback, useEffect, useMemo } from "react";
 import {
+  uploadRequest,
   useBoardAdd,
   useBoardRemake,
   useProfileUpdate,
@@ -258,7 +259,7 @@ const WriteBox = ({
   const imgBtnId = "imgBox";
   const titleObj = useSimpleText(title ? title : "");
   const descriptionObj = useSimpleText(description ? description : "");
-
+  const loadingAlram = useModalText();
   const boardAdd = useBoardAdd(() => {
     router.replace("/category/all");
   }, modalText.openText);
@@ -272,28 +273,46 @@ const WriteBox = ({
 
   const request = useCallback(
     async (formData: FormData) => {
+      const content = formData.get("content") as string | null;
+      const img = formData.get("img") as File | null;
+      const title = formData.get("title") as string | null;
+      const description = formData.get("description") as string | null;
+      const category = formData.get("category") as string;
       boardId
-        ? await boardRemake.mutate({ formData, boardId: boardId })
-        : await boardAdd.mutate(formData);
+        ? await boardRemake.mutate({
+            content: content ? content : "",
+            img: img ? img.name : "",
+            title: title ? title : "",
+            description: description ? description : "",
+            boardId: String(boardId),
+          })
+        : await boardAdd.mutate({
+            content: content ? content : "",
+            img: img ? img.name : "",
+            title: title ? title : "",
+            description: description ? description : "",
+            category: category ? category : "",
+          });
     },
     [queryClient, boardAdd, boardRemake]
   );
   const { preview } = usePreview(formData);
 
-  const submit = useCallback(() => {
+  const submit = useCallback(async () => {
     if (
       text.length > 0 &&
       titleObj.text.length > 0 &&
       descriptionObj.text.length > 0
     )
-      request(
-        pushedFormData(formData, [
-          { name: "content", value: text },
-          { name: "title", value: titleObj.text },
-          { name: "description", value: descriptionObj.text },
-          { name: "category", value: category ? category : "" },
-        ])
-      );
+      if (!(await uploadRequest(formData, loadingAlram))) return;
+    request(
+      pushedFormData(formData, [
+        { name: "content", value: text },
+        { name: "title", value: titleObj.text },
+        { name: "description", value: descriptionObj.text },
+        { name: "category", value: category ? category : "" },
+      ])
+    );
   }, [formData, text, content, request, router, setText]);
   const file = useMemo(() => {
     return formData.get("img") as null | File;
@@ -422,6 +441,13 @@ const WriteBox = ({
           </Button>
         </div>
       </div>
+      <Modal_little modalCtl={loadingAlram.is} closeModalCtl={() => {}}>
+        {loadingAlram.text ? (
+          loadingAlram.text
+        ) : (
+          <LoadingSpin bgColorClass="bg-white" text="이미지 업로드중" />
+        )}
+      </Modal_little>
     </div>
   );
 };

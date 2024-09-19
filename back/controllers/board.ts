@@ -43,7 +43,10 @@ router.get("/list", async (req: Request, res: Response) => {
   const searchType = stringCheck.safeParse(req.query.searchType).success
     ? stringCheck.parse(req.query.searchType)
     : undefined;
-  if (!req.session.isAdminLogin && isDeleted) {
+  const onlyDeleted = booleanCheck.safeParse(req.query.onlyDeleted).success
+    ? req.query.onlyDeleted === "true"
+    : false;
+  if (!req.session.isAdminLogin && (isDeleted || onlyDeleted)) {
     res.status(403).send({ message: "no authority" });
     return;
   }
@@ -55,7 +58,8 @@ router.get("/list", async (req: Request, res: Response) => {
       writerId,
       isDeleted,
       search,
-      searchType
+      searchType,
+      onlyDeleted
     )
   );
 });

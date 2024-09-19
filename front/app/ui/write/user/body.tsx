@@ -16,7 +16,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useProfileUpdate } from "@/app/lib/actions";
+import { uploadRequest, useProfileUpdate } from "@/app/lib/actions";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,7 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
   const modalText = useModalText();
   const [imgChange, setImgChange] = useState<string>("changeImg");
   const imgBtnId = "imgBox";
-
+  const loadingAlram = useModalText();
   const updateOwn = useProfileUpdate(() => {
     queryClient.refetchQueries({ queryKey: ["get", "userInfo", "own"] });
     router.replace("/user");
@@ -76,19 +76,26 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
 
   const request = useCallback(
     async (formData: FormData) => {
-      await updateOwn.mutate(formData);
+      const nick = formData.get("nick") as string | null;
+      const img = formData.get("img") as File | null;
+      await updateOwn.mutate({
+        nick: nick ? nick : "",
+        img: img ? img.name : "",
+      });
     },
     [queryClient, updateOwn]
   );
   const { preview } = usePreview(formData);
 
-  const submit = useCallback(() => {
+  const submit = useCallback(async () => {
     if (imgChange !== "changeImg") {
       const noImgData = new FormData();
       noImgData.set("nick", text);
       request(noImgData);
       return;
     }
+    if (!(await uploadRequest(formData, loadingAlram))) return;
+
     request(pushedFormData(formData, [{ name: "nick", value: text }]));
     setText(nick);
   }, [formData, text, nick, request, router, setText, imgChange]);
@@ -195,6 +202,13 @@ const WriteBox = ({ nick, img }: { nick: string; img: string }) => {
       </div>
       <Modal_little closeModalCtl={modalText.close} modalCtl={modalText.is}>
         {modalText.text}
+      </Modal_little>
+      <Modal_little modalCtl={loadingAlram.is} closeModalCtl={() => {}}>
+        {loadingAlram.text ? (
+          loadingAlram.text
+        ) : (
+          <LoadingSpin bgColorClass="bg-white" text="이미지 업로드중" />
+        )}
       </Modal_little>
     </div>
   );

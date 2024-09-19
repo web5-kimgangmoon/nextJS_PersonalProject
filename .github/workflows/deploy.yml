@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/oauth
 
 jobs:
   test_node:

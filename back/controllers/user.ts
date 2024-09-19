@@ -102,14 +102,17 @@ router.get("/", async (req: Request, res: Response) => {
           .send({ userInfo: await getUserInfo(req.session.userId) })
       : res.status(200).send({ userInfo: undefined });
 });
-router.patch("/", upload("img"), async (req: Request, res: Response) => {
+router.patch("/", async (req: Request, res: Response) => {
   const userId = intCheck.safeParse(req.session.userId).success
     ? Number(req.session.userId)
     : undefined;
   const nick = stringCheck.safeParse(req.body.nick).success
     ? stringCheck.parse(req.body.nick)
     : null;
-  const result = await profileUpdate(userId, nick, req.file?.filename);
+  const img = stringCheck.safeParse(req.body.img).success
+    ? stringCheck.parse(req.body.img)
+    : null;
+  const result = await profileUpdate(userId, nick, img);
   if (typeof result === "string") {
     res.status(400).send(result);
     return;

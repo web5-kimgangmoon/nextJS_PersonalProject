@@ -9,7 +9,6 @@ import {
   reportCmt,
   updateCmt,
 } from "../queries/cmt";
-import { upload } from "../services/upload";
 import z from "zod";
 
 const router = Router();
@@ -110,18 +109,14 @@ router.delete("/:cmtId", async (req: Request, res: Response) => {
     : res.status(400).send();
 });
 
-router.patch("/:cmtId", upload("img"), async (req: Request, res: Response) => {
+router.patch("/:cmtId", async (req: Request, res: Response) => {
   const userId = req?.session?.userId;
   const cmtId = Number(req.params.cmtId);
-  const isDeleteImg = booleanCheck.safeParse(req.body.isDeleteImg).success
-    ? req.body.isDeleteImg === "true"
-      ? true
-      : false
-    : false;
+  const isDeleteImg = req.body.isDeleteImg ? true : false;
   if (
     !userId ||
     !stringCheck.safeParse(req.body.content).success ||
-    (!req.body.content && !req.file?.filename) ||
+    (!req.body.content && !req.body.img) ||
     !cmtId
   ) {
     res.status(403).send();
@@ -132,13 +127,13 @@ router.patch("/:cmtId", upload("img"), async (req: Request, res: Response) => {
     cmtId as number,
     isDeleteImg,
     req.body.content,
-    req.file?.filename
+    req.body.img
   ))
     ? res.status(204).send()
     : res.status(400).send();
 });
 
-router.post("/", upload("img"), async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   const replyId = intCheck.safeParse(req.query.replyId).success
     ? Number(req.query.replyId)
     : undefined;
@@ -150,7 +145,7 @@ router.post("/", upload("img"), async (req: Request, res: Response) => {
     !userId ||
     (!boardId && !replyId) ||
     !stringCheck.safeParse(req.body.content).success ||
-    (!req.body.content && !req.file?.filename)
+    (!req.body?.content && !req.body?.img)
   ) {
     res.status(403).send();
     return;
@@ -159,8 +154,7 @@ router.post("/", upload("img"), async (req: Request, res: Response) => {
     await addCmt(
       { boardId: boardId, replyId, userId: req.session.userId as number },
       req.body.content,
-
-      req.file?.filename
+      req.body.img
     )
   );
 });

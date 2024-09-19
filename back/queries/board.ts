@@ -15,7 +15,8 @@ export const getBoardList = async (
   writerId: number | undefined,
   isDeleted: boolean,
   search: string | undefined,
-  searchType: string | undefined
+  searchType: string | undefined,
+  onlyDeleted?: boolean | undefined
 ) => {
   interface SendData {
     boardList: Array<{
@@ -64,6 +65,10 @@ export const getBoardList = async (
   if (!isDeleted) {
     condition["deletedAt"] = null;
     condition["deleteReasonId"] = null;
+  }
+  if (onlyDeleted) {
+    condition["deletedAt"] = { [Op.not]: null };
+    condition["deleteReasonId"] = { [Op.not]: null };
   }
   if (writerId) condition["writerId"] = writerId;
   const targetList = await Board.findAll({

@@ -8,13 +8,19 @@ import { useDeleteImg } from "@/app/hooks/callback/deleteImg";
 import { newCopyFormData, pushedFormData } from "@/app/lib/utils";
 import { KeyboardEvent, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useAddCmt, useUpdateCmt } from "@/app/lib/actions";
+import {
+  uploadImgFile,
+  uploadRequest,
+  useAddCmt,
+  useUpdateCmt,
+} from "@/app/lib/actions";
 import Image from "next/image";
 import { useQuery_getCategoryDetail } from "@/app/lib/data";
 import { LoadingSpin } from "@/app/ui/loadingSpin";
 import { useQueryClient } from "@tanstack/react-query";
 import { useModalText } from "@/app/hooks/modal";
 import { Modal_little } from "@/app/ui/modal";
+import serverAxios from "@/app/lib/serverActionAxios";
 // import { Blob } from "buffer";
 
 export const WriteCmt = ({
@@ -55,11 +61,27 @@ export const WriteCmt = ({
   }, modalText.openText);
   const request = useCallback(
     async (formData: FormData) => {
+      const content = formData.get("content") as string | null;
+      const img = formData.get("img") as File | null;
+      const isDeleteImg = formData.get("isDeleteImg") as string | null;
       isUpdate && cmtId
-        ? await updateCmt.mutate({ formData, cmtId })
+        ? await updateCmt.mutate({
+            content: content ? content : "",
+            img: img ? img.name : "",
+            cmtId,
+            isDeleteImg: isDeleteImg === "true" ? true : false,
+          })
         : boardId
-        ? await addCmt.mutate({ formData, boardId })
-        : await addCmt.mutate({ formData, replyId });
+        ? await addCmt.mutate({
+            content: content ? content : "",
+            img: img ? img.name : "",
+            boardId,
+          })
+        : await addCmt.mutate({
+            content: content ? content : "",
+            img: img ? img.name : "",
+            replyId,
+          });
     },
     [boardId, cmtId, isUpdate, replyId, addCmt, queryClient, updateCmt]
   );
@@ -112,8 +134,9 @@ export const WriteCmtComp = ({
     "isDeleteImg"
   );
   const resetForm = useDeleteImg(setPreview, setFormData, imgBtnId);
-
-  const submit = useCallback(() => {
+  const loadingAlram = useModalText();
+  const submit = useCallback(async () => {
+    if (!(await uploadRequest(formData, loadingAlram))) return;
     request(pushedFormData(formData, [{ name: "content", value: text }]));
     modalClose && modalClose();
     resetForm();
@@ -129,12 +152,6 @@ export const WriteCmtComp = ({
     // router,
     setText,
   ]);
-  const pressEnter = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.code === "Enter") submit();
-    },
-    [submit]
-  );
   return (
     <div hidden={!isOpen} className="w-full h-full pb-4">
       <div className="border-4 border-borderGray rounded-t-[2.5rem] p-5 text-base bg-white">
@@ -183,13 +200,6 @@ export const WriteCmtComp = ({
           className="w-full h-full outline-none"
           onChange={onChangeText}
           value={text}
-          onKeyDown={
-            formData.get("img") ||
-            text ||
-            (formData.get("isDeleteImg") !== "true" && img)
-              ? pressEnter
-              : undefined
-          }
           // defaultValue={baseText}
         />
       </div>
@@ -235,6 +245,13 @@ export const WriteCmtComp = ({
           </Button>
         </div>
       </div>
+      <Modal_little modalCtl={loadingAlram.is} closeModalCtl={() => {}}>
+        {loadingAlram.text ? (
+          loadingAlram.text
+        ) : (
+          <LoadingSpin bgColorClass="bg-white" text="이미지 업로드중" />
+        )}
+      </Modal_little>
     </div>
   );
 };

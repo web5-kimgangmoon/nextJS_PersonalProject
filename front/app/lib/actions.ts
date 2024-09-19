@@ -8,13 +8,25 @@ export const useBoardAdd = (
 ) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["board", "post"],
-    mutationFn: async (
-      formData: FormData
-    ): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.post(`/board`, formData, {
-        headers: {
-          "Content-Type": "mutipart/form-data",
-        },
+    mutationFn: async ({
+      title,
+      content,
+      description,
+      img,
+      category,
+    }: {
+      title: string;
+      content: string;
+      description: string;
+      img: string;
+      category: string;
+    }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      return await serverAxios.post(`/board`, {
+        title,
+        content,
+        img,
+        description,
+        category,
       });
     },
     onSuccess: () => {
@@ -33,16 +45,23 @@ export const useBoardRemake = (
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["board", "patch"],
     mutationFn: async ({
-      formData,
+      title,
+      content,
+      description,
+      img,
       boardId,
     }: {
-      formData: FormData;
-      boardId: number;
+      title: string;
+      content: string;
+      description: string;
+      img: string;
+      boardId: string;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.patch(`/board/${boardId}`, formData, {
-        headers: {
-          "Content-Type": "mutipart/form-data",
-        },
+      return await serverAxios.patch(`/board/${boardId}`, {
+        title,
+        content,
+        description,
+        img,
       });
     },
     onSuccess: () => {
@@ -100,14 +119,14 @@ export const useProfileUpdate = (
 ) => {
   const { mutate, mutateAsync } = useMutation({
     mutationKey: ["user", "patch", "own"],
-    mutationFn: async (
-      formData: FormData
-    ): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.patch(`/user`, formData, {
-        headers: {
-          "Content-Type": "mutipart/form-data",
-        },
-      });
+    mutationFn: async ({
+      nick,
+      img,
+    }: {
+      nick: string;
+      img: string;
+    }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
+      return await serverAxios.patch(`/user`, { nick, img });
     },
     onSuccess: () => {
       refetch();
@@ -207,20 +226,26 @@ export const useAddCmt = (
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["post", "cmt"],
     mutationFn: async ({
-      formData,
-      boardId,
+      content,
+      img,
       replyId,
+      boardId,
     }: {
-      formData: FormData;
-      boardId?: number;
+      content: string;
+      img: string;
       replyId?: number;
+      boardId?: number;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.post(`/cmt`, formData, {
-        headers: {
-          "Content-Type": "mutipart/form-data",
-        },
-        params: { boardId: boardId, replyId: replyId },
-      });
+      return await serverAxios.post(
+        `/cmt`,
+        { content, img },
+        {
+          headers: {
+            "Content-Type": "mutipart/form-data",
+          },
+          params: { boardId: boardId, replyId: replyId },
+        }
+      );
     },
     onSuccess: () => {
       refetch();
@@ -239,16 +264,20 @@ export const useUpdateCmt = (
   const { mutate, mutateAsync, data } = useMutation({
     mutationKey: ["patch", "cmt"],
     mutationFn: async ({
-      formData,
+      content,
+      img,
+      isDeleteImg,
       cmtId,
     }: {
-      formData: FormData;
+      content: string;
+      img: string;
+      isDeleteImg: boolean;
       cmtId: number;
     }): Promise<UseMutationResult<AxiosResponse<any, any>, any>> => {
-      return await serverAxios.patch(`/cmt/${cmtId}`, formData, {
-        headers: {
-          "Content-Type": "mutipart/form-data",
-        },
+      return await serverAxios.patch(`/cmt/${cmtId}`, {
+        content,
+        img,
+        isDeleteImg,
       });
     },
     onSuccess: () => {
@@ -390,4 +419,65 @@ export const useRegist = (
     },
   });
   return { mutate, mutateAsync };
+};
+export const uploadImgFile = async (
+  setText: (test: string) => void,
+  closeModal: () => void,
+  formData: FormData
+) => {
+  try {
+    const data = await serverAxios.post(`/imgUpload`, formData, {
+      headers: {
+        "Content-Type": "mutipart/form-data",
+      },
+    });
+    data?.status === 204 && setText("");
+    return 204;
+  } catch (err: any) {
+    if (err.status === 400) {
+      setText("요청이 실패했습니다");
+      setTimeout(() => {
+        closeModal();
+      }, 2000);
+    }
+    return 400;
+  }
+};
+export const uploadRequest = async (
+  formData: FormData,
+  loadingAlram: {
+    open: () => void;
+    openText: (text: string) => void;
+    close: () => void;
+  }
+) => {
+  const imgFile = formData.get("img") as File;
+  let data = 0;
+  if (imgFile) {
+    const chunkSize = 1024 * 5;
+    const chunkCount = Math.ceil(imgFile.size / chunkSize);
+    const sendForm = new FormData();
+    sendForm.set("end", String(chunkCount));
+    loadingAlram.open();
+    for (let i = 0; i < chunkCount; i++) {
+      const offset = i * chunkSize;
+      sendForm.set(
+        "img",
+        imgFile.slice(offset, offset + chunkSize),
+        imgFile.name
+      );
+      sendForm.set("current", String(i + 1));
+      data = await uploadImgFile(
+        loadingAlram.openText,
+        loadingAlram.close,
+        sendForm
+      );
+      if (data === 400) break;
+    }
+  } else return true;
+  if (data === 204 || data === 200) {
+    loadingAlram.close();
+    return true;
+  }
+  if (data === 400) return false;
 };
