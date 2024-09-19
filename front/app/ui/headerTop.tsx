@@ -67,7 +67,7 @@ export function HeaderTop({ isColorWhite }: { isColorWhite?: boolean }) {
             modalCtl={write.is}
             isShutDown={true}
           >
-            <CategoryList />
+            <CategoryList close={write.close} />
           </Modal>
         </div>
         <div className="p-2">
@@ -132,7 +132,7 @@ export function HeaderTop({ isColorWhite }: { isColorWhite?: boolean }) {
   );
 }
 
-export const CategoryList = () => {
+export const CategoryList = ({ close }: { close: () => void }) => {
   const categoryInfo = useQuery_getCategories();
   if (categoryInfo.isLoading) return <LoadingSpin bgColorClass={"bg-white"} />;
   let count = 0;
@@ -169,7 +169,7 @@ export const CategoryList = () => {
         </div>
       </div>
       {inputList.map((item) => (
-        <CategoryBox list={item} key={item[0].id} />
+        <CategoryBox list={item} key={item[0].id} close={close} />
       ))}
     </div>
   );
@@ -177,13 +177,15 @@ export const CategoryList = () => {
 
 export const CategoryBox = ({
   list,
+  close,
 }: {
   list: { path: string; img: string; description: string }[];
+  close: () => void;
 }) => {
   return (
     <div className="py-4">
       <div className="flex justify-between w-full px-4">
-        <Link href={list[0].path}>
+        <Link href={list[0].path} onClick={close}>
           <CategoryTop img={list[0].img} />
         </Link>
         {list[1]?.path ? (
@@ -195,7 +197,7 @@ export const CategoryBox = ({
         )}
       </div>
       <div className="flex justify-between w-full px-4">
-        <Link href={list[0].path}>
+        <Link href={list[0].path} onClick={close}>
           <CategoryBottom description={list[0].description} />
         </Link>
         {list[1]?.path ? (

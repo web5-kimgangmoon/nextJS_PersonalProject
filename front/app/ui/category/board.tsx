@@ -58,10 +58,9 @@ export const BoardList = () => {
   }, [page, search, searchType, refetch]);
   if (isLoading && !data) return <LoadingSpin bgColorClass="bg-categoryGray" />;
   if (data?.data.boardList.length === 0) return <NoBoard />;
-  const boardList = data?.data.boardList;
   return (
     <div>
-      {boardList.map(
+      {data?.data.boardList.map(
         (item: {
           isTop?: boolean;
           cmtCnt: number;

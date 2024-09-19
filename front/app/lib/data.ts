@@ -110,7 +110,20 @@ export const useQuery_getCategories = () => {
 };
 export const useQuery_getBoardList = (get: GetBoardList) => {
   const { isLoading, data, refetch } = useQuery({
-    queryKey: ["get", "board", "list"],
+    queryKey: [
+      "get",
+      "board",
+      "list",
+      `${get.category}`,
+      `limit ${get.limit}`,
+      `offst ${get.offset}`,
+      `search ${get.search}`,
+      `searchType ${get.searchType}`,
+      `${get.writerId ? `writerId ${get.writerId}` : ""}`,
+      `${get.isDeleted ? `deleted` : ""}`,
+      `${get.isOwn ? "own" : ""}`,
+      `${get.onlyDeleted ? "onlyDeleted" : ""}`,
+    ],
     queryFn: async () => {
       return await serverAxios.get("/board/list", {
         params: {
@@ -122,6 +135,7 @@ export const useQuery_getBoardList = (get: GetBoardList) => {
           search: get.search,
           searchType: get.searchType,
           writerId: get.writerId,
+          onlydeleted: get.onlyDeleted ? "true" : "false",
         },
       });
     },
