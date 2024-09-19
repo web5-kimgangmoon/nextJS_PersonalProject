@@ -29,7 +29,6 @@ router.get("/categories", async (req: Request, res: Response) => {
 
 router.post("/imgUpload", upload("img"), (req, res) => {
   try {
-    req.headers.authorization === `Bearer ${"testAuth"}`;
     const current = intCheck.safeParse(req.body.current).success
       ? Number(req.body.current)
       : undefined;

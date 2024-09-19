@@ -428,6 +428,7 @@ export const uploadImgFile = async (
     return 204;
   } catch (err: any) {
     if (err.status) {
+      console.log(err);
       setText("요청이 실패했습니다");
       setTimeout(() => {
         closeModal();
