@@ -160,16 +160,19 @@ export function SlideUserInfo({
       {
         title: `댓글 ${userInfo.userInfo ? userInfo.userInfo.cmtCnt : 0}`,
         path: "cmtList",
+        id: 1,
       },
 
       {
         title: `게시글 ${userInfo.userInfo ? userInfo.userInfo.boardsCnt : 0}`,
         path: "boardList",
+        id: 2,
       },
 
       {
         title: "생성일",
         path: "createdAt",
+        id: 3,
       },
     ].map((item) => ({
       path: `/user${params.userId ? "/" + params.userId : ""}?select=${
@@ -177,6 +180,7 @@ export function SlideUserInfo({
       }`,
       title: item.title,
       selected: item.path === selectedMenu,
+      id: item.id,
     }));
     // isOwn &&
     //   list.push({
@@ -185,6 +189,7 @@ export function SlideUserInfo({
     //     }?select=${"connectId"}`,
     //     title: "소셜연동",
     //     selected: "connectId" === selectedMenu,
+    //     id:4
     //   });
     isOwn &&
       list.push({
@@ -193,6 +198,7 @@ export function SlideUserInfo({
         }?select=${"withdraw"}`,
         title: "회원탈퇴",
         selected: "withdraw" === selectedMenu,
+        id: 5,
       });
     return list;
   }, [selectedMenu, userInfo?.userInfo]);
