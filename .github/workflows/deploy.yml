@@ -25,11 +25,11 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Install Dependencies of Back
-        working-directory: ./personalproject1
+        working-directory: ./back
         run: npm i
 
       - name: Build Back
-        working-directory: ./personalproject1
+        working-directory: ./back
         run: npx tsc
 
       - name: Copy Files to EC2
@@ -39,9 +39,9 @@ jobs:
             mkdir /var/www/personalproject1
             mkdir /var/www/personalproject1/public
             mkdir /var/www/personalproject1/sessions'
-          rsync -avz -e "ssh" ./personalproject1/build/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/personalproject1
-          rsync -avz -e "ssh" ./personalproject1/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/personalproject1/back/package.json
-          rsync -avz -e "ssh" ./personalproject1/public/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/personalproject1/back/public
+          rsync -avz -e "ssh" ./back/build/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/personalproject1
+          rsync -avz -e "ssh" ./back/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/personalproject1/back/package.json
+          rsync -avz -e "ssh" ./back/public/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/personalproject1/back/public
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || {
