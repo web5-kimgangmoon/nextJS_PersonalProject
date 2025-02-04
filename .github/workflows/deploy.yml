@@ -40,8 +40,8 @@ jobs:
             mkdir /var/www/personalproject1/public
             mkdir /var/www/personalproject1/sessions'
           rsync -avz -e "ssh" ./back/build/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/personalproject1
-          rsync -avz -e "ssh" ./back/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/personalproject1/back/package.json
-          rsync -avz -e "ssh" ./back/public/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/personalproject1/back/public
+          rsync -avz -e "ssh" ./back/package.json ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/personalproject1/package.json
+          rsync -avz -e "ssh" ./back/public/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/personalproject1/public
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || {
