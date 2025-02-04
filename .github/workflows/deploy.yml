@@ -71,4 +71,4 @@ jobs:
           }        
           npm install -g pm2          
           pm2 delete personalproject1
-          pm2 start /var/www/personalproject1/server.js --name personalproject1'
+          pm2 start /var/www/personalproject1/index.js --name personalproject1'
