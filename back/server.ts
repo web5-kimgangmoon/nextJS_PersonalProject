@@ -9,7 +9,8 @@ const FileStore = store(session);
 
 config();
 // export const front = `http://localhost:3080/api/img?name=`;
-export const front = `/api/img?name=`;
+// export const front = `/api/img?name=`;
+export const front = `https://personalproject1server.clashcrash.com/api/img?name=`;
 
 // import sequelize from "./models/index";
 import test from "./placeholderData/testcase";
@@ -27,6 +28,18 @@ app.use((req, res, next) => {
   if (process.env.NODE_ENV === "deploy") morgan("combined")(req, res, next);
   else morgan("dev")(req, res, next);
 });
+
+app.use(
+  cors({
+    origin: [
+      /http:\/\/localhost:*/,
+      /http:\/\/127.0.0.1:*/,
+      /https:\/\/personalproject1.clashcrash.com*/,
+    ],
+    credentials: true,
+  })
+);
+
 declare module "express" {
   interface Request {
     ban?: boolean;
@@ -58,12 +71,6 @@ app.use(
   })
 );
 
-app.use(
-  cors({
-    origin: [/http:\/\/localhost:*/, /http:\/\/127.0.0.1:*/, "/"],
-    credentials: true,
-  })
-);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
