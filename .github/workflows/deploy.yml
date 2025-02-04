@@ -59,7 +59,7 @@ jobs:
           echo GOOGLE_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_OAUTH }} >> .env
           echo FACEBOOK_CLIENT_ID=${{ secrets.FACEBOOK_CLIENT_ID }} >> .env
           echo FACEBOOK_SECRET=${{ secrets.FACEBOOK_SECRET }} >> .env
-          echo FACEBOOK_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH }} > .env'
+          echo FACEBOOK_REDIRECT_OAUTH=${{ secrets.NEXT_PUBLIC_FACEBOOK_REDIRECT_OAUTH }} >> .env'
 
       - name: Start Server
         run: |
