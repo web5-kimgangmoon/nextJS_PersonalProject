@@ -1,4 +1,4 @@
-import { front } from "../server";
+import { front } from "..";
 import Cmt from "../models/cmts";
 
 export const createCmt = async () => {
