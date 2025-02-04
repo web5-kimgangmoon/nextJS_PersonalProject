@@ -7,7 +7,9 @@ import session from "express-session";
 import store from "session-file-store";
 const FileStore = store(session);
 
-config();
+const __dirname = import.meta.dirname;
+
+config({ path: `${__dirname}/.env` });
 // export const front = `http://localhost:3080/api/img?name=`;
 // export const front = `/api/img?name=`;
 export const front = `https://personalproject1server.clashcrash.com/api/img?name=`;
