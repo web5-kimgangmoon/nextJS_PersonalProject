@@ -29,7 +29,7 @@
     "@types/express-session": "^1.18.0",
     "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.12",
-    "@types/node": "^22.5.4",
+    "@types/node": "^22.13.1",
     "@types/sequelize": "^4.28.20",
     "@types/session-file-store": "^1.2.5",
     "@types/validator": "^13.12.1",
