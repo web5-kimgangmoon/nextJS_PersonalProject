@@ -61,7 +61,7 @@ app.use(
     name: "user",
     store: new FileStore({
       reapInterval: 1800,
-      path: path.join(__dirname, "./sessions"),
+      path: path.join(__dirname, "/sessions"),
     }),
     cookie: {
       // signed: true,
