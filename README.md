@@ -43,7 +43,9 @@ https://www.reddit.com/r/nextjs/comments/kty9vi/dompurifysanitize_throws_error_t
 수정: html-react-parser는 xss 공격을 보호해주는 라이브러리가 아닌 편의성을 위한 라이브러리다.
 js dom은 서버사이드의 라이브러리다. 이 프로젝트에서는 클라이언트 사이드만 이용, 지금은 필요없다.
 
-### oauth 설정
+### placeholder-shown
+
+### oauth 설정(적용 못함)
 
 구글 개발자 설정 페이지  
 https://console.cloud.google.com/apis/credentials/key/9ea68080-109c-4a9b-b0de-d86f82ca084b?hl=ko&project=even-sun-433101-s7
@@ -56,5 +58,3 @@ https://developers.facebook.com/apps/?show_reminder=true
 
 페이스북 oauth documentation 페이지  
 https://developers.facebook.com/docs/facebook-login/guides/test
-
-### placeholder-shown
