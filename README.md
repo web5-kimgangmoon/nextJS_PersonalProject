@@ -4,9 +4,18 @@
 
 - 게시판
 
-## 라이브러리
+## 스택
 
-개발중은 로고가 아닌 수기로 적겠습니다.
+![noImg](./stacks/figma.svg)
+![noImg](./stacks/js.svg)
+![noImg](./stacks/mysql.svg)
+![noImg](./stacks/nextjs.svg)
+![noImg](./stacks/nodejs.svg)
+![noImg](./stacks/npm.svg)
+![noImg](./stacks/prettier.svg)
+![noImg](./stacks/reactjs.svg)
+![noImg](./stacks/tailwindcss.svg)
+![noImg](./stacks/typescript.svg)
 
 ## 설치
 
